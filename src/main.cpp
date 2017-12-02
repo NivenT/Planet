@@ -3,6 +3,7 @@
 #include "nta/ResourceManager.h"
 #include "nta/SystemManager.h"
 #include "nta/AudioManager.h"
+#include "nta/ScreenManager.h"
 #include "nta/Logger.h"
 #include "nta/MyEngine.h"
 #include "nta/Random.h"
