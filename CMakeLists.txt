@@ -39,15 +39,6 @@ endif()
 
 add_subdirectory(jubilant-funicular)
 
-include_directories(include ${NTA_INCLUDE_DIR})
 add_executable(game src/main.cpp)
-target_link_libraries(game #${NTA_LIBRARIES})
-  ${NTA_LIBRARIES}
-  ${SDL2_LIBRARY}
-  ${SDL2TTF_LIBRARY}
-  ${SDLMIXER_LIBRARY}
-  ${GLUT_LIBRARIES} # Seems to not work
-  ${GLEW_LIBRARIES} # Seems to not work
-  ${IL_LIBRARIES}
-  ${ILU_LIBRARIES}
-)
+target_link_libraries(game ${NTA_LIBRARIES})
+include_directories(include ${NTA_INCLUDE_DIR})
