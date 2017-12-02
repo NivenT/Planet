@@ -37,11 +37,11 @@ else()
     endif()
 endif()
 
-add_subdirectory(nta)
+add_subdirectory(jubilant-funicular)
 
 include_directories(include ${NTA_INCLUDE_DIR})
-add_executable(arimaa src/main.cpp src/Board.cpp src/MainGame.cpp src/Menu.cpp)
-target_link_libraries(arimaa #${NTA_LIBRARIES})
+add_executable(game src/main.cpp)
+target_link_libraries(game #${NTA_LIBRARIES})
   ${NTA_LIBRARIES}
   ${SDL2_LIBRARY}
   ${SDL2TTF_LIBRARY}
