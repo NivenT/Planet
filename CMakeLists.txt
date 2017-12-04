@@ -39,6 +39,6 @@ endif()
 
 add_subdirectory(jubilant-funicular)
 
-add_executable(game src/main.cpp)
+add_executable(game src/main.cpp src/MainGame.cpp)
 target_link_libraries(game ${NTA_LIBRARIES})
 include_directories(include ${NTA_INCLUDE_DIR})

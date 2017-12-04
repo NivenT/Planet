@@ -8,13 +8,16 @@
 #include "nta/MyEngine.h"
 #include "nta/Random.h"
 
+#include "MainGame.h"
+
 int main(int argc, char* argv[]) {
     nta::init();
     nta::Logger::createLog();
     nta::Random::init();
     nta::AudioManager::init();
-
-    nta::ScreenManager screenManager("Chip-8", 60);
+		
+    nta::ScreenManager screenManager("Game", 60);
+		screenManager.addScreen(new MainGame);
     screenManager.run();
 
     screenManager.destroy();
