@@ -22,6 +22,7 @@ void MainGame::init() {
         m_simpleProg->addAttribute("pos");
         m_simpleProg->addAttribute("color");
         m_simpleProg->addAttribute("uv");
+        m_simpleProg->addAttribute("hasTexture");
         m_simpleProg->linkShaders();
     }
     m_simpleProg->use();
