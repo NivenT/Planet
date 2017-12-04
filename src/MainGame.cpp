@@ -43,17 +43,17 @@ void MainGame::render() {
 		} m_batch.end();
 
 		m_pbatch.begin(); {
-			vector<Vertex2D> verts;
-			for (int i = 0; i < 6; i++) {
-				verts.emplace_back(10.f * glm::vec2(cos(i * M_PI/3), sin(i * M_PI/3)));
-			}
-			m_pbatch.addPrimitive(begin(verts), end(verts), 0);
+        vector<Vertex2D> verts;
+        for (int i = 0; i < 6; i++) {
+            verts.emplace_back(10.f * glm::vec2(cos(i * M_PI/3), sin(i * M_PI/3)));
+        }
+        m_pbatch.addPrimitive(begin(verts), end(verts), 0);
 		} m_pbatch.end();
 		
     m_simpleProg->use(); {
-			glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE, &m_camera.getCameraMatrix()[0][0]);
-			m_batch.render();
-			m_pbatch.render();
+        glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE, &m_camera.getCameraMatrix()[0][0]);
+        m_batch.render();
+        m_pbatch.render();
 		} m_simpleProg->unuse();
 		
     m_window->swapBuffers();
