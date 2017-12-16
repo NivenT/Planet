@@ -11,7 +11,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.) {
+MainGame::MainGame() : m_time(0.), m_grid(3) {
 }
 
 MainGame::~MainGame() {
@@ -49,10 +49,9 @@ void MainGame::render() {
 		} m_batch.end();
 
     //static vec4 color(Random::randFloat(), Random::randFloat(), Random::randFloat(), 1.0);
-    static Grid grid;
     m_pbatch.begin(); {
         //m_pbatch.addPrimitive(6, vec2(0.), 10.f, color, m_time);
-        grid.render(m_pbatch);
+        m_grid.render(m_pbatch);
 		} m_pbatch.end();
 		
     m_simpleProg->use(); {

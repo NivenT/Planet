@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
 		
     nta::ScreenManager screenManager("Game", 60);
 		screenManager.addScreen(new MainGame);
-    screenManager.run();
-
+    screenManager.run(); 
+    
     screenManager.destroy();
     nta::ResourceManager::destroy();
     nta::SystemManager::destroy();
