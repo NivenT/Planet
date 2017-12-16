@@ -5,12 +5,13 @@
 #include "nta/Random.h"
 
 #include "MainGame.h"
+#include "Grid.h"
 
 using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() {
+MainGame::MainGame() : m_time(0.) {
 }
 
 MainGame::~MainGame() {
@@ -37,6 +38,8 @@ void MainGame::init() {
 }
 
 void MainGame::update() {
+    //m_camera.setDimensions(m_window->getDimensions());
+    m_time += 1/60.;
 }
 
 void MainGame::render() {
@@ -45,13 +48,11 @@ void MainGame::render() {
     m_batch.begin(); {
 		} m_batch.end();
 
-    static vec4 color(Random::randFloat(), Random::randFloat(), Random::randFloat(), 1.0);
-		m_pbatch.begin(); {
-        vector<Vertex2D> verts;
-        for (int i = 0; i < 6; i++) {
-            verts.emplace_back(10.f * vec2(cos(i * M_PI/3), sin(i * M_PI/3)), color);
-        }
-        m_pbatch.addPrimitive(begin(verts), end(verts), 0);
+    //static vec4 color(Random::randFloat(), Random::randFloat(), Random::randFloat(), 1.0);
+    static Grid grid;
+    m_pbatch.begin(); {
+        //m_pbatch.addPrimitive(6, vec2(0.), 10.f, color, m_time);
+        grid.render(m_pbatch);
 		} m_pbatch.end();
 		
     m_simpleProg->use(); {

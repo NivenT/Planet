@@ -13,6 +13,8 @@ private:
     nta::SpriteBatch  m_batch;
 		nta::PrimitiveBatch m_pbatch;
     nta::Camera2D m_camera;
+
+    float m_time;
 public:
 		MainGame();
 		~MainGame();
