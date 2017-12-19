@@ -13,17 +13,17 @@ class MainGame : public nta::Screen {
 private:
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::SpriteBatch  m_batch;
-		nta::PrimitiveBatch m_pbatch;
+    nta::PrimitiveBatch m_pbatch;
     nta::Camera2D m_camera;
 
     Grid m_grid;
     float m_time;
 public:
-		MainGame();
-		~MainGame();
+    MainGame();
+    ~MainGame();
     void update();
     void render();
-		void init();
+    void init();
 };
 
 #endif // MAINGAME_H_INCLUDED

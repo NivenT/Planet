@@ -15,9 +15,9 @@ int main(int argc, char* argv[]) {
     nta::Logger::createLog();
     nta::Random::init();
     nta::AudioManager::init();
-		
+    
     nta::ScreenManager screenManager("Game", 60);
-		screenManager.addScreen(new MainGame);
+    screenManager.addScreen(new MainGame);
     screenManager.run(); 
     
     screenManager.destroy();
