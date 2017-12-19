@@ -18,6 +18,9 @@ int main(int argc, char* argv[]) {
     
     nta::ScreenManager screenManager("Game", 60);
     screenManager.addScreen(new MainGame);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     screenManager.run(); 
     
     screenManager.destroy();

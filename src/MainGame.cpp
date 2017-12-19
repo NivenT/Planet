@@ -14,7 +14,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.) {
+MainGame::MainGame() : m_time(0.), m_debug(false) {
     m_planet = Planet::new_test();
 }
 
@@ -57,6 +57,10 @@ void MainGame::update() {
         m_camera.rotate(dt);
     }
 
+    if (nta::InputManager::justPressed(SDLK_SPACE)) {
+        m_debug = !m_debug;
+    }
+
     m_time += 1/60.;
 }
 
@@ -66,10 +70,9 @@ void MainGame::render() {
     m_batch.begin(); {
     } m_batch.end();
 
-    //static vec4 color(Random::randFloat(), Random::randFloat(), Random::randFloat(), 1.0);
     m_pbatch.begin(); {
-        //m_pbatch.addPrimitive(6, vec2(0.), 10.f, color, m_time);
         m_planet.render(m_pbatch);
+        if (m_debug) m_planet.render_debug(m_pbatch);
     } m_pbatch.end();
         
     m_simpleProg->use(); {

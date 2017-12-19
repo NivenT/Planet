@@ -18,6 +18,7 @@ private:
 
     Planet m_planet;
     float m_time;
+    bool m_debug;
 public:
     MainGame();
     ~MainGame();

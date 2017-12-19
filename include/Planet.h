@@ -16,6 +16,9 @@
 
 class Planet {
 private:
+    // (0,0) should be center of sea level in world coordinates
+    glm::vec2 getOffset() const;
+
     std::vector<Tile> m_tiles;
     // indices into m_tiles 
     std::vector<std::vector<int>> m_layout;
@@ -28,6 +31,7 @@ public:
     static Planet new_test();
     ~Planet();
     void render(nta::PrimitiveBatch& pbatch) const;
+    void render_debug(nta::PrimitiveBatch& pbatch) const;
 };
 
 #endif // PLANET_H_INCLUDED
