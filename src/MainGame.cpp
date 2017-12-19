@@ -52,6 +52,18 @@ void MainGame::init() {
     glUniform1i(m_overlayProg->getUniformLocation("sampler"), 0);
     m_overlayProg->unuse();
 
+    m_planetProg = SystemManager::getGLSLProgram("planet");
+    if (!m_planetProg->isLinked()) {
+        m_planetProg->addAttribute("pos");
+        m_planetProg->addAttribute("color");
+        m_planetProg->addAttribute("uv");
+        m_planetProg->addAttribute("hasTexture");
+        m_planetProg->linkShaders();
+    }
+    m_planetProg->use();
+    glUniform1i(m_planetProg->getUniformLocation("sampler"), 0);
+    m_planetProg->unuse();
+
     m_batch.init();
     m_pbatch.init();
     m_overlay_batch.init();
@@ -106,16 +118,22 @@ void MainGame::render() {
         }
     } m_overlay_batch.end();
         
+    auto camera_matrix = m_camera.getCameraMatrix();
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
-                           &m_camera.getCameraMatrix()[0][0]);
-        m_pbatch.render();
+                           &camera_matrix[0][0]);
         m_batch.render();
     } m_simpleProg->unuse();
 
     m_overlayProg->use(); {
         m_overlay_batch.render();
     } m_overlayProg->unuse();
+
+    m_planetProg->use(); {
+        glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
+                           &camera_matrix[0][0]);
+        m_pbatch.render();
+    } m_planetProg->unuse();
         
     m_window->swapBuffers();
 }

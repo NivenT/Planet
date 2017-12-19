@@ -14,6 +14,7 @@ class MainGame : public nta::Screen {
 private:
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::GLSLProgram* m_overlayProg = nullptr;
+    nta::GLSLProgram* m_planetProg = nullptr;
     nta::SpriteFont* m_font = nullptr;
 
     nta::SpriteBatch m_batch;
