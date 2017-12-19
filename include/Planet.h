@@ -30,6 +30,7 @@ public:
     Planet() {}
     static Planet new_test();
     ~Planet();
+    float getRadius() const;
     void render(nta::PrimitiveBatch& pbatch) const;
     void render_debug(nta::PrimitiveBatch& pbatch) const;
 };

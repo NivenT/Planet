@@ -25,6 +25,7 @@ private:
     Planet m_planet;
     float m_time;
     bool m_debug;
+    bool m_square_planet;
 public:
     MainGame();
     ~MainGame();

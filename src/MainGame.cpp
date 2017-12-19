@@ -15,7 +15,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true) {
+MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(false) {
     m_planet = Planet::new_test();
 }
 
@@ -90,6 +90,8 @@ void MainGame::update() {
 
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
+    } else if (InputManager::justPressed(SDLK_RETURN)) {
+        m_square_planet = !m_square_planet;
     }
 
     m_time += 1/60.;
@@ -102,7 +104,7 @@ void MainGame::render() {
         if (m_debug) {
             vec2 center = m_camera.getCenter();
             m_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
-                             ResourceManager::getTexture("circle.png").id, vec4(1,0,0,1));
+                             ResourceManager::getTexture("circle.png").id, vec4(1,0,0,1), 0.0);
         }
     } m_batch.end();
 
@@ -119,21 +121,23 @@ void MainGame::render() {
     } m_overlay_batch.end();
         
     auto camera_matrix = m_camera.getCameraMatrix();
+    m_planetProg->use(); {
+        glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
+                           &camera_matrix[0][0]);
+        glUniform1f(m_planetProg->getUniformLocation("planet_radius"), m_planet.getRadius());
+        if (!m_square_planet) m_pbatch.render();
+    } m_planetProg->unuse();
+
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
+        if (m_square_planet) m_pbatch.render();
         m_batch.render();
     } m_simpleProg->unuse();
 
     m_overlayProg->use(); {
         m_overlay_batch.render();
     } m_overlayProg->unuse();
-
-    m_planetProg->use(); {
-        glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
-                           &camera_matrix[0][0]);
-        m_pbatch.render();
-    } m_planetProg->unuse();
         
     m_window->swapBuffers();
 }
