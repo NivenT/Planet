@@ -18,8 +18,10 @@ Planet Planet::new_test() {
     test.m_tiles.push_back(Tile(vec4(0.4, 0.7, 0.1, 1)));
     test.m_tiles.push_back(Tile(vec4(0.6, 0.8, 1, 1)));
     test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 1)));
-    test.m_dimensions = ivec2(10, 44);
+
     test.m_sea_level = 3;
+    test.m_dimensions[0] = 10;
+    test.m_dimensions[1] = round(2*M_PI*test.m_dimensions[0]);
 
     for (int r = 0; r < test.m_dimensions[0]; r++) {
         test.m_layout.emplace_back();
@@ -37,6 +39,10 @@ vec2 Planet::getOffset() const {
 
 float Planet::getRadius() const {
     return (m_dimensions[0] - m_sea_level)*TILE_SIZE;
+}
+
+float Planet::getHeight() const {
+    return m_dimensions[0] * TILE_SIZE;
 }
 
 void Planet::render(nta::PrimitiveBatch& pbatch) const {

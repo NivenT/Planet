@@ -71,7 +71,7 @@ void MainGame::init() {
 }
 
 void MainGame::update() {
-    static float dx = 0.618, dy = 1.618, dt = 0.01;
+    static float dx = 0.618, dy = 1.618, dt = 0.01, ds = 1.01;
     if (InputManager::isPressed(SDLK_w)) {
         m_camera.translateCenter(0, dy);
     } if (InputManager::isPressed(SDLK_a)) {
@@ -84,6 +84,10 @@ void MainGame::update() {
         m_camera.rotate(-dt);
     } if (InputManager::isPressed(SDLK_q)) {
         m_camera.rotate(dt);
+    } if (InputManager::getMouseWheelMotion() > 0) {
+        m_camera.scaleDimensions(1./ds, 1./ds);
+    } if (InputManager::getMouseWheelMotion() < 0) {
+        m_camera.scaleDimensions(ds, ds);
     } if (InputManager::isPressed(SDLK_g)) {
         m_camera = Camera2D();
     }
@@ -125,12 +129,15 @@ void MainGame::render() {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
         glUniform1f(m_planetProg->getUniformLocation("planet_radius"), m_planet.getRadius());
+        glUniform1f(m_planetProg->getUniformLocation("planet_height"), m_planet.getHeight());
+
         if (!m_square_planet) m_pbatch.render();
     } m_planetProg->unuse();
 
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
+        
         if (m_square_planet) m_pbatch.render();
         m_batch.render();
     } m_simpleProg->unuse();

@@ -31,6 +31,7 @@ public:
     static Planet new_test();
     ~Planet();
     float getRadius() const;
+    float getHeight() const;
     void render(nta::PrimitiveBatch& pbatch) const;
     void render_debug(nta::PrimitiveBatch& pbatch) const;
 };
