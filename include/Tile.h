@@ -16,7 +16,7 @@ struct Tile {
     static Tile new_outline() {
         return {nta::ResourceManager::getTexture("outline.png"), glm::vec4(1,1,1,1)};
     }
-    void render(nta::PrimitiveBatch& pbatch, glm::vec2 top_left) {
+    void render(nta::PrimitiveBatch& pbatch, glm::vec2 top_left) const {
         std::vector<nta::Vertex2D> vertices;
 
         vertices.emplace_back(top_left, m_color, glm::vec2(0,0));

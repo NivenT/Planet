@@ -27,7 +27,7 @@ public:
     Planet() {}
     static Planet new_test();
     ~Planet();
-    void render(nta::PrimitiveBatch& pbatch);
+    void render(nta::PrimitiveBatch& pbatch) const;
 };
 
 #endif // PLANET_H_INCLUDED

@@ -1,18 +1,21 @@
+#include <iostream>
+
 #include "nta/Logger.h"
 #include "nta/SystemManager.h"
 #include "nta/ResourceManager.h"
+#include "nta/InputManager.h"
 #include "nta/Vertex.h"
 #include "nta/Random.h"
+#include "nta/GLMConsoleOutput.h"
 
 #include "MainGame.h"
-#include "Planet.h"
-//#include "Grid.h"
 
 using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.)/*,  m_grid(3) */ {
+MainGame::MainGame() : m_time(0.) {
+    m_planet = Planet::new_test();
 }
 
 MainGame::~MainGame() {
@@ -39,7 +42,21 @@ void MainGame::init() {
 }
 
 void MainGame::update() {
-    //m_camera.setDimensions(m_window->getDimensions());
+    static float dx = 0.618, dy = 1.618, dt = 0.01;
+    if (nta::InputManager::isPressed(SDLK_w)) {
+        m_camera.translateCenter(0, dy);
+    } if (nta::InputManager::isPressed(SDLK_a)) {
+        m_camera.translateCenter(-dx, 0);
+    } if (nta::InputManager::isPressed(SDLK_s)) {
+        m_camera.translateCenter(0, -dy);
+    } if (nta::InputManager::isPressed(SDLK_d)) {
+        m_camera.translateCenter(dx, 0);
+    } if (nta::InputManager::isPressed(SDLK_e)) {
+        m_camera.rotate(-dt);
+    } if (nta::InputManager::isPressed(SDLK_q)) {
+        m_camera.rotate(dt);
+    }
+
     m_time += 1/60.;
 }
 
@@ -50,11 +67,9 @@ void MainGame::render() {
     } m_batch.end();
 
     //static vec4 color(Random::randFloat(), Random::randFloat(), Random::randFloat(), 1.0);
-    Planet test = Planet::new_test();
     m_pbatch.begin(); {
         //m_pbatch.addPrimitive(6, vec2(0.), 10.f, color, m_time);
-        //m_grid.render(m_pbatch);
-        test.render(m_pbatch);
+        m_planet.render(m_pbatch);
     } m_pbatch.end();
         
     m_simpleProg->use(); {

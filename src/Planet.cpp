@@ -27,9 +27,9 @@ Planet Planet::new_test() {
     return test;
 }
 
-void Planet::render(nta::PrimitiveBatch& pbatch) {
+void Planet::render(nta::PrimitiveBatch& pbatch) const {
     // (0,0) should be center of sea level in world coordinates
-    vec2 offset(-m_dimensions[1]*TILE_SIZE/2., (float)m_sea_level*TILE_SIZE);
+    vec2 offset(-m_dimensions[1]*TILE_SIZE/2., m_sea_level*TILE_SIZE);
     for (int r = 0; r < m_dimensions[0]; r++) {
         for (int c = 0; c < m_dimensions[1]; c++) {
             m_tiles[m_layout[r][c]].render(pbatch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
