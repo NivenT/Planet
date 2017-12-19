@@ -4,6 +4,7 @@
 #include "nta/SystemManager.h"
 #include "nta/ResourceManager.h"
 #include "nta/InputManager.h"
+#include "nta/ScreenManager.h"
 #include "nta/Vertex.h"
 #include "nta/Random.h"
 #include "nta/GLMConsoleOutput.h"
@@ -23,6 +24,8 @@ MainGame::~MainGame() {
 
 void MainGame::init() {
     Logger::writeToLog("Initializing main screen...");
+
+    m_font = ResourceManager::getSpriteFont("manilasansreg.otf");
 
     m_simpleProg = SystemManager::getGLSLProgram("Simple2D");
     if (!m_simpleProg->isLinked()) {
@@ -68,6 +71,10 @@ void MainGame::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_batch.begin(); {
+        if (m_debug) {
+            m_font->drawText(m_batch, "fps: " + to_string((int)m_manager->getFPS()), 
+                             vec4(m_camera.getTopLeft(), m_camera.getDimensions()*vec2(0.3, 0.1)));
+        }
     } m_batch.end();
 
     m_pbatch.begin(); {

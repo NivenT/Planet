@@ -3,6 +3,7 @@
 
 #include "nta/PrimitiveBatch.h"
 #include "nta/SpriteBatch.h"
+#include "nta/SpriteFont.h"
 #include "nta/GLSLProgram.h"
 #include "nta/Camera2D.h"
 #include "nta/Screen.h"
@@ -12,6 +13,8 @@
 class MainGame : public nta::Screen {
 private:
     nta::GLSLProgram* m_simpleProg = nullptr;
+    nta::SpriteFont* m_font = nullptr;
+
     nta::SpriteBatch  m_batch;
     nta::PrimitiveBatch m_pbatch;
     nta::Camera2D m_camera;
