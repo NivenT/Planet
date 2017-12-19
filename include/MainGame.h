@@ -7,7 +7,7 @@
 #include "nta/Camera2D.h"
 #include "nta/Screen.h"
 
-#include "Grid.h"
+//#include "Grid.h"
 
 class MainGame : public nta::Screen {
 private:
@@ -16,7 +16,7 @@ private:
     nta::PrimitiveBatch m_pbatch;
     nta::Camera2D m_camera;
 
-    Grid m_grid;
+    //Grid m_grid;
     float m_time;
 public:
     MainGame();
