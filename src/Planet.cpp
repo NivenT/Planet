@@ -16,17 +16,17 @@ Planet::~Planet() {
 Planet Planet::new_test() {
     Planet test;
     test.m_tiles.push_back(Tile(vec4(0.4, 0.7, 0.1, 1)));
-    test.m_tiles.push_back(Tile(vec4(0.6, 0.8, 1, 1)));
+    test.m_tiles.push_back(Tile(vec4(0.65, 0.85, 1, 1)));
     test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 1)));
 
-    test.m_sea_level = 3;
-    test.m_dimensions[0] = 10;
+    test.m_sea_level = 7;
+    test.m_dimensions[0] = 14;
     test.m_dimensions[1] = round(2*M_PI*test.m_dimensions[0]);
 
     for (int r = 0; r < test.m_dimensions[0]; r++) {
         test.m_layout.emplace_back();
         for (int c = 0; c < test.m_dimensions[1]; c++) {
-            test.m_layout.back().push_back(r >= 8 ? 2 :
+            test.m_layout.back().push_back(r >= 12 ? 2 :
                                            r >= test.m_sea_level ? 0 : 1);
         }
     }
