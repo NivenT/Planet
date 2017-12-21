@@ -37,7 +37,15 @@ else()
     endif()
 endif()
 
+# Needed for liquidfun
+find_package(Threads)
+
+# Only want the library itself
+set(BOX2D_BUILD_EXAMPLES OFF)
+set(BOX2D_BUILD_UNITTESTS OFF)
+
 add_subdirectory(jubilant-funicular)
+add_subdirectory(liquidfun/liquidfun/Box2D)
 
 add_executable(game src/main.cpp src/MainGame.cpp src/Planet.cpp)
 target_link_libraries(game ${NTA_LIBRARIES})

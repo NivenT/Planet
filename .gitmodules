@@ -1,3 +1,6 @@
 [submodule "jubilant-funicular"]
 	path = jubilant-funicular
 	url = https://github.com/nivent/jubilant-funicular
+[submodule "liquidfun"]
+	path = liquidfun
+	url = https://github.com/google/liquidfun
