@@ -1,4 +1,5 @@
 #include "Planet.h"
+#include "utils.h"
 
 using namespace glm;
 using namespace std;
@@ -76,22 +77,13 @@ void Planet::render_debug(nta::PrimitiveBatch& pbatch) const {
 
     for (int r = 0; r <= m_dimensions[0]; r++) {
         vec4 color = r == m_sea_level ? vec4(0,1,1,1) : vec4(1);
-
         vec2 left(offset - (float)r*TILE_DY), 
              right(offset - (float)r*TILE_DY + (float)m_dimensions[1]*TILE_DX);
-        vec2 diff = right - left;
-        for (int i = 0; i < NUM_PIECES; i++) {
-            nta::Vertex2D here(left + (float)i*diff/NUM_PIECES, color), 
-                          there(left + (float)(i+1)*diff/NUM_PIECES, color);
-            pbatch.addPrimitive({here, there});
-        }
+        render_line_in_pieces(pbatch, left, right, NUM_PIECES, color);
     }
     for (int c = 0; c <= m_dimensions[1]; c++) {
         vec2 top(offset + (float)c*TILE_DX),
              bottom(offset - (float)m_dimensions[0]*TILE_DY + (float)c*TILE_DX);
-        vec2 diff = bottom - top;
-        for (int i = 0; i < NUM_PIECES; i++) {
-            pbatch.addPrimitive({top + (float)i*diff/NUM_PIECES, top + (float)(i+1)*diff/NUM_PIECES});
-        }
+        render_line_in_pieces(pbatch, top, bottom, NUM_PIECES);
     }
 }

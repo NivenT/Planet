@@ -10,6 +10,7 @@
 #include <nta/GLMConsoleOutput.h>
 
 #include "MainGame.h"
+#include "utils.h"
 
 using namespace std;
 using namespace nta;
@@ -26,20 +27,20 @@ MainGame::~MainGame() {
 }
 
 void MainGame::debug_render_aabb(PrimitiveBatch& pbatch, const b2AABB& box) const {
+    static const int NUM_PIECES = 150;
+
     b2Vec2 b2_center = box.GetCenter(), b2_extents = box.GetExtents();
     vec2 center(b2_center.x, b2_center.y), extents(b2_extents.x, b2_extents.y);
-
-    cout<<"center: "<<center<<" | extents: "<<extents<<endl;
 
     for (int x = -1; x <= 1; x += 2) {
         vec2 start = center + vec2(x*extents.x, extents.y),
              end = center + vec2(x*extents.x, -extents.y);
-        pbatch.addPrimitive({{start, DEBUG_BOX2D_COLOR}, {end, DEBUG_BOX2D_COLOR}});
+        render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_COLOR);
     }
     for (int y = -1; y <= 1; y += 2) {
         vec2 start = center + vec2(-extents.x, y*extents.y),
              end = center + vec2(extents.x, y*extents.y);
-        pbatch.addPrimitive({{start, DEBUG_BOX2D_COLOR}, {end, DEBUG_BOX2D_COLOR}});
+        render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_COLOR);
     }
 }
 
@@ -161,7 +162,7 @@ void MainGame::render() {
     m_pbatch.begin(); {
         m_planet.render(m_pbatch);
         if (m_debug) {
-            //m_planet.render_debug(m_pbatch);
+            m_planet.render_debug(m_pbatch);
             debug_render_world(m_pbatch, m_world.get());
         }
     } m_pbatch.end();
