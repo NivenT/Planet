@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 2.8.7)
 project(game)
 
 if(NOT ${CMAKE_VERSION} LESS 3.2)
-    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD 14)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    message(STATUS "Using C++14")
 else()
     message(STATUS "Checking compiler flags for C++14 support.")
     # Set C++11/14 support flags for various compilers

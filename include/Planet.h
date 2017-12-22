@@ -1,6 +1,8 @@
 #ifndef PLANET_H_INCLUDED
 #define PLANET_H_INCLUDED
 
+#include <Box2D/Box2D.h>
+
 #include "Tile.h"
 
 /*
@@ -22,16 +24,20 @@ private:
     std::vector<Tile> m_tiles;
     // indices into m_tiles 
     std::vector<std::vector<int>> m_layout;
+    glm::vec2 m_gravity;
     // rows x columns (i.e. not width by height)
     glm::ivec2 m_dimensions;
+    b2Body* m_body = nullptr;
     // row coordinate considered sea level on this planet
     int m_sea_level; 
 public:
     Planet() {}
     static Planet new_test();
     ~Planet();
+    b2Vec2 getGravity() const;
     float getRadius() const;
     float getHeight() const;
+    void add_to_world(b2World* world);
     void render(nta::PrimitiveBatch& pbatch) const;
     void render_debug(nta::PrimitiveBatch& pbatch) const;
 };

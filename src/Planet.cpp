@@ -30,11 +30,17 @@ Planet Planet::new_test() {
                                            r >= test.m_sea_level ? 0 : 1);
         }
     }
+
+    test.m_gravity = vec2(0, -9.8);
     return test;
 }
 
 vec2 Planet::getOffset() const {
     return vec2(-m_dimensions[1]*TILE_SIZE/2., m_sea_level*TILE_SIZE);   
+}
+
+b2Vec2 Planet::getGravity() const {
+    return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
 float Planet::getRadius() const {
@@ -43,6 +49,16 @@ float Planet::getRadius() const {
 
 float Planet::getHeight() const {
     return m_dimensions[0] * TILE_SIZE;
+}
+
+void Planet::add_to_world(b2World* world) {
+    b2BodyDef ground_body_def;
+    ground_body_def.position = b2Vec2(0, -getRadius()/2.0);
+    m_body = world->CreateBody(&ground_body_def);
+
+    b2PolygonShape ground_box;
+    ground_box.SetAsBox(m_dimensions[1]*TILE_SIZE/2.0, getRadius()/2.0);
+    m_body->CreateFixture(&ground_box, 0.0);
 }
 
 void Planet::render(nta::PrimitiveBatch& pbatch) const {

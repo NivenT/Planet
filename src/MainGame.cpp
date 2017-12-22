@@ -17,9 +17,50 @@ using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true) {
     m_planet = Planet::new_test();
+    m_world = make_unique<b2World>(m_planet.getGravity());
+
+    m_planet.add_to_world(m_world.get());
 }
 
 MainGame::~MainGame() {
+}
+
+void MainGame::debug_render_aabb(PrimitiveBatch& pbatch, const b2AABB& box) const {
+    b2Vec2 b2_center = box.GetCenter(), b2_extents = box.GetExtents();
+    vec2 center(b2_center.x, b2_center.y), extents(b2_extents.x, b2_extents.y);
+
+    cout<<"center: "<<center<<" | extents: "<<extents<<endl;
+
+    for (int x = -1; x <= 1; x += 2) {
+        vec2 start = center + vec2(x*extents.x, extents.y),
+             end = center + vec2(x*extents.x, -extents.y);
+        pbatch.addPrimitive({{start, DEBUG_BOX2D_COLOR}, {end, DEBUG_BOX2D_COLOR}});
+    }
+    for (int y = -1; y <= 1; y += 2) {
+        vec2 start = center + vec2(-extents.x, y*extents.y),
+             end = center + vec2(extents.x, y*extents.y);
+        pbatch.addPrimitive({{start, DEBUG_BOX2D_COLOR}, {end, DEBUG_BOX2D_COLOR}});
+    }
+}
+
+void MainGame::debug_render_body(PrimitiveBatch& pbatch, const b2Body* body) const {
+    if (!body) return;
+    // Not sure how I feel about this const placement
+    b2Fixture const* curr = body->GetFixtureList();
+    while (curr) {
+        for (int i = 0; i < curr->GetShape()->GetChildCount(); i++) {
+            debug_render_aabb(pbatch, curr->GetAABB(i));
+        }
+        curr = curr->GetNext();
+    }
+}
+
+void MainGame::debug_render_world(PrimitiveBatch& pbatch, const b2World* world) const {
+    b2Body const* curr = world->GetBodyList();
+    while (curr) {
+        debug_render_body(pbatch, curr);
+        curr = curr->GetNext();
+    }
 }
 
 void MainGame::init() {
@@ -72,30 +113,35 @@ void MainGame::init() {
 
 void MainGame::update() {
     static float dx = 0.618, dy = 1.618, dt = 0.01, ds = 1.01;
-    if (InputManager::isPressed(SDLK_w)) {
-        m_camera.translateCenter(0, dy);
-    } if (InputManager::isPressed(SDLK_a)) {
-        m_camera.translateCenter(-dx, 0);
-    } if (InputManager::isPressed(SDLK_s)) {
-        m_camera.translateCenter(0, -dy);
-    } if (InputManager::isPressed(SDLK_d)) {
-        m_camera.translateCenter(dx, 0);
-    } if (InputManager::isPressed(SDLK_e)) {
-        m_camera.rotate(-dt);
-    } if (InputManager::isPressed(SDLK_q)) {
-        m_camera.rotate(dt);
-    } if (InputManager::getMouseWheelMotion() > 0) {
-        m_camera.scaleDimensions(1./ds, 1./ds);
-    } if (InputManager::getMouseWheelMotion() < 0) {
-        m_camera.scaleDimensions(ds, ds);
-    } if (InputManager::isPressed(SDLK_g)) {
-        m_camera = Camera2D();
+    if (m_debug) {
+        if (InputManager::isPressed(SDLK_w)) {
+            m_camera.translateCenter(0, dy);
+        } if (InputManager::isPressed(SDLK_a)) {
+            m_camera.translateCenter(-dx, 0);
+        } if (InputManager::isPressed(SDLK_s)) {
+            m_camera.translateCenter(0, -dy);
+        } if (InputManager::isPressed(SDLK_d)) {
+            m_camera.translateCenter(dx, 0);
+        } if (InputManager::isPressed(SDLK_e)) {
+            m_camera.rotate(-dt);
+        } if (InputManager::isPressed(SDLK_q)) {
+            m_camera.rotate(dt);
+        } if (InputManager::getMouseWheelMotion() > 0) {
+            m_camera.scaleDimensions(1./ds, 1./ds);
+        } if (InputManager::getMouseWheelMotion() < 0) {
+            m_camera.scaleDimensions(ds, ds);
+        } if (InputManager::isPressed(SDLK_g)) {
+            m_camera = Camera2D();
+        }
+
+        if (InputManager::justPressed(SDLK_RETURN)) {
+            m_square_planet = !m_square_planet;
+        }
     }
 
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
-    } else if (InputManager::justPressed(SDLK_RETURN)) {
-        m_square_planet = !m_square_planet;
+        if (!m_debug) m_camera = Camera2D();
     }
 
     m_time += 1/60.;
@@ -114,7 +160,10 @@ void MainGame::render() {
 
     m_pbatch.begin(); {
         m_planet.render(m_pbatch);
-        if (m_debug) m_planet.render_debug(m_pbatch);
+        if (m_debug) {
+            //m_planet.render_debug(m_pbatch);
+            debug_render_world(m_pbatch, m_world.get());
+        }
     } m_pbatch.end();
 
     m_overlay_batch.begin(); {
