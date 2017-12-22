@@ -1,8 +1,8 @@
 #ifndef TILE_H_INCLUDED
 #define TILE_H_INCLUDED 
 
-#include "nta/ResourceManager.h"
-#include "nta/PrimitiveBatch.h"
+#include <nta/ResourceManager.h>
+#include <nta/PrimitiveBatch.h>
 
 #define TILE_SIZE 10.f
 #define TILE_DX glm::vec2(TILE_SIZE, 0)

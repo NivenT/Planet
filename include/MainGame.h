@@ -1,12 +1,12 @@
 #ifndef MAINGAME_H_INCLUDED
 #define MAINGAME_H_INCLUDED
 
-#include "nta/PrimitiveBatch.h"
-#include "nta/SpriteBatch.h"
-#include "nta/SpriteFont.h"
-#include "nta/GLSLProgram.h"
-#include "nta/Camera2D.h"
-#include "nta/Screen.h"
+#include <nta/PrimitiveBatch.h>
+#include <nta/SpriteBatch.h>
+#include <nta/SpriteFont.h>
+#include <nta/GLSLProgram.h>
+#include <nta/Camera2D.h>
+#include <nta/Screen.h>
 
 #include "Planet.h"
 

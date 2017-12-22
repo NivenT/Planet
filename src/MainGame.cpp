@@ -1,13 +1,13 @@
 #include <iostream>
 
-#include "nta/Logger.h"
-#include "nta/SystemManager.h"
-#include "nta/ResourceManager.h"
-#include "nta/InputManager.h"
-#include "nta/ScreenManager.h"
-#include "nta/Vertex.h"
-#include "nta/Random.h"
-#include "nta/GLMConsoleOutput.h"
+#include <nta/Logger.h>
+#include <nta/SystemManager.h>
+#include <nta/ResourceManager.h>
+#include <nta/InputManager.h>
+#include <nta/ScreenManager.h>
+#include <nta/Vertex.h>
+#include <nta/Random.h>
+#include <nta/GLMConsoleOutput.h>
 
 #include "MainGame.h"
 
@@ -15,7 +15,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(false) {
+MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true) {
     m_planet = Planet::new_test();
 }
 
