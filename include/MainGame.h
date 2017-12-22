@@ -38,6 +38,7 @@ private:
     float m_time;
     bool m_debug;
     bool m_square_planet;
+    bool m_paused;
 public:
     MainGame();
     ~MainGame();

@@ -16,11 +16,28 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true) {
+MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), m_paused(true) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 
     m_planet.add_to_world(m_world.get());
+
+    // Boxes for testing
+    for (int i = 0; i < 20; i++) {
+        b2BodyDef bodyDef;
+        bodyDef.type = b2_dynamicBody;
+        bodyDef.position = b2Vec2(Random::randFloat(-80, 80), Random::randFloat(10, 100));
+        b2Body* body = m_world->CreateBody(&bodyDef);
+
+        b2PolygonShape boxShape;
+        boxShape.SetAsBox(Random::randFloat(3, 8), Random::randFloat(3, 8));
+
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &boxShape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.3f;
+        body->CreateFixture(&fixtureDef);
+    }   
 }
 
 MainGame::~MainGame() {
@@ -143,9 +160,14 @@ void MainGame::update() {
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
         if (!m_debug) m_camera = Camera2D();
+    } else if (InputManager::justPressed(SDLK_p)) {
+        m_paused = !m_paused;
     }
 
-    m_time += 1/60.;
+    if (!m_paused) {
+        m_time += 1/60.;
+        m_world->Step(1./m_manager->getFPS(), 6, 2);
+    }
 }
 
 void MainGame::render() {
@@ -171,6 +193,9 @@ void MainGame::render() {
         if (m_debug) {
             m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                              vec4(0, 0, 15, -5));
+        }
+        if (m_paused) {
+            m_font->drawText(m_overlay_batch, "Paused", vec4(85, 0, 15, -5));
         }
     } m_overlay_batch.end();
         
