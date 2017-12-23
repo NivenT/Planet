@@ -16,26 +16,27 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), m_paused(true) {
+MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), 
+                       m_paused(true), m_draw_aabbs(false) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 
     m_planet.add_to_world(m_world.get());
 
     // Boxes for testing
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position = b2Vec2(Random::randFloat(-80, 80), Random::randFloat(10, 100));
+        bodyDef.position = b2Vec2(Random::randFloat(-400, 400), Random::randFloat(10, 120));
         b2Body* body = m_world->CreateBody(&bodyDef);
 
         b2PolygonShape boxShape;
-        boxShape.SetAsBox(Random::randFloat(3, 8), Random::randFloat(3, 8));
+        boxShape.SetAsBox(Random::randFloat(2, 15), Random::randFloat(2, 15));
 
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &boxShape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.3f;
+        fixtureDef.density = Random::randFloat(0.5, 3.0);
+        fixtureDef.friction = Random::randFloat(0.2, 1.5);
         body->CreateFixture(&fixtureDef);
     }   
 }
@@ -44,7 +45,7 @@ MainGame::~MainGame() {
 }
 
 void MainGame::debug_render_aabb(PrimitiveBatch& pbatch, const b2AABB& box) const {
-    static const int NUM_PIECES = 150;
+    static const int NUM_PIECES = 50;
 
     b2Vec2 b2_center = box.GetCenter(), b2_extents = box.GetExtents();
     vec2 center(b2_center.x, b2_center.y), extents(b2_extents.x, b2_extents.y);
@@ -52,31 +53,62 @@ void MainGame::debug_render_aabb(PrimitiveBatch& pbatch, const b2AABB& box) cons
     for (int x = -1; x <= 1; x += 2) {
         vec2 start = center + vec2(x*extents.x, extents.y),
              end = center + vec2(x*extents.x, -extents.y);
-        render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_COLOR);
+        render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_AABB_COLOR);
     }
     for (int y = -1; y <= 1; y += 2) {
         vec2 start = center + vec2(-extents.x, y*extents.y),
              end = center + vec2(extents.x, y*extents.y);
+        render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_AABB_COLOR);
+    }
+}
+
+void MainGame::debug_render_poly(PrimitiveBatch& pbatch, const b2PolygonShape* poly,
+                                 vec2 position, float rotation) const {
+    static const int NUM_PIECES = 50;
+
+    const int count = poly->GetVertexCount();
+    for (int i = 0; i < count; i++) {
+        vec2 start(poly->m_vertices[i].x, poly->m_vertices[i].y),
+             end(poly->m_vertices[(i+1)%count].x, poly->m_vertices[(i+1)%count].y);
+        start = vec2(cos(rotation)*start.x-sin(rotation)*start.y,
+                     sin(rotation)*start.x+cos(rotation)*start.y) + position;
+        end = vec2(cos(rotation)*end.x-sin(rotation)*end.y,
+                   sin(rotation)*end.x+cos(rotation)*end.y) + position;
         render_line_in_pieces(pbatch, start, end, NUM_PIECES, DEBUG_BOX2D_COLOR);
     }
 }
 
-void MainGame::debug_render_body(PrimitiveBatch& pbatch, const b2Body* body) const {
+void MainGame::debug_render_body(PrimitiveBatch& pbatch, const b2Body* body, 
+                                 bool draw_aabbs) const {
     if (!body) return;
     // Not sure how I feel about this const placement
     b2Fixture const* curr = body->GetFixtureList();
+
+    vec2 pos(body->GetPosition().x, body->GetPosition().y);
+    float rot = body->GetAngle();
     while (curr) {
         for (int i = 0; i < curr->GetShape()->GetChildCount(); i++) {
-            debug_render_aabb(pbatch, curr->GetAABB(i));
+            switch (curr->GetType()) {
+                case b2Shape::Type::e_polygon:
+                    debug_render_poly(pbatch, (const b2PolygonShape*)curr->GetShape(), pos, rot);
+                    break;
+
+                default:
+                    /// only draw once
+                    if (!draw_aabbs) debug_render_aabb(pbatch, curr->GetAABB(i));
+                    break;
+            }
+            if (draw_aabbs) debug_render_aabb(pbatch, curr->GetAABB(i));
         }
         curr = curr->GetNext();
     }
 }
 
-void MainGame::debug_render_world(PrimitiveBatch& pbatch, const b2World* world) const {
+void MainGame::debug_render_world(PrimitiveBatch& pbatch, const b2World* world, 
+                                  bool draw_aabbs) const {
     b2Body const* curr = world->GetBodyList();
     while (curr) {
-        debug_render_body(pbatch, curr);
+        debug_render_body(pbatch, curr, draw_aabbs);
         curr = curr->GetNext();
     }
 }
@@ -160,6 +192,8 @@ void MainGame::update() {
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
         if (!m_debug) m_camera = Camera2D();
+    } else if (InputManager::justPressed(SDLK_b)) {
+        m_draw_aabbs = !m_draw_aabbs;
     } else if (InputManager::justPressed(SDLK_p)) {
         m_paused = !m_paused;
     }
@@ -185,14 +219,16 @@ void MainGame::render() {
         m_planet.render(m_pbatch);
         if (m_debug) {
             m_planet.render_debug(m_pbatch);
-            debug_render_world(m_pbatch, m_world.get());
         }
+        debug_render_world(m_pbatch, m_world.get(), m_draw_aabbs);
     } m_pbatch.end();
 
     m_overlay_batch.begin(); {
         if (m_debug) {
             m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                              vec4(0, 100, 15, 5));
+            m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
+                             vec4(0, 5, 20, 5));
         }
         if (m_paused) {
             m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));

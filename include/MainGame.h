@@ -14,14 +14,19 @@
 
 #include "Planet.h"
 
-#define DEBUG_BOX2D_COLOR vec4(1,0,0,1)
+#define DEBUG_BOX2D_COLOR glm::vec4(0.5,0,0.3,1)
+#define DEBUG_BOX2D_AABB_COLOR glm::vec4(1,0,0,1)
 
 class MainGame : public nta::Screen {
 private:
     // TODO (?): Move to a util.{h,cpp} file?
     void debug_render_aabb(nta::PrimitiveBatch& pbatch, const b2AABB& box) const;
-    void debug_render_body(nta::PrimitiveBatch& pbatch, const b2Body* body) const;
-    void debug_render_world(nta::PrimitiveBatch& pbatch, const b2World* world) const;
+    void debug_render_poly(nta::PrimitiveBatch& pbatch, const b2PolygonShape* poly,
+                           glm::vec2 position, float rotation) const;
+    void debug_render_body(nta::PrimitiveBatch& pbatch, const b2Body* body, 
+                           bool draw_aabbs) const;
+    void debug_render_world(nta::PrimitiveBatch& pbatch, const b2World* world, 
+                            bool draw_aabbs) const;
 
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::GLSLProgram* m_overlayProg = nullptr;
@@ -37,6 +42,7 @@ private:
     Planet m_planet;
     float m_time;
     bool m_debug;
+    bool m_draw_aabbs;
     bool m_square_planet;
     bool m_paused;
 public:
