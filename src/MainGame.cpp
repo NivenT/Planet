@@ -16,15 +16,15 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), 
-                       m_paused(true), m_draw_aabbs(false) {
+MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
+                       m_paused(false), m_draw_aabbs(false) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 
     m_planet.add_to_world(m_world.get());
 
     // Boxes for testing
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 50 && false; i++) {
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
         bodyDef.position = b2Vec2(Random::randFloat(-400, 400), Random::randFloat(10, 120));
