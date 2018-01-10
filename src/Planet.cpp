@@ -62,11 +62,11 @@ void Planet::add_to_world(b2World* world) {
     m_body->CreateFixture(&ground_box, 0.0);
 }
 
-void Planet::render(nta::PrimitiveBatch& pbatch) const {
+void Planet::render(nta::SpriteBatch& batch) const {
     const vec2 offset = getOffset();
     for (int r = 0; r < m_dimensions[0]; r++) {
         for (int c = 0; c < m_dimensions[1]; c++) {
-            m_tiles[m_layout[r][c]].render(pbatch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
+            m_tiles[m_layout[r][c]].render(batch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
         }
     }
 }

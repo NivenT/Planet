@@ -28,6 +28,9 @@ private:
     void debug_render_world(nta::PrimitiveBatch& pbatch, const b2World* world, 
                             bool draw_aabbs) const;
 
+    void prepare_batches();
+    void render_batches();
+
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::GLSLProgram* m_overlayProg = nullptr;
     nta::GLSLProgram* m_planetProg = nullptr;

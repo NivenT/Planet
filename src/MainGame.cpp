@@ -8,6 +8,7 @@
 #include <nta/Vertex.h>
 #include <nta/Random.h>
 #include <nta/GLMConsoleOutput.h>
+#include <nta/Sprite.h>
 
 #include "MainGame.h"
 #include "utils.h"
@@ -17,21 +18,21 @@ using namespace nta;
 using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
-                       m_paused(false), m_draw_aabbs(false) {
+                       m_paused(true), m_draw_aabbs(true) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 
     m_planet.add_to_world(m_world.get());
 
     // Boxes for testing
-    for (int i = 0; i < 50 && false; i++) {
+    for (int i = 0; i < 30 && false; i++) {
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
         bodyDef.position = b2Vec2(Random::randFloat(-400, 400), Random::randFloat(10, 120));
         b2Body* body = m_world->CreateBody(&bodyDef);
 
         b2PolygonShape boxShape;
-        boxShape.SetAsBox(Random::randFloat(2, 15), Random::randFloat(2, 15));
+        boxShape.SetAsBox(Random::randFloat(1, 5), Random::randFloat(1, 5));
 
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &boxShape;
@@ -204,23 +205,23 @@ void MainGame::update() {
     }
 }
 
-void MainGame::render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+void MainGame::prepare_batches() {
     m_batch.begin(); {
         if (m_debug) {
             vec2 center = m_camera.getCenter();
             m_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
                              ResourceManager::getTexture("circle.png").id, vec4(1,0,0,1), 0.0);
         }
+        m_planet.render(m_batch);
     } m_batch.end();
 
     m_pbatch.begin(); {
-        m_planet.render(m_pbatch);
+        //m_planet.render(m_pbatch);
+
         if (m_debug) {
             m_planet.render_debug(m_pbatch);
         }
-        debug_render_world(m_pbatch, m_world.get(), m_draw_aabbs);
+        //debug_render_world(m_pbatch, m_world.get(), m_draw_aabbs);
     } m_pbatch.end();
 
     m_overlay_batch.begin(); {
@@ -234,7 +235,9 @@ void MainGame::render() {
             m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));
         }
     } m_overlay_batch.end();
-        
+}
+
+void MainGame::render_batches() {
     auto camera_matrix = m_camera.getCameraMatrix();
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
@@ -242,20 +245,32 @@ void MainGame::render() {
         glUniform1f(m_planetProg->getUniformLocation("planet_radius"), m_planet.getRadius());
         glUniform1f(m_planetProg->getUniformLocation("planet_height"), m_planet.getHeight());
 
-        if (!m_square_planet) m_pbatch.render();
+        if (!m_square_planet) {
+            m_pbatch.render();
+            m_batch.render();
+        }
     } m_planetProg->unuse();
 
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
         
-        if (m_square_planet) m_pbatch.render();
-        m_batch.render();
+        if (m_square_planet) {
+            m_pbatch.render();
+            m_batch.render();
+        }
     } m_simpleProg->unuse();
 
     m_overlayProg->use(); {
         m_overlay_batch.render();
     } m_overlayProg->unuse();
-        
+}
+
+void MainGame::render() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    prepare_batches();
+    render_batches();
+
     m_window->swapBuffers();
 }
