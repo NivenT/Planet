@@ -3,7 +3,8 @@
 
 #include <Box2D/Box2D.h>
 
-#include <nta/PrimitiveBatch.h>
+#include <nta/SpriteBatch.h>
+#include <nta/DebugBatch.h>
 
 #include "Tile.h"
 
@@ -40,8 +41,8 @@ public:
     float getRadius() const;
     float getHeight() const;
     void add_to_world(b2World* world);
-    void render(nta::SpriteBatch& pbatch) const;
-    void render_debug(nta::PrimitiveBatch& pbatch) const;
+    void render(nta::SpriteBatch& batch) const;
+    void render_debug(nta::DebugBatch& dbatch) const;
 };
 
 #endif // PLANET_H_INCLUDED

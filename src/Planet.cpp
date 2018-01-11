@@ -1,5 +1,4 @@
 #include "Planet.h"
-#include "utils.h"
 
 using namespace glm;
 using namespace std;
@@ -71,19 +70,20 @@ void Planet::render(nta::SpriteBatch& batch) const {
     }
 }
 
-void Planet::render_debug(nta::PrimitiveBatch& pbatch) const {
-    static const float NUM_PIECES = 50;
+void Planet::render_debug(nta::DebugBatch& dbatch) const {
+    static const size_t NUM_PIECES = 50;
     const vec2 offset = getOffset();
 
     for (int r = 0; r <= m_dimensions[0]; r++) {
         vec4 color = r == m_sea_level ? vec4(0,1,1,1) : vec4(1);
         vec2 left(offset - (float)r*TILE_DY), 
              right(offset - (float)r*TILE_DY + (float)m_dimensions[1]*TILE_DX);
-        render_line_in_pieces(pbatch, left, right, NUM_PIECES, color);
+        //render_line_in_pieces(pbatch, left, right, NUM_PIECES, color);
+        dbatch.addLine(left, right, NUM_PIECES, color);
     }
     for (int c = 0; c <= m_dimensions[1]; c++) {
         vec2 top(offset + (float)c*TILE_DX),
              bottom(offset - (float)m_dimensions[0]*TILE_DY + (float)c*TILE_DX);
-        render_line_in_pieces(pbatch, top, bottom, NUM_PIECES);
+        dbatch.addLine(top, bottom, NUM_PIECES);
     }
 }

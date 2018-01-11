@@ -5,7 +5,7 @@
 
 #include <Box2D/Box2D.h>
 
-#include <nta/PrimitiveBatch.h>
+#include <nta/DebugBatch.h>
 #include <nta/SpriteBatch.h>
 #include <nta/SpriteFont.h>
 #include <nta/GLSLProgram.h>
@@ -20,12 +20,12 @@
 class MainGame : public nta::Screen {
 private:
     // TODO (?): Move to a util.{h,cpp} file?
-    void debug_render_aabb(nta::PrimitiveBatch& pbatch, const b2AABB& box) const;
-    void debug_render_poly(nta::PrimitiveBatch& pbatch, const b2PolygonShape* poly,
+    void debug_render_aabb(nta::DebugBatch& dbatch, const b2AABB& box) const;
+    void debug_render_poly(nta::DebugBatch& dbatch, const b2PolygonShape* poly,
                            glm::vec2 position, float rotation) const;
-    void debug_render_body(nta::PrimitiveBatch& pbatch, const b2Body* body, 
+    void debug_render_body(nta::DebugBatch& dbatch, const b2Body* body, 
                            bool draw_aabbs) const;
-    void debug_render_world(nta::PrimitiveBatch& pbatch, const b2World* world, 
+    void debug_render_world(nta::DebugBatch& dbatch, const b2World* world, 
                             bool draw_aabbs) const;
 
     void prepare_batches();
@@ -38,7 +38,7 @@ private:
 
     nta::SpriteBatch m_batch;
     nta::SpriteBatch m_overlay_batch;
-    nta::PrimitiveBatch m_pbatch;
+    nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;
 
     std::unique_ptr<b2World> m_world;
