@@ -13,6 +13,7 @@
 #include <nta/Screen.h>
 
 #include "Planet.h"
+#include "Player.h"
 
 #define DEBUG_BOX2D_COLOR glm::vec4(0.5,0,0.3,1)
 #define DEBUG_BOX2D_AABB_COLOR glm::vec4(1,0,0,1)
@@ -38,11 +39,15 @@ private:
 
     nta::SpriteBatch m_batch;
     nta::SpriteBatch m_overlay_batch;
+    nta::SpriteBatch m_debug_sprite_batch;
     nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;
 
     std::unique_ptr<b2World> m_world;
+    std::vector<Object*> m_objects;
+    Player* m_player;
     Planet m_planet;
+
     float m_time;
     bool m_debug;
     bool m_draw_aabbs;

@@ -15,29 +15,15 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
-                       m_paused(false), m_draw_aabbs(true) {
+MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), 
+                       m_paused(true), m_draw_aabbs(true) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
-
     m_planet.add_to_world(m_world.get());
 
-    // Boxes for testing physics
-    for (int i = 0; i < 100 && false; i++) {
-        b2BodyDef bodyDef;
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position = b2Vec2(Random::randFloat(-400, 400), Random::randFloat(10, 120));
-        b2Body* body = m_world->CreateBody(&bodyDef);
-
-        b2PolygonShape boxShape;
-        boxShape.SetAsBox(Random::randFloat(2, 15), Random::randFloat(2, 15));
-
-        b2FixtureDef fixtureDef;
-        fixtureDef.shape = &boxShape;
-        fixtureDef.density = Random::randFloat(0.5, 3.0);
-        fixtureDef.friction = Random::randFloat(0.2, 1.5);
-        body->CreateFixture(&fixtureDef);
-    }   
+    m_player = new Player;
+    m_objects.push_back(m_player);
+    m_player->add_to_world(m_world.get());
 }
 
 MainGame::~MainGame() {
@@ -80,11 +66,11 @@ void MainGame::debug_render_poly(DebugBatch& dbatch, const b2PolygonShape* poly,
 void MainGame::debug_render_body(DebugBatch& dbatch, const b2Body* body, 
                                  bool draw_aabbs) const {
     if (!body) return;
-    // Not sure how I feel about this const placement
-    b2Fixture const* curr = body->GetFixtureList();
-
     vec2 pos(body->GetPosition().x, body->GetPosition().y);
     float rot = body->GetAngle();
+    
+    // Not sure how I feel about this const placement
+    b2Fixture const* curr = body->GetFixtureList();
     while (curr) {
         for (int i = 0; i < curr->GetShape()->GetChildCount(); i++) {
             switch (curr->GetType()) {
@@ -157,6 +143,7 @@ void MainGame::init() {
     m_batch.init();
     m_overlay_batch.init();
     m_debug_batch.init();
+    m_debug_sprite_batch.init();
     Logger::writeToLog("main screen initialized");
 }
 
@@ -205,11 +192,6 @@ void MainGame::update() {
 
 void MainGame::prepare_batches() {
     m_batch.begin(); {
-        if (m_debug) {
-            vec2 center = m_camera.getCenter();
-            m_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
-                             ResourceManager::getTexture("circle.png").id, vec4(1,0,0,1), 1.0);
-        }
         m_planet.render(m_batch);
     } m_batch.end();
 
@@ -234,6 +216,15 @@ void MainGame::prepare_batches() {
             m_planet.render_debug(m_debug_batch);
         }
     } m_debug_batch.end();
+
+    m_debug_sprite_batch.begin(); {
+        if (m_debug) {
+            vec2 center = m_camera.getCenter();
+            m_debug_sprite_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
+                                          ResourceManager::getTexture("circle.png").id, 
+                                          vec4(1,0,0,1), 1.0);
+        }
+    } m_debug_sprite_batch.end();
 }
 
 void MainGame::render_batches() {
@@ -258,6 +249,7 @@ void MainGame::render_batches() {
             m_batch.render();
             m_debug_batch.render();
         }
+        m_debug_sprite_batch.render();
     } m_simpleProg->unuse();
 
     m_overlayProg->use(); {
