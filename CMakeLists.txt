@@ -42,6 +42,11 @@ endif()
 add_subdirectory(jubilant-funicular)
 find_package(Box2D REQUIRED)
 
-add_executable(game src/main.cpp src/MainGame.cpp src/Planet.cpp)
+add_executable(game src/main.cpp 
+                    src/MainGame.cpp 
+                    src/Planet.cpp 
+                    src/Object.cpp
+                    src/Agent.cpp
+                    src/Player.cpp)
 target_link_libraries(game ${NTA_LIBRARIES} ${BOX2D_LIBRARIES})
 include_directories(include ${NTA_INCLUDE_DIR} ${BOX2D_INCLUDE_DIR})

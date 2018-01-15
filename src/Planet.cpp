@@ -31,7 +31,7 @@ Planet Planet::new_test() {
         }
     }
 
-    test.m_gravity = vec2(0, -9.81);
+    test.m_gravity = vec2(0, -20.0);
     return test;
 }
 

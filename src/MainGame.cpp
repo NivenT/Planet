@@ -16,14 +16,14 @@ using namespace nta;
 using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
-                       m_paused(true), m_draw_aabbs(true) {
+                       m_paused(false), m_draw_aabbs(true) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 
     m_planet.add_to_world(m_world.get());
 
-    // Boxes for testing
-    for (int i = 0; i < 100; i++) {
+    // Boxes for testing physics
+    for (int i = 0; i < 100 && false; i++) {
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
         bodyDef.position = b2Vec2(Random::randFloat(-400, 400), Random::randFloat(10, 120));
@@ -161,7 +161,7 @@ void MainGame::init() {
 }
 
 void MainGame::update() {
-    static float dx = 0.618, dy = 1.618, dt = 0.01, ds = 1.01;
+    static const float dx = 0.618, dy = 1.618, dt = 0.01, ds = 1.01;
     if (m_debug) {
         if (InputManager::isPressed(SDLK_w)) {
             m_camera.translateCenter(0, dy);
@@ -229,8 +229,8 @@ void MainGame::prepare_batches() {
     } m_overlay_batch.end();
 
     m_debug_batch.begin(); {
-        debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
         if (m_debug) {
+            debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
             m_planet.render_debug(m_debug_batch);
         }
     } m_debug_batch.end();
