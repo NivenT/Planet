@@ -1,3 +1,5 @@
+#include <nta/InputManager.h>
+
 #include "Player.h"
 
 using namespace std;
@@ -32,4 +34,33 @@ void Player::render(SpriteBatch& batch) const {
 }
 
 void Player::update(const UpdateParams& params) {
+    static const float EPS = 1e-1;
+    Agent::update(params);
+
+    if (InputManager::isPressed(SDLK_d)) {
+        m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
+    } else if (InputManager::isPressed(SDLK_a)) {
+        m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
+    }
+
+    bool is_standing = false;
+    for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
+        if (edge->contact->IsTouching()) {
+            b2WorldManifold manifold;
+            edge->contact->GetWorldManifold(&manifold);
+
+            for (int i = 0; i < b2_maxManifoldPoints; i++) {
+                if (manifold.points[i].y < getCenter().y - PLAYER_HALF_DIMS.y + EPS) {
+                    is_standing = true;
+                    // No matter what you think of this, it's better than break + if
+                    goto contact_check_over;
+                }
+            }
+        }
+    }
+    contact_check_over:
+
+    if (is_standing && InputManager::isPressed(SDLK_w)) {
+        m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
+    }
 }

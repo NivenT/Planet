@@ -16,6 +16,9 @@
 #include "Player.h"
 #include "utils.h"
 
+#define DEFAULT_CAMERA_CENTER glm::vec2(0)
+#define DEFAULT_CAMERA_DIMENSIONS glm::vec2(5)
+
 class MainGame : public nta::Screen {
 private:
     void prepare_batches();
@@ -39,8 +42,10 @@ private:
     Player* m_player;
     Planet m_planet;
 
-    float m_time;
+    // This is getting ridiculous
+    float m_time; // When am I gonna get rid of this?
     bool m_debug;
+    bool m_soft_debug;
     bool m_draw_aabbs;
     bool m_square_planet;
     bool m_paused;

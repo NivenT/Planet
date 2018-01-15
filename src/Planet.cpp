@@ -31,12 +31,16 @@ Planet Planet::new_test() {
         }
     }
 
-    test.m_gravity = vec2(0, -20.0);
+    test.m_gravity = vec2(0, -9.81);
     return test;
 }
 
 vec2 Planet::getOffset() const {
     return vec2(-m_dimensions[1]*TILE_SIZE/2., m_sea_level*TILE_SIZE);   
+}
+
+vec2 Planet::getDimensions() const {
+    return vec2(m_dimensions.y, m_dimensions.x) * TILE_SIZE;
 }
 
 b2Vec2 Planet::getGravity() const {

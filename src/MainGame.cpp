@@ -16,7 +16,8 @@ using namespace nta;
 using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
-                       m_paused(false), m_draw_aabbs(true) {
+                       m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
+                       m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
     m_planet.add_to_world(m_world.get());
@@ -109,16 +110,26 @@ void MainGame::update() {
 
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
-        if (!m_debug) m_camera = Camera2D();
+        m_camera = m_debug ? Camera2D() : Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
     } else if (InputManager::justPressed(SDLK_b)) {
         m_draw_aabbs = !m_draw_aabbs;
     } else if (InputManager::justPressed(SDLK_p)) {
         m_paused = !m_paused;
+    } else if (InputManager::justPressed(SDLK_i)) {
+        m_soft_debug = !m_soft_debug;
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
         m_time += 1/m_manager->getFPS();
+
+        UpdateParams params;
+        params.planet = &m_planet;
+        for (auto& obj : m_objects) {
+            obj->update(params);
+        }
         m_world->Step(1./m_manager->getFPS(), 6, 2);
+
+        if (!m_debug) m_camera.setCenter(m_player->getCenter());
     }
 }
 
@@ -147,8 +158,10 @@ void MainGame::prepare_batches() {
     } m_overlay_batch.end();
 
     m_debug_batch.begin(); {
-        if (m_debug) {
+        if (m_debug || m_soft_debug) {
             debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
+        }
+        if (m_debug) {
             m_planet.render_debug(m_debug_batch);
         }
     } m_debug_batch.end();

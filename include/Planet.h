@@ -37,6 +37,8 @@ public:
     Planet() {}
     static Planet new_test();
     ~Planet();
+    // returns width x height in world coordinates
+    glm::vec2 getDimensions() const;
     b2Vec2 getGravity() const;
     float getRadius() const;
     float getHeight() const;

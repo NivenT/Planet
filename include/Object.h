@@ -8,7 +8,10 @@
 #include <nta/SpriteBatch.h>
 #include <nta/DebugBatch.h>
 
+#include "Planet.h"
+
 struct UpdateParams {
+    Planet* planet;
 };
 
 class Object {

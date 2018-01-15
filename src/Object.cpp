@@ -26,5 +26,15 @@ vec2 Object::getTopLeft() const {
 void Object::render_debug(DebugBatch& _) const {
 }
 
-void Object::update(const UpdateParams& _) {
+void Object::update(const UpdateParams& params) {
+    const float planet_width = params.planet->getDimensions().x;
+    const float planet_half_width = planet_width/2.f;
+    while (getCenter().x > planet_half_width) {
+        m_body->SetTransform(b2Vec2(getCenter().x - planet_width, getCenter().y), 
+                             m_body->GetAngle());
+    }
+    while (getCenter().x < -planet_half_width) {
+        m_body->SetTransform(b2Vec2(getCenter().x + planet_width, getCenter().y), 
+                             m_body->GetAngle());
+    }
 }
