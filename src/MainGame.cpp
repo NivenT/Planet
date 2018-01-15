@@ -101,9 +101,9 @@ void MainGame::debug_render_world(DebugBatch& dbatch, const b2World* world,
 void MainGame::init() {
     Logger::writeToLog("Initializing main screen...");
 
-    m_font = ResourceManager::getSpriteFont("manilasansreg.otf");
+    m_font = ResourceManager::getSpriteFont("resources/fonts/manilasansreg.otf");
 
-    m_simpleProg = SystemManager::getGLSLProgram("simple2D");
+    m_simpleProg = SystemManager::getGLSLProgram("shaders/simple2D");
     if (!m_simpleProg->isLinked()) {
         m_simpleProg->addAttribute("pos");
         m_simpleProg->addAttribute("color");
@@ -115,7 +115,7 @@ void MainGame::init() {
     glUniform1i(m_simpleProg->getUniformLocation("sampler"), 0);
     m_simpleProg->unuse();
 
-    m_overlayProg = SystemManager::getGLSLProgram("overlay");
+    m_overlayProg = SystemManager::getGLSLProgram("shaders/overlay");
     if (!m_overlayProg->isLinked()) {
         m_overlayProg->addAttribute("pos");
         m_overlayProg->addAttribute("color");
@@ -127,7 +127,8 @@ void MainGame::init() {
     glUniform1i(m_overlayProg->getUniformLocation("sampler"), 0);
     m_overlayProg->unuse();
 
-    m_planetProg = SystemManager::getGLSLProgram("planet", "planet", "simple2D");
+    m_planetProg = SystemManager::getGLSLProgram("planet", 
+                                                 "shaders/planet.vert", "shaders/simple2D.frag");
     if (!m_planetProg->isLinked()) {
         m_planetProg->addAttribute("pos");
         m_planetProg->addAttribute("color");
@@ -224,9 +225,10 @@ void MainGame::prepare_batches() {
     m_debug_sprite_batch.begin(); {
         if (m_debug) {
             vec2 center = m_camera.getCenter();
+            GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");
+
             m_debug_sprite_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
-                                          ResourceManager::getTexture("circle.png").id, 
-                                          vec4(1,0,0,1), 1.0);
+                                          tex.id, vec4(1,0,0,1), 1.0);
         }
     } m_debug_sprite_batch.end();
 }
