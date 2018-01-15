@@ -15,8 +15,8 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
-                       m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
+MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false), 
+                       m_paused(false), m_draw_aabbs(true), m_soft_debug(false),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
@@ -178,13 +178,17 @@ void MainGame::prepare_batches() {
 }
 
 void MainGame::render_batches() {
-    auto camera_matrix = m_camera.getCameraMatrix();
+    const auto camera_matrix = m_camera.getCameraMatrix();
+    const float scale = m_camera.getDimensions().y;
+
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
         glUniform1f(m_planetProg->getUniformLocation("is_light"), 0.0);
-        glUniform1f(m_planetProg->getUniformLocation("planet_radius"), m_planet.getRadius());
-        glUniform1f(m_planetProg->getUniformLocation("planet_height"), m_planet.getHeight());
+        glUniform1f(m_planetProg->getUniformLocation("normalized_planet_radius"), 
+                    m_planet.getRadius()/scale);
+        glUniform1f(m_planetProg->getUniformLocation("normalized_planet_height"), 
+                    m_planet.getHeight()/scale);
 
         if (!m_square_planet) {
             m_batch.render();

@@ -61,7 +61,8 @@ void Planet::add_to_world(b2World* world) {
     m_body = world->CreateBody(&ground_body_def);
 
     b2PolygonShape ground_box;
-    ground_box.SetAsBox(m_dimensions[1]*TILE_SIZE/2.0, getRadius()/2.0);
+    // ground extends past edge of planet to avoid tipping
+    ground_box.SetAsBox(m_dimensions[1]*TILE_SIZE/1.95, getRadius()/2.0);
     m_body->CreateFixture(&ground_box, 0.0);
 }
 

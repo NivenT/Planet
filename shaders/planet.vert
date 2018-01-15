@@ -2,9 +2,9 @@
 
 uniform mat3 camera;
 // includes atmosphere
-uniform float planet_height;
+uniform float normalized_planet_height;
 // does not include atmosphere
-uniform float planet_radius;
+uniform float normalized_planet_radius;
 
 in vec3 pos;
 in vec4 color;
@@ -40,10 +40,16 @@ vec2 cmplexp(vec2 z) {
 }
 
 void main() {
+    /*
     vec2 circ_pos = (planet_radius + pos.y) * cmplexp(pos.yx/planet_height);
     vec3 position = camera * vec3(circ_pos, 1);
     gl_Position = vec4(position.xy, pos.z, 1);
-    
+    /**/
+    vec3 position = camera * vec3(pos.xy, 1);
+    vec2 circ_pos = (normalized_planet_radius + position.y) * 
+                        cmplexp(position.yx/normalized_planet_height);
+    gl_Position = vec4(circ_pos.y, circ_pos.x - normalized_planet_radius, pos.z, 1);
+    /**/
     fragColor = color;
     fragUV = uv;
     hasTexture = hasTex;
