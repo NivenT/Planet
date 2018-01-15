@@ -1,6 +1,10 @@
 # Planet
 WIP Planet hopping game
 
+![image](https://github.com/NivenT/Planet/blob/master/screenshots/screen1.png)
+
+Above is a screenshot of the game in debug mode, mainly showing that the planet is made of tiles. All the physics is calculated as if the planet is a rectangle, but things are rendered as if the planet is a circle. The little box near the top is the player, and the red dot is just there to keep track of the center of the screen.
+
 # The Vision
 The main premise of the game is that you start off on some simple planet, and start exploring. There will be enemies to shoot, and puzzles to solve; once you complete some objective (maybe reaching the center of the planet, maybe something else) you get to fly to other planets and do the same thing. There's no story with this game, only gameplay; go from planet to planet, solve puzzles, have fun and whatnot. I envision the game having no loading screens or fast travel. Even as you go from planet to planet you'll have to actually fly through the space inbetween.
 
