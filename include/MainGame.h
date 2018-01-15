@@ -37,8 +37,10 @@ private:
     nta::GLSLProgram* m_planetProg = nullptr;
     nta::SpriteFont* m_font = nullptr;
 
+    // Never expected to ever use more than 2 batches
     nta::SpriteBatch m_batch;
     nta::SpriteBatch m_overlay_batch;
+    nta::SpriteBatch m_light_batch;
     nta::SpriteBatch m_debug_sprite_batch;
     nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;

@@ -15,8 +15,8 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(true), m_square_planet(true), 
-                       m_paused(true), m_draw_aabbs(true) {
+MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(true), 
+                       m_paused(false), m_draw_aabbs(true) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
     m_planet.add_to_world(m_world.get());
@@ -124,11 +124,10 @@ void MainGame::init() {
         m_overlayProg->linkShaders();
     }
     m_overlayProg->use();
-    // TODO: remember what this does
     glUniform1i(m_overlayProg->getUniformLocation("sampler"), 0);
     m_overlayProg->unuse();
 
-    m_planetProg = SystemManager::getGLSLProgram("planet");
+    m_planetProg = SystemManager::getGLSLProgram("planet", "planet", "simple2D");
     if (!m_planetProg->isLinked()) {
         m_planetProg->addAttribute("pos");
         m_planetProg->addAttribute("color");
@@ -141,6 +140,7 @@ void MainGame::init() {
     m_planetProg->unuse();
 
     m_batch.init();
+    m_light_batch.init();
     m_overlay_batch.init();
     m_debug_batch.init();
     m_debug_sprite_batch.init();
@@ -184,7 +184,7 @@ void MainGame::update() {
         m_paused = !m_paused;
     }
 
-    if (!m_paused) {
+    if (!m_paused && m_manager->getFPS() > 0.1) {
         m_time += 1/m_manager->getFPS();
         m_world->Step(1./m_manager->getFPS(), 6, 2);
     }
@@ -194,6 +194,10 @@ void MainGame::prepare_batches() {
     m_batch.begin(); {
         m_planet.render(m_batch);
     } m_batch.end();
+
+    m_light_batch.begin(); {
+        m_player->render(m_light_batch);
+    } m_light_batch.end();
 
     m_overlay_batch.begin(); {
         if (m_debug) {
@@ -232,12 +236,19 @@ void MainGame::render_batches() {
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
+        glUniform1f(m_planetProg->getUniformLocation("is_light"), 0.0);
         glUniform1f(m_planetProg->getUniformLocation("planet_radius"), m_planet.getRadius());
         glUniform1f(m_planetProg->getUniformLocation("planet_height"), m_planet.getHeight());
 
         if (!m_square_planet) {
             m_batch.render();
             m_debug_batch.render();
+        
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glUniform1f(m_planetProg->getUniformLocation("is_light"), 1.0);
+            m_light_batch.render();
+            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 0.0);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
     } m_planetProg->unuse();
 
@@ -248,6 +259,12 @@ void MainGame::render_batches() {
         if (m_square_planet) {
             m_batch.render();
             m_debug_batch.render();
+        
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 1.0);
+            m_light_batch.render();
+            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 0.0);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
         m_debug_sprite_batch.render();
     } m_simpleProg->unuse();

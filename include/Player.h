@@ -2,6 +2,7 @@
 #define PLAYER_H_INCLUDED
 
 #include "Agent.h"
+#include "Light.h"
 
 // TODO: Order these sensibly
 #define PLAYER_COLOR glm::vec4(0.24, 0.00, 0.40, 1.00)

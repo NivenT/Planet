@@ -27,6 +27,8 @@ void Player::add_to_world(b2World* world) {
 }
 
 void Player::render(SpriteBatch& batch) const {
+    Light light(getCenter(), PLAYER_COLOR, PLAYER_HALF_DIMS.x*1.618);
+    light.render(batch);
 }
 
 void Player::update(const UpdateParams& params) {

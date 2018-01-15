@@ -15,9 +15,9 @@ Planet::~Planet() {
 
 Planet Planet::new_test() {
     Planet test;
-    test.m_tiles.push_back(Tile(vec4(0.4, 0.7, 0.1, 1)));
-    test.m_tiles.push_back(Tile(vec4(0.65, 0.85, 1, 1)));
-    test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 1)));
+    test.m_tiles.push_back(Tile(vec4(0.4, 0.7, 0.1, 0.8)));
+    test.m_tiles.push_back(Tile(vec4(0.65, 0.85, 1, 0.3)));
+    test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 0.5)));
 
     test.m_sea_level = 7;
     test.m_dimensions[0] = 14;
