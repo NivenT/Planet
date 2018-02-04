@@ -12,7 +12,7 @@ Player::Player() : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH) {
 Player::~Player() {
 }
 
-void Player::add_to_world(b2World* world) {
+void Player::add_to_world(b2World* world, const CreationParams& _) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y);

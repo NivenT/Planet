@@ -24,7 +24,7 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
 
     m_player = new Player;
     m_objects.push_back(m_player);
-    m_player->add_to_world(m_world.get());
+    m_player->add_to_world(m_world.get(), CreationParams{});
 }
 
 MainGame::~MainGame() {
