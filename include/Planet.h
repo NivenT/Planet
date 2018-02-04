@@ -40,6 +40,7 @@ public:
     // returns width x height in world coordinates
     glm::vec2 getDimensions() const;
     b2Vec2 getGravity() const;
+    glm::vec2 getTileCenter(int row, int col) const;
     float getRadius() const;
     float getHeight() const;
     void add_to_world(b2World* world);

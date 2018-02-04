@@ -43,6 +43,11 @@ vec2 Planet::getDimensions() const {
     return vec2(m_dimensions.y, m_dimensions.x) * TILE_SIZE;
 }
 
+vec2 Planet::getTileCenter(int row, int col) const {
+    const vec2 offset = getOffset();
+    return offset - (float)row*TILE_DY + (float)col*TILE_DX + vec2(TILE_SIZE, -TILE_SIZE)/2.f;
+}
+
 b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }

@@ -13,6 +13,11 @@ struct UpdateParams {
 };
 
 struct CreationParams {
+    CreationParams() : planet(nullptr), position(0), extents(0), density(0), friction(0) {
+    }
+
+    // The planet an object belongs to
+    Planet* planet;
     glm::vec2 position;
     glm::vec2 extents;
     float density;

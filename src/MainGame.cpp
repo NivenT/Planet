@@ -23,8 +23,17 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
     m_planet.add_to_world(m_world.get());
 
     m_player = new Player;
-    m_objects.push_back(m_player);
     m_player->add_to_world(m_world.get(), CreationParams{});
+
+    CreationParams item_params;
+    item_params.planet = &m_planet;
+    item_params.position = m_planet.getTileCenter(6, 35);
+
+    Item* test_item = new Item("resources/images/stick.png", SMALL_ITEM_EXTENTS);
+    test_item->add_to_world(m_world.get(), item_params);
+
+    m_objects.push_back(m_player);
+    m_objects.push_back(test_item);
 }
 
 MainGame::~MainGame() {
@@ -136,6 +145,9 @@ void MainGame::update() {
 void MainGame::prepare_batches() {
     m_batch.begin(); {
         m_planet.render(m_batch);
+        for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
+            (*it)->render(m_batch);
+        }
     } m_batch.end();
 
     m_light_batch.begin(); {

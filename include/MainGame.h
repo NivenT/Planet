@@ -14,6 +14,7 @@
 
 #include "Planet.h"
 #include "Player.h"
+#include "Item.h"
 #include "utils.h"
 
 #define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)
@@ -38,6 +39,7 @@ private:
     nta::Camera2D m_camera;
 
     std::unique_ptr<b2World> m_world;
+    // m_objects[0] == m_player
     std::vector<Object*> m_objects;
     Player* m_player;
     Planet m_planet;
