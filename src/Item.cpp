@@ -30,18 +30,14 @@ void Item::add_to_world(b2World* world, const CreationParams& params) {
     fixture_def.shape = &body_shape;
     fixture_def.density = params.density;
     fixture_def.friction = params.friction;
+    fixture_def.filter.maskBits = ITEM_MASK_BITS;
     m_body->CreateFixture(&fixture_def);
 
     m_planet = params.planet;
+    m_equipped = false; // Should be unnecessary but can't hurt
 }
 
 void Item::render(SpriteBatch& batch) const {
-    /*
-    // Assume single quad for fixture
-    b2PolygonShape* quad = (b2PolygonShape*)m_body->GetFixtureList()->GetShape();
-    vec2 v1(quad->m_vertices[0].x, quad->m_vertices[0].y), 
-         v2(quad->m_vertices[2].x, quad->m_vertices[2].y);
-    */
     const vec2 center = getCenter();
     batch.addGlyph(vec4(center.x - m_extents.x, center.y + m_extents.y, 2.f*m_extents),
                    vec4(0,0,1,1), m_tex.id, m_color);

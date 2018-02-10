@@ -3,10 +3,6 @@
 
 #include "Agent.h"
 
-#define SMALL_ITEM (TILE_SIZE/3.f)
-
-#define SMALL_ITEM_EXTENTS glm::vec2(SMALL_ITEM/2.f, SMALL_ITEM/2.f)
-
 class Item : public Object {
 private:
     bool m_equipped;

@@ -69,7 +69,12 @@ void Planet::add_to_world(b2World* world) {
     b2PolygonShape ground_box;
     // ground extends past edge of planet to avoid tipping
     ground_box.SetAsBox(m_dimensions[1]*TILE_SIZE/1.95, getRadius()/2.0);
-    m_body->CreateFixture(&ground_box, 0.0);
+
+
+    b2FixtureDef fixture_def;
+    fixture_def.shape = &ground_box;
+    fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
+    m_body->CreateFixture(&fixture_def);
 }
 
 void Planet::render(nta::SpriteBatch& batch) const {

@@ -4,11 +4,7 @@
 #include <nta/ResourceManager.h>
 #include <nta/SpriteBatch.h>
 
-#define TILE_SIZE 10.f
-#define TILE_DX glm::vec2(TILE_SIZE, 0)
-#define TILE_DY glm::vec2(0, TILE_SIZE)
-#define TILE_DIMS glm::vec2(TILE_SIZE)
-#define TILE_EXTENTS (TILE_DIMS/2.f)
+#include "defs.h"
 
 struct Tile {
     nta::GLTexture m_tex;

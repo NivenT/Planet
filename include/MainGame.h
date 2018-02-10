@@ -17,9 +17,6 @@
 #include "Item.h"
 #include "utils.h"
 
-#define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)
-#define DEFAULT_CAMERA_DIMENSIONS glm::vec2(TILE_SIZE*3.f)
-
 class MainGame : public nta::Screen {
 private:
     void prepare_batches();

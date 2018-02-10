@@ -9,6 +9,9 @@
 #include "Planet.h"
 
 struct UpdateParams {
+    UpdateParams() : planet(nullptr) {
+    }
+
     Planet* planet;
 };
 
