@@ -15,8 +15,8 @@ private:
     //std::function<void(Item&, UpdateParams)> m_update_func;
     //std::function<void(const Item&, nta::SpriteBatch&)> m_render_func;
 public:
-    Item(crvec4 c, crstring texture, crvec2 extents);
-    Item(crstring texture, crvec2 extents);
+    Item(crvec4 c, crstring texture, crvec2 extents, uint16_t type = 0);
+    Item(crstring texture, crvec2 extents, uint16_t type = 0);
     ~Item();
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;

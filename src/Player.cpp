@@ -6,13 +6,13 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Player::Player() : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH) {
+Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE) {
 }
 
 Player::~Player() {
 }
 
-void Player::add_to_world(b2World* world, const CreationParams& _) {
+void Player::add_to_world(b2World* world, const CreationParams& params) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y);
@@ -25,13 +25,17 @@ void Player::add_to_world(b2World* world, const CreationParams& _) {
     fixture_def.shape = &body_shape;
     fixture_def.density = PLAYER_DENSITY;
     fixture_def.friction = PLAYER_FRICTION;
-    m_body->CreateFixture(&fixture_def); 
+    m_body->CreateFixture(&fixture_def);
+
+    Agent::add_to_world(world, params);
 }
 
 void Player::render(SpriteBatch& batch) const {
     Light light(getCenter(), PLAYER_COLOR, PLAYER_HALF_DIMS.x*1.618, m_health/PLAYER_INIT_HEALTH);
     light.render(batch);
 }
+
+#include <iostream>
 
 void Player::update(const UpdateParams& params) {
     static const float EPS = 1e-1;
@@ -45,6 +49,11 @@ void Player::update(const UpdateParams& params) {
 
     bool is_standing = false;
     for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
+        if (edge->other->GetUserData()) {
+            std::cout<<"here"<<std::endl;
+            const uint16_t type = ((Object*)edge->other->GetUserData())->getObjectType();
+            std::cout<<"here"<<std::endl<<std::endl;
+        }
         if (edge->contact->IsTouching()) {
             b2WorldManifold manifold;
             edge->contact->GetWorldManifold(&manifold);

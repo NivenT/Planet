@@ -4,7 +4,7 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Agent::Agent(glm::vec4 c, float m) : Object(c), m_health(m) {
+Agent::Agent(glm::vec4 c, float m, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(m) {
 }
 
 Agent::~Agent() {

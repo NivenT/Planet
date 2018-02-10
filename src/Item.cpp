@@ -5,12 +5,12 @@
 using namespace nta;
 using namespace glm;
 
-Item::Item(crvec4 c, crstring texture, crvec2 extents) : Object(c), m_owner(nullptr), 
-    m_extents(extents), m_equipped(false) {
+Item::Item(crvec4 c, crstring texture, crvec2 extents, uint16_t type) : 
+    Object(c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false) {
     m_tex = ResourceManager::getTexture(texture);
 }
 
-Item::Item(crstring texture, crvec2 extents) : Item(vec4(1), texture, extents) {
+Item::Item(crstring texture, crvec2 extents, uint16_t type) : Item(vec4(1), texture, extents, type) {
 }
 
 Item::~Item() {
@@ -35,6 +35,7 @@ void Item::add_to_world(b2World* world, const CreationParams& params) {
 
     m_planet = params.planet;
     m_equipped = false; // Should be unnecessary but can't hurt
+    Object::add_to_world(world, params);
 }
 
 void Item::render(SpriteBatch& batch) const {

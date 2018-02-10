@@ -7,7 +7,7 @@ class Agent : public Object {
 protected:
     float m_health;
 public:
-    Agent(glm::vec4 c, float m);
+    Agent(glm::vec4 c, float m, uint16_t type);
     virtual ~Agent();
     virtual glm::vec2 getDirection() const;
     glm::vec2 getVelocity() const;

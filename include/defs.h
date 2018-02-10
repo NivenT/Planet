@@ -1,17 +1,17 @@
 #ifndef DEFS_H_INCLUDED
 #define DEFS_H_INCLUDED
 
-/// Rendering
-#define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)
-#define DEFAULT_CAMERA_DIMENSIONS glm::vec2(TILE_SIZE*3.f)
-
-#define DEBUG_BOX2D_COLOR glm::vec4(0.5,0,0.3,1)
-#define DEBUG_BOX2D_AABB_COLOR glm::vec4(1,0,0,1)
-
 /// Collisions
 // Objects collide with categories in their mask bits
 #define PLANET_CATEGORY_BITS 0b0000'0000'0000'0010
 #define ITEM_MASK_BITS PLANET_CATEGORY_BITS
+
+/// Objects
+#define OBJECT_TYPE 0b0000'0000'0000'0001
+#define AGENT_TYPE  0b0000'0000'0000'0010
+#define ITEM_TYPE   0b0000'0000'0000'0100
+#define PLAYER_TYPE 0b0000'0000'0000'1000
+#define ENEMY_TYPE  0b0000'0000'0001'0000
 
 /// Tiles
 #define TILE_SIZE 10.f
@@ -36,7 +36,14 @@
 #define PLAYER_JUMP_FORCE (PLAYER_FORCE*10.f)
 
 /// Items
-#define SMALL_ITEM (TILE_SIZE/3.f)
+#define SMALL_ITEM (TILE_SIZE/M_PI) // I think this is technically illegitimate use of M_PI
 #define SMALL_ITEM_EXTENTS glm::vec2(SMALL_ITEM/2.f, SMALL_ITEM/2.f)
+
+/// Rendering
+#define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)
+#define DEFAULT_CAMERA_DIMENSIONS glm::vec2(TILE_SIZE*3.f)
+
+#define DEBUG_BOX2D_COLOR glm::vec4(0.5,0,0.3,1)
+#define DEBUG_BOX2D_AABB_COLOR glm::vec4(1,0,0,1)
 
 #endif // DEFS_H_INCLUDED

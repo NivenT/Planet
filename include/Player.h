@@ -7,7 +7,7 @@
 
 class Player : public Agent {
 public:
-    Player();
+    Player(uint16_t type = 0);
     ~Player();
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;

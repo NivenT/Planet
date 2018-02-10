@@ -4,10 +4,14 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Object::Object(crvec4 c) : m_color(c) {
+Object::Object(crvec4 c, uint16_t type) : m_color(c), m_type_mask(type | OBJECT_TYPE) {
 }
 
 Object::~Object() {
+}
+
+uint16_t Object::getObjectType() const {
+    return m_type_mask;
 }
 
 vec2 Object::getCenter() const {
@@ -21,6 +25,11 @@ vec2 Object::getTopLeft() const {
     const b2Vec2 extents = fixture->GetAABB(0).GetExtents();
 
     return vec2(center.x - extents.x, center.y + extents.y);
+}
+
+// Call at end of child's add_to_world
+void Object::add_to_world(b2World* world, const CreationParams& params) {
+    m_body->SetUserData(this);
 }
 
 void Object::render_debug(DebugBatch& _) const {
