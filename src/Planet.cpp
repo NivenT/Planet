@@ -62,7 +62,7 @@ float Planet::getHeight() const {
     return m_dimensions[0] * TILE_SIZE;
 }
 
-/// TODO: Every tile should be its own body
+// TODO: Every tile should be its own body
 void Planet::add_to_world(b2World* world) {
     b2BodyDef ground_body_def;
     ground_body_def.position = b2Vec2(0, -getRadius()/2.0);

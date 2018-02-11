@@ -20,7 +20,7 @@ vec2 Object::getCenter() const {
 
 vec2 Object::getTopLeft() const {
     const vec2 center = getCenter();
-    // assume there's only one fixture and one child
+    // assume there's only one fixture and one child (<-- likely not always a true assumption)
     b2Fixture const * const fixture = m_body->GetFixtureList();
     const b2Vec2 extents = fixture->GetAABB(0).GetExtents();
 

@@ -21,5 +21,4 @@ void main() {
     } else {
         finalColor = hasTexture > 0.5 ? fragColor * texture(sampler, fragUV) : fragColor;
     }
-    
 }

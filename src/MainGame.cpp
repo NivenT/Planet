@@ -37,6 +37,10 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
 }
 
 MainGame::~MainGame() {
+    for (auto object : m_objects) {
+        delete object;
+    }
+    m_objects.clear();
 }
 
 void MainGame::init() {
@@ -189,6 +193,7 @@ void MainGame::prepare_batches() {
     } m_debug_sprite_batch.end();
 }
 
+// TODO: Somehow get depth working well
 void MainGame::render_batches() {
     const auto camera_matrix = m_camera.getCameraMatrix();
     const float scale = m_camera.getDimensions().y;
