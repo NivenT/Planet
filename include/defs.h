@@ -1,6 +1,9 @@
 #ifndef DEFS_H_INCLUDED
 #define DEFS_H_INCLUDED
 
+#define TITLE "Planet (WIP title)"
+#define TARGET_FPS 60
+
 /// Collisions
 // Objects collide with categories in their mask bits
 #define PLANET_CATEGORY_BITS 0b0000'0000'0000'0010
@@ -21,7 +24,6 @@
 #define TILE_EXTENTS (TILE_DIMS/2.f)
 
 /// Player
-// TODO: Order these sensibly
 #define PLAYER_COLOR glm::vec4(0.24, 0.00, 0.40, 1.00)
 #define PLAYER_INIT_HEALTH 100.f
 #define PLAYER_DIMS glm::vec2(TILE_SIZE/2.f, TILE_SIZE)

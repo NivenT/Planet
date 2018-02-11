@@ -26,12 +26,19 @@ void Item::add_to_world(b2World* world, const CreationParams& params) {
     b2PolygonShape body_shape;
     body_shape.SetAsBox(m_extents.x, m_extents.y);
 
+    // Solid fixture for certain collisions (e.g. with ground)
     b2FixtureDef fixture_def;
     fixture_def.shape = &body_shape;
     fixture_def.density = params.density;
     fixture_def.friction = params.friction;
     fixture_def.filter.maskBits = ITEM_MASK_BITS;
     m_body->CreateFixture(&fixture_def);
+
+    // Sensor fixture for detecting collisions w/o resolution (e.g. with player)
+    b2FixtureDef sensor_def;
+    sensor_def.shape = &body_shape;
+    sensor_def.isSensor = true;
+    m_body->CreateFixture(&sensor_def);
 
     m_planet = params.planet;
     m_equipped = false; // Should be unnecessary but can't hurt

@@ -6,6 +6,10 @@
 #include "Tile.h"
 
 class Player : public Agent {
+private:
+    void handle_collisions(const UpdateParams& params);
+
+    bool m_is_standing;
 public:
     Player(uint16_t type = 0);
     ~Player();

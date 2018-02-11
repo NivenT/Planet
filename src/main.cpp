@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     nta::Random::init();
     nta::AudioManager::init();
     
-    nta::ScreenManager screenManager("Planet (WIP title)", 60);
+    nta::ScreenManager screenManager(TITLE, TARGET_FPS);
     screenManager.addScreen(new MainGame);
 
     glEnable(GL_BLEND);
