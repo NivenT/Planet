@@ -1,6 +1,10 @@
 #ifndef DEFS_H_INCLUDED
 #define DEFS_H_INCLUDED
 
+/// Note: Many #define's here depend on other #include's appearing before them
+///       in the files that include this header (e.g. glm). I'm not sure how I
+///       feel about that
+
 #define TITLE "Planet (WIP title)"
 #define TARGET_FPS 60
 
@@ -38,7 +42,7 @@
 #define PLAYER_JUMP_FORCE (PLAYER_FORCE*10.f)
 
 /// Items
-#define SMALL_ITEM (TILE_SIZE/M_PI) // I think this is technically illegitimate use of M_PI
+#define SMALL_ITEM (TILE_SIZE/M_PI)
 #define SMALL_ITEM_EXTENTS glm::vec2(SMALL_ITEM/2.f, SMALL_ITEM/2.f)
 
 /// Rendering

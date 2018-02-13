@@ -21,6 +21,8 @@ class MainGame : public nta::Screen {
 private:
     void prepare_batches();
     void render_batches();
+    void debug_update();
+    void dev_update();
 
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::GLSLProgram* m_overlayProg = nullptr;
@@ -48,6 +50,7 @@ private:
     bool m_draw_aabbs;
     bool m_square_planet;
     bool m_paused;
+    bool m_dev_mode;
 public:
     MainGame();
     ~MainGame();

@@ -17,7 +17,8 @@ using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false), 
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(false),
-                       m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
+                       m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
+                       m_dev_mode(false) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
     m_planet.add_to_world(m_world.get());
@@ -93,43 +94,55 @@ void MainGame::init() {
     Logger::writeToLog("main screen initialized");
 }
 
-void MainGame::update() {
+void MainGame::debug_update() {
     static const float dx = 0.618, dy = 1.618, dt = 0.01, ds = 1.01;
-    if (m_debug) {
-        if (InputManager::isPressed(SDLK_w)) {
-            m_camera.translateCenter(0, dy);
-        } if (InputManager::isPressed(SDLK_a)) {
-            m_camera.translateCenter(-dx, 0);
-        } if (InputManager::isPressed(SDLK_s)) {
-            m_camera.translateCenter(0, -dy);
-        } if (InputManager::isPressed(SDLK_d)) {
-            m_camera.translateCenter(dx, 0);
-        } if (InputManager::isPressed(SDLK_e)) {
-            m_camera.rotate(-dt);
-        } if (InputManager::isPressed(SDLK_q)) {
-            m_camera.rotate(dt);
-        } if (InputManager::getMouseWheelMotion() > 0) {
-            m_camera.scaleDimensions(1./ds, 1./ds);
-        } if (InputManager::getMouseWheelMotion() < 0) {
-            m_camera.scaleDimensions(ds, ds);
-        } if (InputManager::isPressed(SDLK_g)) {
-            m_camera = Camera2D();
-        }
-
-        if (InputManager::justPressed(SDLK_RETURN)) {
-            m_square_planet = !m_square_planet;
-        }
+    if (InputManager::isPressed(SDLK_w)) {
+        m_camera.translateCenter(0, dy);
+    } if (InputManager::isPressed(SDLK_a)) {
+        m_camera.translateCenter(-dx, 0);
+    } if (InputManager::isPressed(SDLK_s)) {
+        m_camera.translateCenter(0, -dy);
+    } if (InputManager::isPressed(SDLK_d)) {
+        m_camera.translateCenter(dx, 0);
+    } if (InputManager::isPressed(SDLK_e)) {
+        m_camera.rotate(-dt);
+    } if (InputManager::isPressed(SDLK_q)) {
+        m_camera.rotate(dt);
+    } if (InputManager::getMouseWheelMotion() > 0) {
+        m_camera.scaleDimensions(1./ds, 1./ds);
+    } if (InputManager::getMouseWheelMotion() < 0) {
+        m_camera.scaleDimensions(ds, ds);
+    } if (InputManager::isPressed(SDLK_g)) {
+        m_camera = Camera2D();
     }
 
+    if (InputManager::justPressed(SDLK_RETURN)) {
+        m_square_planet = !m_square_planet;
+    }
+}
+
+void MainGame::dev_update() {
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
         m_camera = m_debug ? Camera2D() : Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
     } else if (InputManager::justPressed(SDLK_b)) {
         m_draw_aabbs = !m_draw_aabbs;
-    } else if (InputManager::justPressed(SDLK_p)) {
-        m_paused = !m_paused;
     } else if (InputManager::justPressed(SDLK_i)) {
         m_soft_debug = !m_soft_debug;
+    }
+}
+
+void MainGame::update() {
+    if (m_dev_mode) {
+        dev_update();
+    } if (m_debug) {
+        debug_update();
+    }
+
+    if (InputManager::justPressed(SDLK_p)) {
+        m_paused = !m_paused;
+    } if (InputManager::justPressed(SDLK_F1)) {
+        m_dev_mode = !m_dev_mode;
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
@@ -171,6 +184,9 @@ void MainGame::prepare_batches() {
         if (m_paused) {
             m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));
         }
+        if (m_dev_mode) {
+            m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, 5));
+        }
     } m_overlay_batch.end();
 
     m_debug_batch.begin(); {
@@ -211,6 +227,7 @@ void MainGame::render_batches() {
             m_batch.render();
             m_debug_batch.render();
         
+            // TODO: Make lighting less hacky
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
             glUniform1f(m_planetProg->getUniformLocation("is_light"), 1.0);
             m_light_batch.render();
