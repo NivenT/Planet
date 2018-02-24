@@ -143,6 +143,7 @@ void MainGame::update() {
         m_paused = !m_paused;
     } if (InputManager::justPressed(SDLK_F1)) {
         m_dev_mode = !m_dev_mode;
+        //if (!m_dev_mode) m_debug = false;
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {

@@ -69,13 +69,15 @@ void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_collisions(params);
 
-    if (InputManager::isPressed(SDLK_d)) {
-        m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
-    } else if (InputManager::isPressed(SDLK_a)) {
-        m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
-    }
+    if (m_is_standing) {
+        if (InputManager::isPressed(SDLK_d)) {
+            m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
+        } else if (InputManager::isPressed(SDLK_a)) {
+            m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
+        }
 
-    if (m_is_standing && InputManager::isPressed(SDLK_w)) {
-        m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
+        if (InputManager::isPressed(SDLK_w)) {
+            m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
+        }
     }
 }
