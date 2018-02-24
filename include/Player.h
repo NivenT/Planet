@@ -18,6 +18,7 @@ public:
     ~Player();
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
+    void render_inventory(nta::SpriteBatch& batch, nta::SpriteFont& font) const;
     void update(const UpdateParams& params);
 };
 

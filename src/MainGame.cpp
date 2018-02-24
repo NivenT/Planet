@@ -161,54 +161,53 @@ void MainGame::update() {
     }
 }
 
+// Note: Should I return to having all batches be separate?
 void MainGame::prepare_batches() {
-    m_batch.begin(); {
-        m_planet.render(m_batch);
-        for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
-            (*it)->render(m_batch);
-        }
-    } m_batch.end();
+    m_batch.begin();
+    m_light_batch.begin();
+    m_overlay_batch.begin();
+    m_debug_batch.begin();
+    m_debug_sprite_batch.begin();
 
-    m_light_batch.begin(); {
-        m_player->render(m_light_batch);
-    } m_light_batch.end();
+    
+    m_planet.render(m_batch);
+    // +1 to skip the player
+    for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
+        (*it)->render(m_batch);
+    }
+    m_player->render(m_light_batch);
 
-    m_overlay_batch.begin(); {
-        if (m_debug) {
-            m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
-                             vec4(0, 100, 15, 5));
-            m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
-                             vec4(0, 5, 20, 5));
-            // This is useless, but I was curious
-            m_font->drawText(m_overlay_batch, "time: " + to_string(m_time),
-                             vec4(75, 5, 25, 5));
-        }
-        if (m_paused) {
-            m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));
-        }
-        if (m_dev_mode) {
-            m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, 5));
-        }
-    } m_overlay_batch.end();
+    if (m_paused) {
+        m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));
+    }
+    if (m_dev_mode) {
+        m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, 5));
+    }
+    if (m_debug || m_soft_debug) {
+        debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
+    }
+    if (m_debug) {
+        m_planet.render_debug(m_debug_batch);
+        m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
+                         vec4(0, 100, 15, 5));
+        m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
+                         vec4(0, 5, 20, 5));
+        // This is useless, but I was curious
+        m_font->drawText(m_overlay_batch, "time: " + to_string(m_time),
+                         vec4(75, 5, 25, 5));
 
-    m_debug_batch.begin(); {
-        if (m_debug || m_soft_debug) {
-            debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
-        }
-        if (m_debug) {
-            m_planet.render_debug(m_debug_batch);
-        }
-    } m_debug_batch.end();
+        vec2 center = m_camera.getCenter();
+        GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");
 
-    m_debug_sprite_batch.begin(); {
-        if (m_debug) {
-            vec2 center = m_camera.getCenter();
-            GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");
+        m_debug_sprite_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
+                                      tex.id, vec4(1,0,0,1), 1.0);
+    }
 
-            m_debug_sprite_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
-                                          tex.id, vec4(1,0,0,1), 1.0);
-        }
-    } m_debug_sprite_batch.end();
+    m_batch.end();
+    m_light_batch.end();
+    m_overlay_batch.end();
+    m_debug_batch.end();
+    m_debug_sprite_batch.end();
 }
 
 // TODO: Somehow get depth working well
