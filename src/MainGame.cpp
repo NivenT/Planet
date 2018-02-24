@@ -150,6 +150,8 @@ void MainGame::update() {
 
         UpdateParams params;
         params.planet = &m_planet;
+        params.world = m_world.get();
+
         for (auto& obj : m_objects) {
             obj->update(params);
         }

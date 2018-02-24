@@ -9,10 +9,11 @@
 #include "Planet.h"
 
 struct UpdateParams {
-    UpdateParams() : planet(nullptr) {
+    UpdateParams() : planet(nullptr), world(nullptr) {
     }
 
     Planet* planet;
+    b2World* world;
 };
 
 struct CreationParams {

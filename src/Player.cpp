@@ -35,15 +35,18 @@ void Player::render(SpriteBatch& batch) const {
     light.render(batch);
 }
 
-void Player::handle_collisions(const UpdateParams& _) {
+void Player::handle_collisions(const UpdateParams& params) {
     static const float EPS = 1e-1;
 
     m_is_standing = false;
     for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
-        if (edge->other->GetUserData()) {
-            const uint16_t type = ((Object*)edge->other->GetUserData())->getObjectType();
+        void* object = edge->other->GetUserData();
+        if (object) {
+            const uint16_t type = ((Object*)object)->getObjectType();
             if (type && ITEM_TYPE) {
-                // TODO: Pick up item
+                Item* item = (Item*)object;
+                item->pickup(this, params.world);
+                m_inventory.push_back(item);
             }
         }
 

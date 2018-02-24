@@ -14,6 +14,7 @@ public:
     T& curr() const;
     T& prev() const;
     T& next() const;
+    std::size_t size() const;
     void push_back(const T& val);
     void pop_back();
     void pop_curr();
@@ -48,6 +49,11 @@ T& Cycle<T>::prev() const {
 template<typename T>
 T& Cycle<T>::next() const {
     return data[(ptr+1)%data.size()];
+}
+
+template<typename T>
+std::size_t Cycle<T>::size() const {
+    return data.size();
 }
 
 template<typename T>

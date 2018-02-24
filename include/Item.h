@@ -20,7 +20,8 @@ public:
     ~Item();
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
-    void update(const UpdateParams& params);
+    //void update(const UpdateParams& params);
+    void pickup(Agent* owner, b2World* world);
 };
 
 #endif // ITEM_H_INCLUDED

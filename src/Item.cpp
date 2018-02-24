@@ -46,11 +46,16 @@ void Item::add_to_world(b2World* world, const CreationParams& params) {
 }
 
 void Item::render(SpriteBatch& batch) const {
-    const vec2 center = getCenter();
-    batch.addGlyph(vec4(center.x - m_extents.x, center.y + m_extents.y, 2.f*m_extents),
-                   vec4(0,0,1,1), m_tex.id, m_color);
+    if (!m_equipped) {
+        const vec2 center = getCenter();
+        batch.addGlyph(vec4(center.x - m_extents.x, center.y + m_extents.y, 2.f*m_extents),
+                            vec4(0,0,1,1), m_tex.id, m_color);
+    }
 }
 
-void Item::update(const UpdateParams& params) {
-    Object::update(params);
+void Item::pickup(Agent* owner, b2World* world) {
+    m_equipped = true;
+    m_owner = owner;
+
+    world->DestroyBody(m_body);
 }
