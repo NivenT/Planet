@@ -4,11 +4,14 @@
 #include "Agent.h"
 #include "Light.h"
 #include "Tile.h"
+#include "Item.h"
+#include "Cycle.h"
 
 class Player : public Agent {
 private:
     void handle_collisions(const UpdateParams& params);
 
+    Cycle<Item*> m_inventory;
     bool m_is_standing;
 public:
     Player(uint16_t type = 0);
