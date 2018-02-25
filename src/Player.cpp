@@ -89,10 +89,10 @@ void Player::update(const UpdateParams& params) {
     handle_collisions(params);
 
     unset_flags(PLAYER_STATE_SHOW_INVENTORY);
-    if (InputManager::isPressed(SDLK_e)) {
+    if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
         m_inventory.advance();
         set_flags(PLAYER_STATE_SHOW_INVENTORY);
-    } else if (InputManager::isPressed(SDLK_q)) {
+    } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
         m_inventory.retreat();
         set_flags(PLAYER_STATE_SHOW_INVENTORY);
     }
