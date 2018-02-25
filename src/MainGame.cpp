@@ -177,12 +177,13 @@ void MainGame::prepare_batches() {
         (*it)->render(m_batch);
     }
     m_player->render(m_light_batch);
+    m_player->render_inventory(m_overlay_batch, m_font);
 
     if (m_paused) {
-        m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, 5));
+        m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, MEDIUM_TEXT_HEIGHT));
     }
     if (m_dev_mode) {
-        m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, 5));
+        m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, MEDIUM_TEXT_HEIGHT));
     }
     if (m_debug || m_soft_debug) {
         debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
@@ -190,12 +191,12 @@ void MainGame::prepare_batches() {
     if (m_debug) {
         m_planet.render_debug(m_debug_batch);
         m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
-                         vec4(0, 100, 15, 5));
+                         vec4(0, 100, 15, MEDIUM_TEXT_HEIGHT));
         m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
-                         vec4(0, 5, 20, 5));
+                         vec4(0, 5, 20, MEDIUM_TEXT_HEIGHT));
         // This is useless, but I was curious
         m_font->drawText(m_overlay_batch, "time: " + to_string(m_time),
-                         vec4(75, 5, 25, 5));
+                         vec4(75, 5, 25, MEDIUM_TEXT_HEIGHT));
 
         vec2 center = m_camera.getCenter();
         GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");

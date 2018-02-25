@@ -4,11 +4,13 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Agent::Agent(glm::vec4 c, float m, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(m) {
+Agent::Agent(glm::vec4 c, float m, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(m),
+    m_state_flags(0) {
 }
 
 Agent::~Agent() {
     m_health = 0;
+    m_state_flags = 0;
 }
 
 vec2 Agent::getDirection() const {
@@ -26,4 +28,16 @@ float Agent::getHealth() const {
 bool Agent::applyDamage(float damage) {
     m_health -= damage;
     return m_health <= 0;
+}
+
+bool Agent::are_flags_set(AgentFlags flags) const {
+    return (flags & m_state_flags) == flags;
+}
+
+void Agent::set_flags(AgentFlags flags) {
+    m_state_flags |= flags;
+}
+
+void Agent::unset_flags(AgentFlags flags) {
+    m_state_flags &= ~flags;
 }

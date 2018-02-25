@@ -53,6 +53,11 @@ void Item::render(SpriteBatch& batch) const {
     }
 }
 
+void Item::render_icon(SpriteBatch& batch, crvec2 top_left, float transparency) const {
+    batch.addGlyph(vec4(top_left, ITEM_ICON_DIMS), vec4(0,0,1,1), m_tex.id,
+                   vec4(m_color.r, m_color.g, m_color.b, m_color.a * transparency));
+}
+
 void Item::pickup(Agent* owner, b2World* world) {
     m_equipped = true;
     m_owner = owner;

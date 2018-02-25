@@ -11,10 +11,15 @@ private:
 public:
     Cycle();
     ~Cycle();
-    T& curr() const;
-    T& prev() const;
-    T& next() const;
+    // How does the compiler know which to use when it doesn't have to be const?
+    T& curr();
+    T curr() const;
+    T& prev();
+    T prev() const;
+    T& next();
+    T next() const;
     std::size_t size() const;
+    bool is_empty() const;
     void push_back(const T& val);
     void pop_back();
     void pop_curr();
@@ -27,7 +32,7 @@ public:
 };
 
 template<typename T>
-Cycle<T>::Cycle() {
+Cycle<T>::Cycle() : ptr(0) {
 }
 
 template<typename T>
@@ -37,23 +42,43 @@ Cycle<T>::~Cycle() {
 }
 
 template<typename T>
-T& Cycle<T>::curr() const {
+T& Cycle<T>::curr() {
     return data[ptr];
 }
 
 template<typename T>
-T& Cycle<T>::prev() const {
+T Cycle<T>::curr() const {
+    return data[ptr];
+}
+
+template<typename T>
+T& Cycle<T>::prev() {
     return data[(ptr-1)%data.size()];
 }
 
 template<typename T>
-T& Cycle<T>::next() const {
+T Cycle<T>::prev() const {
+    return data[(ptr-1)%data.size()];
+}
+
+template<typename T>
+T& Cycle<T>::next() {
+    return data[(ptr+1)%data.size()];
+}
+
+template<typename T>
+T Cycle<T>::next() const {
     return data[(ptr+1)%data.size()];
 }
 
 template<typename T>
 std::size_t Cycle<T>::size() const {
     return data.size();
+}
+
+template<typename T>
+bool Cycle<T>::is_empty() const {
+    return data.empty();
 }
 
 template<typename T>
