@@ -45,13 +45,13 @@ void Player::render_inventory(SpriteBatch& batch, SpriteFont* font) const {
     static const float TEXT_WIDTH = (ITEM_ICON_SIZE + BOUNDARY) * 3.f + BOUNDARY;
     static const vec2 DELTA(ITEM_ICON_SIZE + BOUNDARY, 0);
 
-    vec2 pos(BOUNDARY, 100 - MEDIUM_TEXT_HEIGHT - BOUNDARY);
+    vec2 pos(BOUNDARY, 100 - MEDIUM_TEXT_HEIGHT - BOUNDARY/2.f);
     const vector<Item*> items{m_inventory.prev(), m_inventory.curr(), m_inventory.next()};
     for (int i = 0; i < items.size(); i++) {
         items[i]->render_icon(batch, pos, i == 1 ? 1.0 : ALPHA);
         pos += DELTA;
     }
-    font->drawText(batch, "Inventory", vec4(BOUNDARY/2.0, 100, TEXT_WIDTH, MEDIUM_TEXT_HEIGHT));
+    font->drawText(batch, "Inventory", vec4(BOUNDARY/2.f, 100, TEXT_WIDTH, MEDIUM_TEXT_HEIGHT));
 }
 
 void Player::handle_collisions(const UpdateParams& params) {
@@ -66,6 +66,8 @@ void Player::handle_collisions(const UpdateParams& params) {
                 Item* item = (Item*)object;
                 item->pickup(this, params.world);
                 m_inventory.push_back(item);
+
+                set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
             }
         }
 
@@ -88,13 +90,12 @@ void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_collisions(params);
 
-    unset_flags(PLAYER_STATE_SHOW_INVENTORY);
     if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
         m_inventory.advance();
-        set_flags(PLAYER_STATE_SHOW_INVENTORY);
+        set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
     } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
         m_inventory.retreat();
-        set_flags(PLAYER_STATE_SHOW_INVENTORY);
+        set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
     }
 
     if (m_is_standing) {

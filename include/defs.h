@@ -59,4 +59,7 @@
 /// Text
 #define MEDIUM_TEXT_HEIGHT 5
 
+/// Timing
+#define STANDARD_POPUP_TIME TARGET_FPS
+
 #endif // DEFS_H_INCLUDED

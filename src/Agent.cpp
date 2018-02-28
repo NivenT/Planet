@@ -1,3 +1,5 @@
+#include <nta/CallbackManager.h>
+
 #include "Agent.h"
 
 using namespace std;
@@ -38,6 +40,16 @@ void Agent::set_flags(AgentFlags flags) {
     m_state_flags |= flags;
 }
 
+void Agent::set_flags_until(AgentFlags flags, uint64_t when) {
+    set_flags(flags);
+    CallbackManager::setTimeout([this, flags]{unset_flags(flags);}, when);
+}
+
 void Agent::unset_flags(AgentFlags flags) {
     m_state_flags &= ~flags;
+}
+
+void Agent::unset_flags_until(AgentFlags flags, uint64_t when) {
+    unset_flags(flags);
+    CallbackManager::setTimeout([this, flags]{set_flags(flags);}, when);
 }

@@ -1,5 +1,6 @@
 #include <SDL2/SDL_ttf.h>
 
+#include <nta/CallbackManager.h>
 #include <nta/ResourceManager.h>
 #include <nta/SystemManager.h>
 #include <nta/AudioManager.h>
@@ -15,6 +16,7 @@ int main(int argc, char* argv[]) {
     nta::Logger::createLog();
     nta::Random::init();
     nta::AudioManager::init();
+    nta::CallbackManager::init();
     
     nta::ScreenManager screenManager(TITLE, TARGET_FPS);
     screenManager.addScreen(new MainGame);
@@ -27,6 +29,7 @@ int main(int argc, char* argv[]) {
     nta::ResourceManager::destroy();
     nta::SystemManager::destroy();
     nta::AudioManager::destroy();
+    nta::CallbackManager::destroy();
     TTF_Quit();
     SDL_Quit();
     nta::Logger::writeToLog("Program exited cleanly");

@@ -8,7 +8,9 @@ typedef uint16_t AgentFlags;
 class Agent : public Object {
 protected:
     void set_flags(AgentFlags flags);
+    void set_flags_until(AgentFlags flags, uint64_t when);
     void unset_flags(AgentFlags flags);
+    void unset_flags_until(AgentFlags flags, uint64_t when);
 
     float m_health;
     AgentFlags m_state_flags;
