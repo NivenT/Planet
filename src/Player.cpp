@@ -1,4 +1,5 @@
 #include <nta/InputManager.h>
+#include <nta/CallbackManager.h>
 
 #include "Player.h"
 
@@ -6,7 +7,8 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE) {
+Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE),
+    m_inventory_event_id(0) {
 }
 
 Player::~Player() {
@@ -86,16 +88,24 @@ void Player::handle_collisions(const UpdateParams& params) {
     }
 }
 
+void Player::popup_inventory() {
+    if (are_flags_set(PLAYER_STATE_SHOW_INVENTORY)) {
+        CallbackManager::delay(m_inventory_event_id, STANDARD_POPUP_TIME);
+    } else {
+        m_inventory_event_id = set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
+    }
+}
+
 void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_collisions(params);
 
     if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
         m_inventory.advance();
-        set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
+        popup_inventory();
     } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
         m_inventory.retreat();
-        set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
+        popup_inventory();
     }
 
     if (m_is_standing) {
