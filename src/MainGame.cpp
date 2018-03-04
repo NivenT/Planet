@@ -33,8 +33,13 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
     Item* test_item = new Item("resources/images/stick.png", SMALL_ITEM_EXTENTS);
     test_item->add_to_world(m_world.get(), item_params);
 
+    item_params.position = m_planet.getTileCenter(6, 10);
+    Item* test_item2 = new Item("resources/images/rock.png", SMALL_ITEM_EXTENTS);
+    test_item2->add_to_world(m_world.get(), item_params);
+
     m_objects.push_back(m_player);
     m_objects.push_back(test_item);
+    m_objects.push_back(test_item2);
 }
 
 MainGame::~MainGame() {

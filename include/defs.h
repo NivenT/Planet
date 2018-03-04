@@ -61,5 +61,6 @@
 
 /// Timing
 #define STANDARD_POPUP_TIME TARGET_FPS
+#define HOLD_TIME (TARGET_FPS*0.75)
 
 #endif // DEFS_H_INCLUDED

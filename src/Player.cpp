@@ -101,20 +101,26 @@ void Player::update(const UpdateParams& params) {
     handle_collisions(params);
 
     if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
-        m_inventory.advance();
+        // TODO: Clear event if button released
+        if (InputManager::justPressed(SDLK_e)) {
+            m_inventory.advance();
+            CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_e);}, HOLD_TIME);
+        }
         popup_inventory();
     } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
-        m_inventory.retreat();
+        if (InputManager::justPressed(SDLK_q)) {
+            m_inventory.retreat();
+            CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_q);}, HOLD_TIME);
+        }
         popup_inventory();
     }
 
-    if (m_is_standing) {
-        if (InputManager::isPressed(SDLK_d)) {
+    if (InputManager::isPressed(SDLK_d)) {
             m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
-        } else if (InputManager::isPressed(SDLK_a)) {
-            m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
-        }
-
+    } else if (InputManager::isPressed(SDLK_a)) {
+        m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
+    }
+    if (m_is_standing) {
         if (InputManager::isPressed(SDLK_w)) {
             m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
         }
