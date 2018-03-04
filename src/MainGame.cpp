@@ -16,7 +16,7 @@ using namespace nta;
 using namespace glm;
 
 MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false), 
-                       m_paused(false), m_draw_aabbs(true), m_soft_debug(false),
+                       m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
                        m_dev_mode(false) {
     m_planet = Planet::new_test();
@@ -200,8 +200,8 @@ void MainGame::prepare_batches() {
         m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
                          vec4(0, 5, 20, MEDIUM_TEXT_HEIGHT));
         // This is useless, but I was curious
-        m_font->drawText(m_overlay_batch, "time: " + to_string(m_time),
-                         vec4(75, 5, 25, MEDIUM_TEXT_HEIGHT));
+        m_font->drawText(m_overlay_batch, "time: " + to_string(m_time, 2),
+                         vec4(90, 5, 10, MEDIUM_TEXT_HEIGHT));
 
         vec2 center = m_camera.getCenter();
         GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");
