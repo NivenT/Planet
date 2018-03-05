@@ -6,7 +6,7 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Agent::Agent(glm::vec4 c, float m, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(m),
+Agent::Agent(glm::vec4 c, float h, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(h),
     m_state_flags(0) {
 }
 

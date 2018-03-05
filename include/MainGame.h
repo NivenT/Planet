@@ -14,7 +14,7 @@
 
 #include "Planet.h"
 #include "Player.h"
-#include "Item.h"
+#include "Enemy.h"
 #include "utils.h"
 
 class MainGame : public nta::Screen {

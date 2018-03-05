@@ -33,7 +33,7 @@ void Player::add_to_world(b2World* world, const CreationParams& params) {
 }
 
 void Player::render(SpriteBatch& batch) const {
-    Light light(getCenter(), PLAYER_COLOR, PLAYER_HALF_DIMS.x*1.618, m_health/PLAYER_INIT_HEALTH);
+    Light light(getCenter(), m_color, PLAYER_HALF_DIMS.x*1.618, m_health/PLAYER_INIT_HEALTH);
     light.render(batch);
 }
 
@@ -64,7 +64,7 @@ void Player::handle_collisions(const UpdateParams& params) {
         void* object = edge->other->GetUserData();
         if (object) {
             const uint16_t type = ((Object*)object)->getObjectType();
-            if (type && ITEM_TYPE) {
+            if (type & ITEM_TYPE) {
                 Item* item = (Item*)object;
                 item->pickup(this, params.world);
                 m_inventory.push_back(item);

@@ -16,7 +16,7 @@ protected:
     float m_health;
     AgentFlags m_state_flags;
 public:
-    Agent(glm::vec4 c, float m, uint16_t type);
+    Agent(glm::vec4 color, float health, uint16_t type);
     virtual ~Agent();
     virtual glm::vec2 getDirection() const;
     glm::vec2 getVelocity() const;

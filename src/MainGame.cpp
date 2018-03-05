@@ -37,9 +37,18 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
     Item* test_item2 = new Item("resources/images/rock.png", SMALL_ITEM_EXTENTS);
     test_item2->add_to_world(m_world.get(), item_params);
 
+    CreationParams enemy_params;
+    enemy_params.planet = &m_planet;
+    enemy_params.position = m_planet.getTileCenter(6, 2);
+    enemy_params.extents = glm::vec2(TILE_SIZE*0.75f, TILE_SIZE/4.f)/2.f;
+    Enemy* test_enemy = new Enemy("resources/images/shoe.png");
+
+    test_enemy->add_to_world(m_world.get(), enemy_params);
+
     m_objects.push_back(m_player);
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
+    m_objects.push_back(test_enemy);
 }
 
 MainGame::~MainGame() {
