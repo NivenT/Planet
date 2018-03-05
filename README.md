@@ -59,11 +59,19 @@ mkdir build
 cd build
 cmake ../
 make
+# The next two lines create symbolic links to resources needed by the program
+# Alternatively, you could copy them instead
 ln -s ../resources
 ln -s ../shaders
 ```
 
 Once that's setup, you can run the game from the `build` folder using `./game`
+
+## Requirements
+Besides the [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements), the other requirements for building this game are
+
+* [Box2D](https://github.com/erincatto/Box2D)
+  * On Ubuntu, you can just run `sudo apt-get install libbox2d-dev`
 
 # Controls
 For an up-to-date account of the controls, check out the update functions in [MainGame.cpp](https://github.com/NivenT/Planet/blob/master/src/MainGame.cpp) and [Player.cpp](https://github.com/NivenT/Planet/blob/master/src/Player.cpp). 
@@ -87,9 +95,3 @@ As of Feb 27, the controls are as below
 * Mouse Wheel (i.e. scrolling) - Zooms in and out
 * G - Resets camera
 * Enter - Toggle between square and round planet viewing modes
-
-# Requirements
-Besides the [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements), the other requirements for building this game are
-
-* [Box2D](https://github.com/erincatto/Box2D)
-  * On Ubuntu, you can just run `sudo apt-get install libbox2d-dev`
