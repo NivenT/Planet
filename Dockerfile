@@ -9,11 +9,13 @@ ADD . /planet
 
 # -qq suppresses output
 RUN apt-get -qq update
-RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libdevil-dev libglew-dev freeglut3-dev libxmu-dev libxi-dev cmake gcc g++
+RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev libdevil-dev \
+		libglew-dev freeglut3-dev libxmu-dev libxi-dev libglm-dev cmake gcc g++
 RUN mkdir build
 
 WORKDIR /planet/build
 RUN cmake ../
+RUN make
 RUN ln -s ../resources
 RUN ln -s ../shaders
 
