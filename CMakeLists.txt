@@ -40,9 +40,15 @@ else()
 endif()
 
 add_subdirectory(jubilant-funicular)
-add_subdirectory(Box2D)
 
-message(STATUS "Box2D libraries are at ${BOX2D_LIBRARIES}")
+set(BOX2D_INSTALL ON)
+set(BOX2D_BUILD_EXAMPLES OFF)
+add_subdirectory(Box2D)
+# Don't like that I'm redefining these
+set(BOX2D_LIBRARIES Box2D)
+set(BOX2D_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Box2D)
+
+message(STATUS "Box2D libraries are ${BOX2D_LIBRARIES} at ${BOX2D_INCLUDE_DIR}")
 
 add_executable(game src/main.cpp 
                     src/MainGame.cpp 
