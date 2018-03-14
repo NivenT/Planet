@@ -3,13 +3,8 @@ FROM ubuntu:17.10
 
 # -qq suppresses output
 RUN apt-get -qq update
-# Complains about unmet dependencies that are "not going to be installed" without this line
-#RUN sudo apt-get -qq -y install libglu1 libglu1-mesa freeglut3 libdevil1c2 libglew1.10 libsdl2-2.0-0 \
-#		libglu1-mesa-dev libsdl2-mixer-2.0.0 libsdl2-ttf-2.0-0 libgles2-mesa-dev
-# TODO: Figure out how to remove above line
 RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev \
 		libdevil-dev libglew-dev freeglut3-dev libxmu-dev libxi-dev libglm-dev cmake gcc g++
-
 
 # Based off of http://fabiorehm.com/blog/2014/09/11/running-gui-apps-with-docker/
 # Replace 1000 with your user / group id (Find them with "id -u $USER" and "id -g $USER")
@@ -34,7 +29,9 @@ RUN make
 RUN ln -s ../resources
 RUN ln -s ../shaders
 
+RUN apt-get install -y firefox
+
 USER developer
 ENV HOME /home/developer
 
-CMD ./game
+CMD /usr/bin/firefox
