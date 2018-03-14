@@ -40,7 +40,9 @@ else()
 endif()
 
 add_subdirectory(jubilant-funicular)
-find_package(Box2D REQUIRED)
+add_subdirectory(Box2D)
+
+message(STATUS "Box2D libraries are at ${BOX2D_LIBRARIES}")
 
 add_executable(game src/main.cpp 
                     src/MainGame.cpp 
