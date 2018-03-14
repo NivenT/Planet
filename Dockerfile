@@ -1,8 +1,9 @@
 # Use an Ubuntu parent image
+#FROM evbauer/mesa_lean:10108.01
 FROM ubuntu:17.10
 
 # -qq suppresses output
-RUN apt-get -qq update
+RUN apt-get update
 RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev \
 		libdevil-dev libglew-dev freeglut3-dev libxmu-dev libxi-dev libglm-dev cmake gcc g++
 
@@ -11,7 +12,7 @@ RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixe
 RUN export uid=1000 gid=1000 && \
 		mkdir -p /home/developer && \
 		mkdir -p /etc/sudoers.d && \
-		echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+		echo "developer:x:${uid}:${gid}:Developer:/home/developer:/bin/bash" >> /etc/passwd && \
 		echo "developer:x:${uid}:" >> /etc/group && \
 		echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
 		chmod 0440 /etc/sudoers.d/developer && \
@@ -29,9 +30,7 @@ RUN make
 RUN ln -s ../resources
 RUN ln -s ../shaders
 
-RUN apt-get install -y firefox
-
 USER developer
 ENV HOME /home/developer
 
-CMD /usr/bin/firefox
+CMD ./game

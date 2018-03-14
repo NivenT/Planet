@@ -6,7 +6,9 @@ function build() {
 }
 function run() {
 		echo docker-build.sh: Running...
-		docker run -e DISPLAY -v $HOME/.Xauthority:/home/developer/.Xauthority  --net=host game
+		xhost +
+		docker run --privileged -it --rm -e DISPLAY -v $HOME/.Xauthority:/home/developer/.Xauthority  \
+					 -v /tmp/.X11-unix:/tmp/.X11-unix:ro --net=host game
 }
 
 if [ $# -ge 1 ]; then
