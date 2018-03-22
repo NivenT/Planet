@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <nta/GLMConsoleOutput.h>
 #include <nta/Logger.h>
 #include <nta/SystemManager.h>
 #include <nta/ResourceManager.h>
@@ -7,7 +8,6 @@
 #include <nta/ScreenManager.h>
 #include <nta/Vertex.h>
 #include <nta/Random.h>
-#include <nta/GLMConsoleOutput.h>
 
 #include "MainGame.h"
 
