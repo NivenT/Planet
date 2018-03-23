@@ -1,4 +1,4 @@
-#version 130
+#version 150
 
 // (0,0) is bottom left of screen and (100, 100) is top right
 in vec3 pos;
