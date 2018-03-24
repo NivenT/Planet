@@ -5,10 +5,16 @@
 
 struct Light {
     Light() {}
-    Light(glm::vec2 pos, glm::vec3 col, float s, float b = 1.0) : 
+    Light(crvec2 pos, glm::vec3 col, float s, float b = 1.0) : 
         center(pos), color(col), radius(s), brightness(b) {
     }
-    Light(glm::vec2 pos, float s, float b = 1.0) :
+    Light(crvec2 pos, crvec4 col, float s, float b = 1.0) :
+        center(pos), radius(s), brightness(b) {
+        color.r = col.r * col.a;
+        color.g = col.g * col.a;
+        color.b = col.b * col.a;
+    }
+    Light(crvec2 pos, float s, float b = 1.0) :
         center(pos), color(glm::vec3(1)), radius(s), brightness(b) {
     }
     void render(nta::SpriteBatch& batch) {
