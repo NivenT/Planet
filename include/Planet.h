@@ -30,7 +30,8 @@ private:
     glm::vec2 m_gravity;
     // rows x columns (i.e. not width by height)
     glm::ivec2 m_dimensions;
-    b2Body* m_body = nullptr;
+    //b2Body* m_body = nullptr;
+    std::vector<std::vector<b2Body*>> m_bodies;
     // row coordinate considered sea level on this planet
     int m_sea_level; 
 public:

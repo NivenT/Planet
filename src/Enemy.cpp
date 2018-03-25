@@ -27,6 +27,7 @@ void Enemy::add_to_world(b2World* world, const CreationParams& params) {
     fixture_def.shape = &body_shape;
     fixture_def.density = params.density;
     fixture_def.friction = params.friction;
+    fixture_def.restitution = params.restitution;
     m_body->CreateFixture(&fixture_def);
 
     Agent::add_to_world(world, params);

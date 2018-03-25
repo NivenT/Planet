@@ -1,4 +1,5 @@
 #include "Planet.h"
+#include "Player.h"
 
 using namespace glm;
 using namespace std;
@@ -23,7 +24,7 @@ Planet Planet::new_test() {
     test.m_dimensions[1] = round(2*M_PI*test.m_dimensions[0]);
 
     test.m_sea_level = 10;
-    const int grass_level = 17;
+    const int grass_level = 18;
 
     for (int r = 0; r < test.m_dimensions[0]; r++) {
         test.m_layout.emplace_back();
@@ -64,6 +65,7 @@ float Planet::getHeight() const {
 
 // TODO: Every tile should be its own body
 void Planet::add_to_world(b2World* world) {
+    /*
     b2BodyDef ground_body_def;
     ground_body_def.position = b2Vec2(0, -getRadius()/2.0);
     m_body = world->CreateBody(&ground_body_def);
@@ -77,6 +79,32 @@ void Planet::add_to_world(b2World* world) {
     fixture_def.shape = &ground_box;
     fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
     m_body->CreateFixture(&fixture_def);
+    */
+
+    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
+        // Note: Indexing is weird
+        m_bodies.emplace_back();
+        for (int c = 0; c < m_dimensions[1]; c++) {
+            b2BodyDef body_def;
+            body_def.type = b2_staticBody;
+            body_def.position = b2Vec2(TILE_SIZE*c-m_dimensions[1]*TILE_HALF_SIZE + TILE_HALF_SIZE,
+                                       (m_sea_level-r)*TILE_SIZE - TILE_HALF_SIZE);
+
+            b2PolygonShape tile_shape;
+            tile_shape.SetAsBox(TILE_HALF_SIZE, TILE_HALF_SIZE);
+
+            b2FixtureDef fixture_def;
+            fixture_def.shape = &tile_shape;
+            fixture_def.friction = 0.110001;
+            fixture_def.restitution = 0;
+            fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
+
+            m_bodies.back().push_back(world->CreateBody(&body_def));
+            m_bodies.back().back()->CreateFixture(&fixture_def);
+            // There's probably a better way to do this (e.g. make Planet an Object)
+            m_bodies.back().back()->SetUserData(new Player(PLANET_TYPE));
+        }
+    }
 }
 
 void Planet::render(nta::SpriteBatch& batch) const {

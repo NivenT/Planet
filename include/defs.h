@@ -19,9 +19,11 @@
 #define ITEM_TYPE   0b0000'0000'0000'0100
 #define PLAYER_TYPE 0b0000'0000'0000'1000
 #define ENEMY_TYPE  0b0000'0000'0001'0000
+#define PLANET_TYPE 0b0000'0000'0010'0000
 
 /// Tiles
 #define TILE_SIZE 1.f
+#define TILE_HALF_SIZE (TILE_SIZE/2.f)
 #define TILE_DX glm::vec2(TILE_SIZE, 0)
 #define TILE_DY glm::vec2(0, TILE_SIZE)
 #define TILE_DIMS glm::vec2(TILE_SIZE)
