@@ -15,8 +15,8 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false), 
-                       m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
+MainGame::MainGame() : m_debug(false), m_square_planet(false), 
+                       m_paused(false), m_draw_aabbs(true), m_soft_debug(false),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
                        m_dev_mode(false) {
     m_planet = Planet::new_test();
@@ -40,7 +40,7 @@ MainGame::MainGame() : m_time(0.), m_debug(false), m_square_planet(false),
     CreationParams enemy_params;
     enemy_params.planet = &m_planet;
     enemy_params.position = m_planet.getTileCenter(6, 2);
-    enemy_params.extents = glm::vec2(TILE_SIZE*0.75f, TILE_SIZE/4.f)/2.f;
+    enemy_params.extents = ENEMY_UNIT_EXTENTS * vec2(3,1);
     Enemy* test_enemy = new Enemy("resources/images/shoe.png");
 
     test_enemy->add_to_world(m_world.get(), enemy_params);
@@ -138,7 +138,8 @@ void MainGame::debug_update() {
 void MainGame::dev_update() {
     if (InputManager::justPressed(SDLK_SPACE)) {
         m_debug = !m_debug;
-        m_camera = m_debug ? Camera2D() : Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
+        m_camera = m_debug ? Camera2D(vec2(0), glm::vec2(m_planet.getRadius())) : 
+                             Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
     } else if (InputManager::justPressed(SDLK_b)) {
         m_draw_aabbs = !m_draw_aabbs;
     } else if (InputManager::justPressed(SDLK_i)) {
@@ -161,8 +162,6 @@ void MainGame::update() {
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
-        m_time += 1/m_manager->getFPS();
-
         UpdateParams params;
         params.planet = &m_planet;
         params.world = m_world.get();
@@ -192,6 +191,8 @@ void MainGame::prepare_batches() {
     }
     m_player->render(m_light_batch);
     m_player->render_inventory(m_overlay_batch, m_font);
+    m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
+                         vec4(85, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
 
     if (m_paused) {
         m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, MEDIUM_TEXT_HEIGHT));
@@ -204,19 +205,8 @@ void MainGame::prepare_batches() {
     }
     if (m_debug) {
         m_planet.render_debug(m_debug_batch);
-        m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
-                         vec4(0, 100, 15, MEDIUM_TEXT_HEIGHT));
         m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
-                         vec4(0, 5, 20, MEDIUM_TEXT_HEIGHT));
-        // This is useless, but I was curious
-        m_font->drawText(m_overlay_batch, "time: " + to_string(m_time, 2),
-                         vec4(90, 5, 10, MEDIUM_TEXT_HEIGHT));
-
-        vec2 center = m_camera.getCenter();
-        GLTexture tex = ResourceManager::getTexture("resources/images/circle.png");
-
-        m_debug_sprite_batch.addGlyph(center - vec2(2.), center + vec2(2.), vec4(0,0,1,1),
-                                      tex.id, vec4(1,0,0,1), 1.0);
+                         vec4(0, MEDIUM_TEXT_HEIGHT, 20, MEDIUM_TEXT_HEIGHT));
     }
 
     m_batch.end();
@@ -229,7 +219,7 @@ void MainGame::prepare_batches() {
 // TODO: Somehow get depth working well
 void MainGame::render_batches() {
     const auto camera_matrix = m_camera.getCameraMatrix();
-    const float scale = m_camera.getDimensions().y;
+    const float scale = m_camera.getDimensions().x;
 
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,

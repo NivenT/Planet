@@ -19,11 +19,11 @@ Planet Planet::new_test() {
     test.m_tiles.push_back(Tile(vec4(0.65, 0.85, 1, 0.3))); // sky
     test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 0.5))); // dirt
 
-    test.m_sea_level = 7;
-    test.m_dimensions[0] = 14;
+    test.m_dimensions[0] = 28;
     test.m_dimensions[1] = round(2*M_PI*test.m_dimensions[0]);
 
-    const int grass_level = 12;
+    test.m_sea_level = 10;
+    const int grass_level = 17;
 
     for (int r = 0; r < test.m_dimensions[0]; r++) {
         test.m_layout.emplace_back();
@@ -89,7 +89,7 @@ void Planet::render(nta::SpriteBatch& batch) const {
 }
 
 void Planet::render_debug(nta::DebugBatch& dbatch) const {
-    static const size_t NUM_PIECES = 50;
+    static const size_t NUM_PIECES = 150;
     const vec2 offset = getOffset();
 
     for (int r = 0; r <= m_dimensions[0]; r++) {
