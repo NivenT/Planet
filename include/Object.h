@@ -41,6 +41,7 @@ public:
     virtual ~Object();
     uint16_t getObjectType() const;
     glm::vec2 getCenter() const;
+    float getOrientation() const;
     virtual glm::vec2 getTopLeft() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);
     virtual void render(nta::SpriteBatch& batch) const = 0;

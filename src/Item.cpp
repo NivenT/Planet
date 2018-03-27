@@ -49,7 +49,7 @@ void Item::render(SpriteBatch& batch) const {
     if (!m_equipped) {
         const vec2 center = getCenter();
         batch.addGlyph(vec4(center.x - m_extents.x, center.y + m_extents.y, 2.f*m_extents),
-                            vec4(0,0,1,1), m_tex.id, m_color);
+                            vec4(0,0,1,1), m_tex.id, m_color, getOrientation());
     }
 }
 

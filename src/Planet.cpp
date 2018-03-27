@@ -38,12 +38,18 @@ Planet Planet::new_test() {
     return test;
 }
 
+/// TODO: replace with a #define OFFSET or make some of these functions inline
 vec2 Planet::getOffset() const {
     return vec2(-m_dimensions[1]*TILE_SIZE/2., m_sea_level*TILE_SIZE);   
 }
 
 vec2 Planet::getDimensions() const {
     return vec2(m_dimensions.y, m_dimensions.x) * TILE_SIZE;
+}
+
+vec2 Planet::getTileTopLeft(int r, int c) const {
+    const vec2 offset = getOffset();
+    return offset - (float)r*TILE_DY + (float)c*TILE_DX;
 }
 
 vec2 Planet::getTileCenter(int row, int col) const {
@@ -55,6 +61,32 @@ b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
+// TODO: Account for missing tiles
+b2ChainShape Planet::createOutline() const {
+    b2ChainShape chain_shape;
+
+    vector<b2Vec2> vertices;
+    for (int c = 0; c < m_dimensions[1]; c++) {
+        const vec2 tl = getTileTopLeft(m_sea_level, c);
+        vertices.emplace_back(tl.x, tl.y);
+    }
+    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
+        const vec2 tr = getTileTopLeft(r, m_dimensions[1]-1) + TILE_DX;
+        vertices.emplace_back(tr.x, tr.y);
+    }
+    for (int c = 0; c < m_dimensions[1]; c++) {
+        const vec2 br = getTileTopLeft(m_dimensions[0]-1, m_dimensions[1]-c-1) + TILE_DX - TILE_DY;
+        vertices.emplace_back(br.x, br.y);
+    }
+    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
+        const vec2 bl = getTileTopLeft(r, 0) - TILE_DY;
+        vertices.emplace_back(bl.x, bl.y);
+    }
+    
+    chain_shape.CreateLoop(vertices.data(), vertices.size());
+    return chain_shape;
+}
+
 float Planet::getRadius() const {
     return (m_dimensions[0] - m_sea_level)*TILE_SIZE;
 }
@@ -63,48 +95,17 @@ float Planet::getHeight() const {
     return m_dimensions[0] * TILE_SIZE;
 }
 
-// TODO: Every tile should be its own body
 void Planet::add_to_world(b2World* world) {
-    /*
-    b2BodyDef ground_body_def;
-    ground_body_def.position = b2Vec2(0, -getRadius()/2.0);
-    m_body = world->CreateBody(&ground_body_def);
+    b2BodyDef body_def;
+    body_def.type = b2_staticBody;
+    body_def.position = b2Vec2(0, 0);
+    m_body = world->CreateBody(&body_def);
 
-    b2PolygonShape ground_box;
-    // ground extends past edge of planet to avoid tipping
-    ground_box.SetAsBox(m_dimensions[1]*TILE_SIZE/1.95, getRadius()/2.0);
-
-
+    b2ChainShape chain_shape = createOutline();
     b2FixtureDef fixture_def;
-    fixture_def.shape = &ground_box;
+    fixture_def.shape = &chain_shape;
     fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
     m_body->CreateFixture(&fixture_def);
-    */
-
-    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
-        // Note: Indexing is weird
-        m_bodies.emplace_back();
-        for (int c = 0; c < m_dimensions[1]; c++) {
-            b2BodyDef body_def;
-            body_def.type = b2_staticBody;
-            body_def.position = b2Vec2(TILE_SIZE*c-m_dimensions[1]*TILE_HALF_SIZE + TILE_HALF_SIZE,
-                                       (m_sea_level-r)*TILE_SIZE - TILE_HALF_SIZE);
-
-            b2PolygonShape tile_shape;
-            tile_shape.SetAsBox(TILE_HALF_SIZE, TILE_HALF_SIZE);
-
-            b2FixtureDef fixture_def;
-            fixture_def.shape = &tile_shape;
-            fixture_def.friction = 0.110001;
-            fixture_def.restitution = 0;
-            fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
-
-            m_bodies.back().push_back(world->CreateBody(&body_def));
-            m_bodies.back().back()->CreateFixture(&fixture_def);
-            // There's probably a better way to do this (e.g. make Planet an Object)
-            m_bodies.back().back()->SetUserData(new Player(PLANET_TYPE));
-        }
-    }
 }
 
 void Planet::render(nta::SpriteBatch& batch) const {
@@ -116,7 +117,9 @@ void Planet::render(nta::SpriteBatch& batch) const {
     }
 }
 
+/// TODO: Make lines below sea level DEBUG_BOX2D_AABB_COLOR
 void Planet::render_debug(nta::DebugBatch& dbatch) const {
+    return;
     static const size_t NUM_PIECES = 150;
     const vec2 offset = getOffset();
 

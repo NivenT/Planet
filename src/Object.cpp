@@ -18,6 +18,10 @@ vec2 Object::getCenter() const {
     return vec2(m_body->GetPosition().x, m_body->GetPosition().y);
 }
 
+float Object::getOrientation() const {
+    return m_body->GetAngle();
+}
+
 vec2 Object::getTopLeft() const {
     const vec2 center = getCenter();
     // assume there's only one fixture and one child (<-- likely not always a true assumption)

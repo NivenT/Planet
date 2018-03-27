@@ -16,7 +16,7 @@ using namespace nta;
 using namespace glm;
 
 MainGame::MainGame() : m_debug(false), m_square_planet(false), 
-                       m_paused(false), m_draw_aabbs(true), m_soft_debug(false),
+                       m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
                        m_dev_mode(false) {
     m_planet = Planet::new_test();
