@@ -39,7 +39,7 @@ void debug_render_poly(DebugBatch& dbatch, const b2PolygonShape* poly, vec2 posi
 
 void debug_render_body(DebugBatch& dbatch, const b2Body* body, bool draw_aabbs) {
     if (!body) return;
-    if (body->GetUserData() && (((Object*)body->GetUserData())->getObjectType() & PLANET_TYPE)) return;
+    //if (body->GetUserData() && (((Object*)body->GetUserData())->getObjectType() & PLANET_TYPE)) return;
     vec2 pos(body->GetPosition().x, body->GetPosition().y);
     float rot = body->GetAngle();
     

@@ -119,7 +119,6 @@ void Planet::render(nta::SpriteBatch& batch) const {
 
 /// TODO: Make lines below sea level DEBUG_BOX2D_AABB_COLOR
 void Planet::render_debug(nta::DebugBatch& dbatch) const {
-    return;
     static const size_t NUM_PIECES = 150;
     const vec2 offset = getOffset();
 
