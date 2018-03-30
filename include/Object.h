@@ -43,6 +43,7 @@ public:
     glm::vec2 getCenter() const;
     float getOrientation() const;
     virtual glm::vec2 getTopLeft() const;
+    virtual glm::vec2 getExtents() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);
     virtual void render(nta::SpriteBatch& batch) const = 0;
     virtual void render_debug(nta::DebugBatch& dbatch) const;

@@ -78,8 +78,8 @@ b2ChainShape Planet::createOutline() const {
         const vec2 br = getTileTopLeft(m_dimensions[0]-1, m_dimensions[1]-c-1) + TILE_DX - TILE_DY;
         vertices.emplace_back(br.x, br.y);
     }
-    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
-        const vec2 bl = getTileTopLeft(r, 0) - TILE_DY;
+    for (int r = m_dimensions[0]; r > m_sea_level; r--) {
+        const vec2 bl = getTileTopLeft(r-1, 0) - TILE_DY;
         vertices.emplace_back(bl.x, bl.y);
     }
     

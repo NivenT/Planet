@@ -9,6 +9,7 @@ using namespace nta;
 
 Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE),
     m_inventory_event_id(0) {
+    set_flags(AGENT_STATE_SHOW_HEALTH);
 }
 
 Player::~Player() {
@@ -88,14 +89,6 @@ void Player::handle_collisions(const UpdateParams& params) {
     }
 }
 
-void Player::popup_inventory() {
-    if (are_flags_set(PLAYER_STATE_SHOW_INVENTORY)) {
-        CallbackManager::delay(m_inventory_event_id, STANDARD_POPUP_TIME);
-    } else {
-        m_inventory_event_id = set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
-    }
-}
-
 void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_collisions(params);
@@ -106,13 +99,13 @@ void Player::update(const UpdateParams& params) {
             m_inventory.advance();
             CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_e);}, HOLD_TIME);
         }
-        popup_inventory();
+        popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
     } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
         if (InputManager::justPressed(SDLK_q)) {
             m_inventory.retreat();
             CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_q);}, HOLD_TIME);
         }
-        popup_inventory();
+        popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
     }
 
     if (InputManager::isPressed(SDLK_d)) {

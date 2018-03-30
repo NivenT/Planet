@@ -10,7 +10,6 @@
 class Player : public Agent {
 private:
     void handle_collisions(const UpdateParams& params);
-    void popup_inventory();
 
     Cycle<Item*> m_inventory;
     bool m_is_standing;

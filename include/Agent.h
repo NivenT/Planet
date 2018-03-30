@@ -14,6 +14,8 @@ protected:
     uint64_t unset_flags_until(AgentFlags flags, uint64_t when);
 
     float m_health;
+    const float m_max_health;
+    uint64_t m_health_event_id;
     AgentFlags m_state_flags;
 public:
     Agent(glm::vec4 color, float health, uint16_t type);
@@ -23,6 +25,9 @@ public:
     float getHealth() const;
     bool applyDamage(float damage);
     bool are_flags_set(AgentFlags flags) const;
+    // TODO: Think of better name
+    void popup(int flag, uint64_t& eid, int when = STANDARD_POPUP_TIME);
+    virtual void render_health(nta::SpriteBatch& batch) const;
 };
 
 #endif // AGENT_H_INCLUDED

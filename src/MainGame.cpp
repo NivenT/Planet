@@ -175,7 +175,6 @@ void MainGame::update() {
     }
 }
 
-// Note: Should I return to having all batches be separate?
 void MainGame::prepare_batches() {
     m_batch.begin();
     m_light_batch.begin();
@@ -191,6 +190,7 @@ void MainGame::prepare_batches() {
     }
     m_player->render(m_light_batch);
     m_player->render_inventory(m_overlay_batch, m_font);
+    m_player->render_health(m_batch);
     m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                          vec4(85, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
 
@@ -200,15 +200,11 @@ void MainGame::prepare_batches() {
     if (m_dev_mode) {
         m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, MEDIUM_TEXT_HEIGHT));
     }
-    if (m_debug || m_soft_debug) {
-        debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
-    }
     if (m_debug) {
         m_planet.render_debug(m_debug_batch);
-        /*
-        m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
-                         vec4(0, MEDIUM_TEXT_HEIGHT, 20, MEDIUM_TEXT_HEIGHT));
-        */
+    }
+    if (m_debug || m_soft_debug) {
+        debug_render_world(m_debug_batch, m_world.get(), m_draw_aabbs);
     }
 
     m_batch.end();
