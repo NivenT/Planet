@@ -5,7 +5,7 @@ using namespace glm;
 using namespace nta;
 
 void debug_render_aabb(DebugBatch& dbatch, const b2AABB& box) {
-    static const int NUM_PIECES = 150;
+    static const int NUM_PIECES = 15;
 
     b2Vec2 b2_center = box.GetCenter(), b2_extents = box.GetExtents();
     vec2 center(b2_center.x, b2_center.y), extents(b2_extents.x, b2_extents.y);
@@ -23,7 +23,7 @@ void debug_render_aabb(DebugBatch& dbatch, const b2AABB& box) {
 }
 
 void debug_render_poly(DebugBatch& dbatch, const b2PolygonShape* poly, vec2 position, float rotation) {
-    static const int NUM_PIECES = 150;
+    static const int NUM_PIECES = 15;
 
     const int count = poly->GetVertexCount();
     for (int i = 0; i < count; i++) {
