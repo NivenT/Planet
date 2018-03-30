@@ -1,5 +1,3 @@
-#include <SDL2/SDL_ttf.h>
-
 #include <nta/GLMConsoleOutput.h>
 #include <nta/CallbackManager.h>
 #include <nta/ResourceManager.h>
@@ -47,12 +45,7 @@ int main(int argc, char* argv[]) {
     screenManager.run(); 
     
     screenManager.destroy();
-    nta::ResourceManager::destroy();
-    nta::SystemManager::destroy();
-    nta::AudioManager::destroy();
-    nta::CallbackManager::destroy();
-    TTF_Quit();
-    SDL_Quit();
+    nta::cleanup();
     nta::Logger::writeToLog("Program exited cleanly");
     return 0;
 }
