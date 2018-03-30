@@ -205,8 +205,10 @@ void MainGame::prepare_batches() {
     }
     if (m_debug) {
         m_planet.render_debug(m_debug_batch);
+        /*
         m_font->drawText(m_overlay_batch, "pos: " + to_string(m_camera.getCenter()),
                          vec4(0, MEDIUM_TEXT_HEIGHT, 20, MEDIUM_TEXT_HEIGHT));
+        */
     }
 
     m_batch.end();

@@ -17,12 +17,12 @@ void log_defs() {
     nta::Logger::indent();
 
     log(TILE_SIZE);
-    log(PLAYER_DIMS);
+    //log(PLAYER_DIMS);
     log(PLAYER_AREA);
     log(PLAYER_MASS);
     log(PLAYER_FORCE);
     log(PLAYER_JUMP_FORCE);
-    log(ENEMY_UNIT_DIMS);
+    //log(ENEMY_UNIT_DIMS);
     log(SMALL_ITEM_SIZE);
 
     nta::Logger::unindent();
