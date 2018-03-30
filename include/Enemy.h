@@ -7,6 +7,8 @@ class Enemy : public Agent {
 private:
     nta::GLTexture m_tex;
     glm::vec2 m_extents;
+protected:
+    void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
 public:
     Enemy(crstring texture, float health = NORMAL_ENEMY_INIT_HEALTH, crvec4 color = glm::vec4(1), 
           uint16_t type = 0);

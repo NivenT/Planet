@@ -30,6 +30,11 @@ float Agent::getHealth() const {
 
 bool Agent::applyDamage(float damage) {
     m_health -= damage;
+    popup(AGENT_STATE_SHOW_HEALTH, m_health_event_id);
+
+    // temporary, of course
+    m_health += m_health <= 0 ? m_max_health : 0;
+
     return m_health <= 0;
 }
 

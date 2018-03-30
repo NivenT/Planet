@@ -39,3 +39,14 @@ void Enemy::render(SpriteBatch& batch) const {
                         vec4(0,0,1,1), m_tex.id, m_color, getOrientation());
     render_health(batch);
 }
+
+void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
+                              Object* obj) {
+    static const float EPS = 1e-1;
+    if (obj) {
+        if (obj->getObjectType() & PLAYER_TYPE) {
+            // TODO: Vary damange
+            applyDamage(0.5);
+        }
+    }
+}

@@ -57,41 +57,38 @@ void Player::render_inventory(SpriteBatch& batch, SpriteFont* font) const {
     font->drawText(batch, "Inventory", vec4(BOUNDARY/2.f, 100, TEXT_WIDTH, MEDIUM_TEXT_HEIGHT));
 }
 
-void Player::handle_collisions(const UpdateParams& params) {
+void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
+                       Object* obj) {
     static const float EPS = 1e-1;
+    if (obj) {
+        if (obj->getObjectType() & ITEM_TYPE) {
+            Item* item = (Item*)obj;
+            item->pickup(this, params.world);
+            m_inventory.push_back(item);
 
-    m_is_standing = false;
-    for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
-        void* object = edge->other->GetUserData();
-        if (object) {
-            const uint16_t type = ((Object*)object)->getObjectType();
-            if (type & ITEM_TYPE) {
-                Item* item = (Item*)object;
-                item->pickup(this, params.world);
-                m_inventory.push_back(item);
-
-                set_flags_until(PLAYER_STATE_SHOW_INVENTORY, STANDARD_POPUP_TIME);
-            }
+            popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
+        } else if (obj->getObjectType() & ENEMY_TYPE) {
+            // TODO: Vary damange
+            applyDamage(0.25);
         }
+    }
 
-        b2Contact* contact = edge->contact;
-        if (contact->IsTouching() && 
-                !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
-            b2WorldManifold manifold;
-            contact->GetWorldManifold(&manifold);
+    if (contact->IsTouching() && 
+            !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
+        b2WorldManifold manifold;
+        contact->GetWorldManifold(&manifold);
 
-            for (int i = 0; i < b2_maxManifoldPoints; i++) {
-                if (manifold.points[i].y < getCenter().y - PLAYER_HALF_DIMS.y + EPS) {
-                    m_is_standing = true;
-                }
+        for (int i = 0; i < b2_maxManifoldPoints; i++) {
+            if (manifold.points[i].y < getCenter().y - PLAYER_HALF_DIMS.y + EPS) {
+                m_is_standing = true;
             }
         }
     }
 }
 
 void Player::update(const UpdateParams& params) {
+    m_is_standing = false;
     Agent::update(params);
-    handle_collisions(params);
 
     if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
         // TODO: Clear event if button released

@@ -32,8 +32,12 @@ struct CreationParams {
 
 class Object {
 private:
+    void handle_collisions(const UpdateParams& params);
+
     const uint16_t m_type_mask;
 protected:
+    virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
+
     glm::vec4 m_color;
     b2Body* m_body;
 public:

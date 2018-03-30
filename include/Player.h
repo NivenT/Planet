@@ -9,7 +9,7 @@
 
 class Player : public Agent {
 private:
-    void handle_collisions(const UpdateParams& params);
+    void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
 
     Cycle<Item*> m_inventory;
     bool m_is_standing;

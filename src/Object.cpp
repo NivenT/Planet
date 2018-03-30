@@ -43,6 +43,18 @@ void Object::add_to_world(b2World* world, const CreationParams& params) {
 void Object::render_debug(DebugBatch& _) const {
 }
 
+void Object::resolve_collision(const UpdateParams& _, b2ContactEdge* __, b2Contact* ___, Object* ____) {
+}
+
+void Object::handle_collisions(const UpdateParams& params) {
+    for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
+        void* object = edge->other->GetUserData();
+        b2Contact* contact = edge->contact;
+        
+        resolve_collision(params, edge, contact, (Object*)object);
+    }
+}
+
 void Object::update(const UpdateParams& params) {
     const float planet_width = params.planet->getDimensions().x;
     const float planet_half_width = planet_width/2.f;
@@ -54,4 +66,6 @@ void Object::update(const UpdateParams& params) {
         m_body->SetTransform(b2Vec2(getCenter().x + planet_width, getCenter().y), 
                              m_body->GetAngle());
     }
+
+    handle_collisions(params);
 }
