@@ -3,7 +3,7 @@
 
 #include <chaiscript/chaiscript.hpp>
 
-#include <nta/MyEngine.h>
+#include <nta/Logger.h>
 
 class ChaiManager {
 private:
@@ -11,6 +11,8 @@ private:
     static std::map<std::string, std::string> m_scripts;
 public:
     static void init();
+    template<typename T>
+    static void add(T data, crstring name);
     static chaiscript::ChaiScript& get_chai();
     static std::string get_script(crstring file_name);
     template<typename T>
@@ -20,7 +22,15 @@ public:
 };
 
 template<typename T>
+void ChaiManager::add(T data, crstring name) {
+    nta::Logger::writeToLog("Adding " + name + " to ChaiManager");
+    m_chai.add(data, name);
+}
+
+template<typename T>
 void ChaiManager::eval_script(crstring file_name, T self) {
+    add(self, "self");
+    eval_snippet(get_script(file_name));
 }
 
 #endif // CHAIMANAGER_H_INCLUDED

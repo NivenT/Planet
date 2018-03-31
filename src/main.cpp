@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
     screenManager.run(); 
     
     screenManager.destroy();
+    ChaiManager::destroy();
     nta::cleanup();
     nta::Logger::writeToLog("Program exited cleanly");
     return 0;
