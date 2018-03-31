@@ -28,7 +28,6 @@ The next big milestone is giving the enemy some form a behavior controlled by a 
   * The edge of the planet is visible as a white line (probably alpha blending issues since the world overlaps a little at the edge)
   * the planet is distorted as you move up and down in debug mode
     * not sure if this is actually a bug or just an artifact of how things are rendered
-* Due to a bug in jubuliant-funicular (specifically, in its CallbackManager class), the game sometimes enters a thread lock upon exiting
 * The physics could use some fine tuning
  
 ## (Very) Rough Roadmap
