@@ -57,7 +57,8 @@ add_executable(game src/main.cpp
                     src/utils.cpp
                     src/Item.cpp
                     src/Enemy.cpp
-                    src/MainMenu.cpp)
+                    src/MainMenu.cpp
+                    src/ChaiManager.cpp)
 target_link_libraries(game ${NTA_LIBRARIES} Box2D)
 include_directories(include ${NTA_INCLUDE_DIR} 
                             ${CMAKE_CURRENT_SOURCE_DIR}/Box2D
