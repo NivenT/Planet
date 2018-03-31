@@ -17,8 +17,10 @@ The main premise of the game is that you start off on some simple planet, and st
 
 A little more on the techincal side of the vision, planets should be round with believable (although almost certainly inaccurate) physics. This is currently acheived by having all the physics work on a rectangular planet, but using shader trickery to render things as if they were round. In addition, I'd like for the different enemy types to have programmable AIs with their logic written in something like [ChaiScript](https://github.com/ChaiScript/ChaiScript). Depending on how well I can implement things, this philosophy might extend to customizable items and who knows what else.
 
-# Current Progress (as of February 27, 2018)
-There is currently only a single planet which is in development as a testbed for the features being added into the game. You control a little light (will change once I figure out how I'll get decent sprites) that can move around and jump. With you on the planet is a stick that you can pick up to add to your inventory. More to come...
+# Current Progress (as of March 30, 2018)
+There is currently only a single planet which is in development as a testbed for the features being added into the game. You control a little light (will change once I figure out how I'll get decent sprites) that can move around and jump. With you on the planet are a stick and a rock which you can pick up to add to your inventory, and a shoe that serves as an enemy.
+
+The next big milestone is giving the enemy some form a behavior controlled by a ChaiScript script.
 
 ## Known Bugs
 
@@ -26,6 +28,8 @@ There is currently only a single planet which is in development as a testbed for
   * The edge of the planet is visible as a white line (probably alpha blending issues since the world overlaps a little at the edge)
   * the planet is distorted as you move up and down in debug mode
     * not sure if this is actually a bug or just an artifact of how things are rendered
+* Due to a bug in jubuliant-funicular (specifically, in its CallbackManager class), the game sometimes enters a thread lock upon exiting
+* The physics could use some fine tuning
  
 ## (Very) Rough Roadmap
 This is a sketch of what I think I should try to do/add next. The items are not listed exactly in the order they will be taken care of because (I suspect) there will be a lot of going back and forth between different things as the game is being fleshed out.
@@ -36,9 +40,6 @@ This is a sketch of what I think I should try to do/add next. The items are not 
   * Undecided on how this will be implemented. At the very least, I don't want each item to need to be it's own class
     * Possibly also use Chaiscript for this but I imagine item effects being less constrained than enemy movement, so I don't know how well that would work
     * Items could also store some `use_func` variable that gets passed in with creation.
-* Add a Menu screen
-   * Play Game
-   * Options (?)
 * Build a level editor
    * Ideally, would allow for custom items/enemies defined using text files and whatnot
    * This is the stage at which I imagine adding a lot of variety to items, enemies, etc.
@@ -66,19 +67,14 @@ mkdir build
 cd build
 cmake ../
 make
-# The next two lines create symbolic links to resources needed by the program
-# Alternatively, you could copy them instead
-ln -s ../resources
-ln -s ../shaders
 ```
 
 Once that's setup, you can run the game from the `build` folder using `./game`
 
-## Requirements
-Besides the [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements), the other requirements for building this game are
+Note: If possible, compile with gcc instead of clang.
 
-* [Box2D](https://github.com/erincatto/Box2D)
-  * On Ubuntu, you can just run `sudo apt-get install libbox2d-dev`
+## Requirements
+The [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements) are all you should need.
 
 # Controls
 For an up-to-date account of the controls, check out the update functions in [MainGame.cpp](https://github.com/NivenT/Planet/blob/master/src/MainGame.cpp) and [Player.cpp](https://github.com/NivenT/Planet/blob/master/src/Player.cpp). 
