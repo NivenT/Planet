@@ -60,7 +60,8 @@ add_executable(game src/main.cpp
                     src/Player.cpp
                     src/utils.cpp
                     src/Item.cpp
-                    src/Enemy.cpp)
+                    src/Enemy.cpp
+                    src/MainMenu.cpp)
 target_link_libraries(game ${NTA_LIBRARIES} ${BOX2D_LIBRARIES})
 include_directories(include ${NTA_INCLUDE_DIR} ${BOX2D_INCLUDE_DIR})
 

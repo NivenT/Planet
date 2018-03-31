@@ -54,6 +54,8 @@ private:
 public:
     MainGame();
     ~MainGame();
+    void onFocus();
+    void offFocus();
     void update();
     void render();
     void init();

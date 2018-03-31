@@ -21,6 +21,13 @@ MainGame::MainGame() : m_debug(false), m_square_planet(false),
                        m_dev_mode(false) {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
+}
+
+MainGame::~MainGame() {
+    offFocus();
+}
+
+void MainGame::onFocus() {
     m_planet.add_to_world(m_world.get());
 
     m_player = new Player;
@@ -49,9 +56,15 @@ MainGame::MainGame() : m_debug(false), m_square_planet(false),
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_enemy);
+
+    m_state = ScreenState::RUNNING;
 }
 
-MainGame::~MainGame() {
+void MainGame::offFocus() {
+    for (b2Body* curr = m_world->GetBodyList(); curr; curr = curr->GetNext()) {
+        m_world->DestroyBody(curr);
+    }
+
     for (auto object : m_objects) {
         delete object;
     }
@@ -105,6 +118,7 @@ void MainGame::init() {
     m_overlay_batch.init();
     m_debug_batch.init();
     m_debug_sprite_batch.init();
+
     Logger::writeToLog("main screen initialized");
 }
 
