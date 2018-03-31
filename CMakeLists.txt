@@ -45,12 +45,8 @@ option(LINK_RESOURCES "Automatically creates links to resources/shaders" ON)
 #set(NTA_USE_DEVIL OFF CACHE BOOL "Using DevIL for loading images" FORCE)
 add_subdirectory(jubilant-funicular)
 
-set(BOX2D_INSTALL ON)
 set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "Build Box2D examples" FORCE)
 add_subdirectory(Box2D)
-# Don't like that I'm redefining these
-set(BOX2D_LIBRARIES Box2D)
-set(BOX2D_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Box2D)
 
 add_executable(game src/main.cpp 
                     src/MainGame.cpp 
@@ -62,8 +58,10 @@ add_executable(game src/main.cpp
                     src/Item.cpp
                     src/Enemy.cpp
                     src/MainMenu.cpp)
-target_link_libraries(game ${NTA_LIBRARIES} ${BOX2D_LIBRARIES})
-include_directories(include ${NTA_INCLUDE_DIR} ${BOX2D_INCLUDE_DIR})
+target_link_libraries(game ${NTA_LIBRARIES} Box2D)
+include_directories(include ${NTA_INCLUDE_DIR} 
+                            ${CMAKE_CURRENT_SOURCE_DIR}/Box2D
+                            ${CMAKE_CURRENT_SOURCE_DIR}/chaiscript)
 
 if(${LINK_RESOURCES})
 	if (NOT EXISTS "${CMAKE_BINARY_DIR}/resources")
