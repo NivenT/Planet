@@ -37,6 +37,7 @@ private:
     const uint16_t m_type_mask;
 protected:
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
+    void setVelocity(crvec2 vel);
 
     glm::vec4 m_color;
     b2Body* m_body;
@@ -46,6 +47,7 @@ public:
     uint16_t getObjectType() const;
     glm::vec2 getCenter() const;
     float getOrientation() const;
+    glm::vec2 getVelocity() const;
     virtual glm::vec2 getTopLeft() const;
     virtual glm::vec2 getExtents() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);

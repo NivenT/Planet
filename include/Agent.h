@@ -21,7 +21,6 @@ public:
     Agent(glm::vec4 color, float health, uint16_t type);
     virtual ~Agent();
     virtual glm::vec2 getDirection() const;
-    glm::vec2 getVelocity() const;
     float getHealth() const;
     bool applyDamage(float damage);
     bool are_flags_set(AgentFlags flags) const;

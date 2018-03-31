@@ -86,10 +86,7 @@ void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, 
     }
 }
 
-void Player::update(const UpdateParams& params) {
-    m_is_standing = false;
-    Agent::update(params);
-
+void Player::handle_input(const UpdateParams& params) {
     if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
         // TODO: Clear event if button released
         if (InputManager::justPressed(SDLK_e)) {
@@ -105,6 +102,7 @@ void Player::update(const UpdateParams& params) {
         popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
     }
 
+    // Should you have to be standing to move left and right?
     if (InputManager::isPressed(SDLK_d)) {
             m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
     } else if (InputManager::isPressed(SDLK_a)) {
@@ -114,5 +112,17 @@ void Player::update(const UpdateParams& params) {
         if (InputManager::isPressed(SDLK_w)) {
             m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
         }
+    }
+}
+
+void Player::update(const UpdateParams& params) {
+    m_is_standing = false;
+
+    Agent::update(params);
+    handle_input(params);
+
+    const vec2 vel = getVelocity();
+    if (m_is_standing && abs(vel.x) > PLAYER_MAX_SPEED) {
+        setVelocity(vec2(PLAYER_MAX_SPEED*sign(vel.x), vel.y));
     }
 }

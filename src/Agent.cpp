@@ -20,10 +20,6 @@ vec2 Agent::getDirection() const {
     return normalize(getVelocity());
 }
 
-vec2 Agent::getVelocity() const {
-    return vec2(m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y);
-}
-
 float Agent::getHealth() const {
     return m_health;
 }
