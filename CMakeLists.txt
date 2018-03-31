@@ -67,9 +67,10 @@ include_directories(include ${NTA_INCLUDE_DIR}
 
 if(${LINK_RESOURCES})
 	if (NOT EXISTS "${CMAKE_BINARY_DIR}/resources")
-		message(STATUS "Linking ../resources and ../shaders")
-		message(STATUS "If this fails, turn off the LINK_RESOURCES flag in CMakeLists.txt")
+		message(STATUS "Linking ../resources ../shaders and ../scripts")
+		message(STATUS "If this fails (e.g. if you're on Windows), turn off the LINK_RESOURCES flag in CMakeLists.txt")
 		execute_process(COMMAND bash -c "ln -s ../resources")
 		execute_process(COMMAND bash -c "ln -s ../shaders")
+        execute_process(COMMAND bash -c "ln -s ../scripts")
 	endif()
 endif()

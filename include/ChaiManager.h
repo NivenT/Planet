@@ -29,7 +29,7 @@ void ChaiManager::add(T data, crstring name) {
 
 template<typename T>
 void ChaiManager::eval_script(crstring file_name, T self) {
-    add(self, "self");
+    m_chai.add(self, "self");
     eval_snippet(get_script(file_name));
 }
 
