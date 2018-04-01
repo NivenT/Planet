@@ -29,6 +29,8 @@ The next big milestone is giving the enemy some form a behavior controlled by a 
   * the planet is distorted as you move up and down in debug mode
     * not sure if this is actually a bug or just an artifact of how things are rendered
 * The physics could use some fine tuning
+* The game segfaults when you exit
+  * Probably ChaiScript-related
  
 ## (Very) Rough Roadmap
 This is a sketch of what I think I should try to do/add next. The items are not listed exactly in the order they will be taken care of because (I suspect) there will be a lot of going back and forth between different things as the game is being fleshed out.
