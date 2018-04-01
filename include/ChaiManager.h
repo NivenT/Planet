@@ -13,6 +13,10 @@ public:
     static void init();
     template<typename T>
     static void add(T data, crstring name);
+    template<typename T>
+    static void add_global_const(T data, crstring name);
+    template<typename T>
+    static void add_global(T data, crstring name);
     static chaiscript::ChaiScript& get_chai();
     static std::string get_script(crstring file_name);
     template<typename T>
@@ -28,7 +32,21 @@ void ChaiManager::add(T data, crstring name) {
 }
 
 template<typename T>
+void ChaiManager::add_global(T data, crstring name) {
+    nta::Logger::writeToLog("Adding global" + name + " to ChaiManager");
+    m_chai.add_global(data, name);
+}
+
+template<typename T>
+void ChaiManager::add_global_const(T data, crstring name) {
+    nta::Logger::writeToLog("Adding const global" + name + " to ChaiManager");
+    m_chai.add_global_const(data, name);
+}
+
+template<typename T>
 void ChaiManager::eval_script(crstring file_name, T self) {
+    // TODO: Change so functions can be defined in the script
+    // TODO: Add UpdateParams
     m_chai.add(self, "self");
     eval_snippet(get_script(file_name));
 }

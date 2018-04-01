@@ -6,12 +6,16 @@
 using namespace nta;
 using namespace glm;
 
-Enemy::Enemy(crstring texture, crstring update, float health, crvec4 color, uint16_t type) : 
-    Agent(color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update) {
+Enemy::Enemy(crstring texture, crstring update, float health, float speed, crvec4 color, uint16_t type) : 
+    Agent(color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update), m_max_speed(speed) {
     m_tex = ResourceManager::getTexture(texture);
 }
 
 Enemy::~Enemy() {
+}
+
+vec2 Enemy::getExtents() const {
+    return m_extents;
 }
 
 void Enemy::add_to_world(b2World* world, const CreationParams& params) {

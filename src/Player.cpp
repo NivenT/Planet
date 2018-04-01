@@ -15,6 +15,10 @@ Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | P
 Player::~Player() {
 }
 
+vec2 Player::getExtents() const {
+    return PLAYER_EXTENTS;
+}
+
 void Player::add_to_world(b2World* world, const CreationParams& params) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
@@ -104,13 +108,13 @@ void Player::handle_input(const UpdateParams& params) {
 
     // Should you have to be standing to move left and right?
     if (InputManager::isPressed(SDLK_d)) {
-            m_body->ApplyForceToCenter(b2Vec2(PLAYER_FORCE, 0), true);
+        applyForce(PLAYER_FORCE, 0);
     } else if (InputManager::isPressed(SDLK_a)) {
-        m_body->ApplyForceToCenter(b2Vec2(-PLAYER_FORCE, 0), true);
+        applyForce(-PLAYER_FORCE, 0);
     }
     if (m_is_standing) {
         if (InputManager::isPressed(SDLK_w)) {
-            m_body->ApplyForceToCenter(b2Vec2(0, PLAYER_JUMP_FORCE), true);
+            applyForce(0, PLAYER_JUMP_FORCE);
         }
     }
 }
