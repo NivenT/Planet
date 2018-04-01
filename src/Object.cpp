@@ -39,9 +39,22 @@ vec2 Object::getVelocity() const {
     return vec2(m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y);
 }
 
+float Object::getMass() const {
+    return m_body->GetMass();
+}
+
 void Object::setVelocity(crvec2 vel) {
     m_body->SetLinearVelocity(b2Vec2(vel.x, vel.y));
 }
+
+void Object::applyForce(float x, float y) {
+    m_body->ApplyForceToCenter(b2Vec2(x, y), true);
+}
+/*
+void Object::applyForce(crvec2 force) {
+    applyForce(force.x, force.y);
+}
+*/
 
 // Call at end of child's add_to_world
 void Object::add_to_world(b2World* world, const CreationParams& params) {

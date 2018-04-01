@@ -1,16 +1,21 @@
 #include <nta/ResourceManager.h>
 
 #include "Enemy.h"
+#include "ChaiManager.h"
 
 using namespace nta;
 using namespace glm;
 
-Enemy::Enemy(crstring texture, float health, crvec4 color, uint16_t type) : 
-    Agent(color, health, type | ENEMY_TYPE), m_extents(0) {
+Enemy::Enemy(crstring texture, crstring update, float health, float speed, crvec4 color, uint16_t type) : 
+    Agent(color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update), m_max_speed(speed) {
     m_tex = ResourceManager::getTexture(texture);
 }
 
 Enemy::~Enemy() {
+}
+
+vec2 Enemy::getExtents() const {
+    return m_extents;
 }
 
 void Enemy::add_to_world(b2World* world, const CreationParams& params) {
@@ -49,4 +54,9 @@ void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b
             applyDamage(0.5);
         }
     }
+}
+
+void Enemy::update(const UpdateParams& params) {
+    Agent::update(params);
+    if (m_update_script != "") ChaiManager::eval_script(m_update_script, chaiscript::var(this));
 }

@@ -5,6 +5,7 @@
 
 #include "MainGame.h"
 #include "MainMenu.h"
+#include "ChaiManager.h"
 
 #define log(s) nta::Logger::writeToLog(#s + std::string(": ") + nta::to_string(s))
 
@@ -26,6 +27,7 @@ void log_defs() {
 
 int main(int argc, char* argv[]) {
     nta::init();
+    ChaiManager::init();
     log_defs();
     
     nta::ScreenManager screenManager(TITLE, TARGET_FPS);
@@ -37,6 +39,7 @@ int main(int argc, char* argv[]) {
     screenManager.run(); 
     
     screenManager.destroy();
+    ChaiManager::destroy();
     nta::cleanup();
     nta::Logger::writeToLog("Program exited cleanly");
     return 0;

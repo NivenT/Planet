@@ -48,7 +48,7 @@ void MainGame::onFocus() {
     enemy_params.planet = &m_planet;
     enemy_params.position = m_planet.getTileCenter(6, 2);
     enemy_params.extents = ENEMY_UNIT_EXTENTS * vec2(3,1);
-    Enemy* test_enemy = new Enemy("resources/images/shoe.png");
+    Enemy* test_enemy = new Enemy("resources/images/shoe.png", "scripts/shoe.chai");
 
     test_enemy->add_to_world(m_world.get(), enemy_params);
 

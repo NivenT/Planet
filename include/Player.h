@@ -18,6 +18,7 @@ private:
 public:
     Player(uint16_t type = 0);
     ~Player();
+    glm::vec2 getExtents() const;
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
     void render_inventory(nta::SpriteBatch& batch, nta::SpriteFont* font) const;
