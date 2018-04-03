@@ -8,21 +8,20 @@ using namespace chaiscript;
 using namespace nta;
 
 ChaiScript ChaiManager::m_chai;
-map<string, string> ChaiManager::m_scripts;
+map<string, function<void()>> ChaiManager::m_scripts;
 
 ChaiScript& ChaiManager::get_chai() {
     return m_chai;
 }
 
-string ChaiManager::get_script(crstring file_name) {
+function<void()> ChaiManager::get_script(crstring file_name) {
     if (m_scripts.find(file_name) == m_scripts.end()) {
-        IOManager::readFileToBuffer(file_name, m_scripts[file_name]);
+        string contents;
+        IOManager::readFileToBuffer(file_name, contents);
+        m_scripts[file_name] = eval_snippet<function<void()>>(contents);
+
     }
     return m_scripts[file_name];
-}
-
-void ChaiManager::eval_snippet(crstring snippet) {
-    m_chai.eval(snippet);
 }
 
 void ChaiManager::destroy() {

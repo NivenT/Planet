@@ -8,7 +8,7 @@
 class ChaiManager {
 private:
     static chaiscript::ChaiScript m_chai;
-    static std::map<std::string, std::string> m_scripts;
+    static std::map<std::string, std::function<void()>> m_scripts;
 public:
     static void init();
     template<typename T>
@@ -18,10 +18,12 @@ public:
     template<typename T>
     static void add_global(T data, crstring name);
     static chaiscript::ChaiScript& get_chai();
-    static std::string get_script(crstring file_name);
+    /// Script must end in the name of a function
+    static std::function<void()> get_script(crstring file_name);
     template<typename T>
     static void eval_script(crstring file_name, T self);
-    static void eval_snippet(crstring snippet);
+    template<typename T>
+    static T eval_snippet(crstring snippet);
     static void destroy();
 };
 
@@ -44,11 +46,20 @@ void ChaiManager::add_global_const(T data, crstring name) {
 }
 
 template<typename T>
-void ChaiManager::eval_script(crstring file_name, T self) {
-    // TODO: Change so functions can be defined in the script
-    // TODO: Add UpdateParams
-    m_chai.add(self, "self");
-    eval_snippet(get_script(file_name));
+T ChaiManager::eval_snippet(crstring snippet) {
+    try {
+        return m_chai.eval<T>(snippet);
+    } catch (const std::exception& e) {
+        nta::Logger::writeErrorToLog("Chaiscript error: " + std::string(e.what()));
+    }
 }
+
+template<typename T>
+void ChaiManager::eval_script(crstring file_name, T self) {
+    // TODO: Add UpdateParams
+    m_chai.set_global(self, "self");
+    get_script(file_name)();
+}
+
 
 #endif // CHAIMANAGER_H_INCLUDED

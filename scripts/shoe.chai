@@ -1,9 +1,13 @@
-//var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
-self.applyForce(AGENT_NORMAL_ACCELERATION * self.getMass(), 0);
+def run() {
+    var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
+    self.applyForce(fx, 0);
 
-//var vel = self.getVelocity();
-if (self.getVelocity().x > self.max_speed) {
-    self.setVelocity(vec2(self.max_speed, self.getVelocity().y));
-} else if (self.getVelocity().x < -self.max_speed) {
-    self.setVelocity(vec2(-self.max_speed, self.getVelocity().y));
+    var vel = self.getVelocity();
+    if (vel.x > self.max_speed) {
+        self.setVelocity(vec2(self.max_speed, vel.y));
+    } else if (vel.x < -self.max_speed) {
+        self.setVelocity(vec2(-self.max_speed, vel.y));
+    }
 }
+
+run
