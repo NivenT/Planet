@@ -35,13 +35,13 @@ void ChaiManager::add(T data, crstring name) {
 
 template<typename T>
 void ChaiManager::add_global(T data, crstring name) {
-    nta::Logger::writeToLog("Adding global" + name + " to ChaiManager");
+    nta::Logger::writeToLog("Adding global " + name + " to ChaiManager");
     m_chai.add_global(data, name);
 }
 
 template<typename T>
 void ChaiManager::add_global_const(T data, crstring name) {
-    nta::Logger::writeToLog("Adding const global" + name + " to ChaiManager");
+    nta::Logger::writeToLog("Adding const global " + name + " to ChaiManager");
     m_chai.add_global_const(data, name);
 }
 

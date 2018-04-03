@@ -55,6 +55,8 @@ void MainMenu::update() {
     }
 }
 
+extern void collect_gl_errors();
+
 void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -74,4 +76,6 @@ void MainMenu::render() {
 
     m_simpleProg->unuse();
     m_window->swapBuffers();
+
+    collect_gl_errors();
 }
