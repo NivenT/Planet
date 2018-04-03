@@ -48,6 +48,7 @@ void Enemy::render(SpriteBatch& batch) const {
 void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
                               Object* obj) {
     static const float EPS = 1e-1;
+    Agent::resolve_collision(params, edge, contact, obj);
     if (obj) {
         if (obj->getObjectType() & PLAYER_TYPE) {
             // TODO: Vary damange

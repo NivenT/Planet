@@ -13,7 +13,6 @@ private:
     void handle_input(const UpdateParams& params);
 
     Cycle<Item*> m_inventory;
-    bool m_is_standing;
     uint64_t m_inventory_event_id;
 public:
     Player(uint16_t type = 0);

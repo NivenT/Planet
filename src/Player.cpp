@@ -64,6 +64,7 @@ void Player::render_inventory(SpriteBatch& batch, SpriteFont* font) const {
 void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
                        Object* obj) {
     static const float EPS = 1e-1;
+    Agent::resolve_collision(params, edge, contact, obj);
     if (obj) {
         if (obj->getObjectType() & ITEM_TYPE) {
             Item* item = (Item*)obj;
@@ -74,18 +75,6 @@ void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, 
         } else if (obj->getObjectType() & ENEMY_TYPE) {
             // TODO: Vary damange
             applyDamage(0.25);
-        }
-    }
-
-    if (contact->IsTouching() && 
-            !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
-        b2WorldManifold manifold;
-        contact->GetWorldManifold(&manifold);
-
-        for (int i = 0; i < b2_maxManifoldPoints; i++) {
-            if (manifold.points[i].y < getCenter().y - PLAYER_HALF_DIMS.y + EPS) {
-                m_is_standing = true;
-            }
         }
     }
 }
@@ -120,8 +109,6 @@ void Player::handle_input(const UpdateParams& params) {
 }
 
 void Player::update(const UpdateParams& params) {
-    m_is_standing = false;
-
     Agent::update(params);
     handle_input(params);
 

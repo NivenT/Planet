@@ -85,3 +85,24 @@ void Agent::render_health(SpriteBatch& batch) const {
     batch.addGlyph(vec4(bl.x, bl.y + HEIGHT, width*m_health/m_max_health, HEIGHT), vec4(0, 0, 1, 1), 
                    tex, vec4(c.r, c.g, c.b, 1));
 }
+
+void Agent::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
+                              Object* obj) {
+    static const float EPS = 1e-1;
+    if (contact->IsTouching() && 
+            !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
+        b2WorldManifold manifold;
+        contact->GetWorldManifold(&manifold);
+
+        for (int i = 0; i < b2_maxManifoldPoints; i++) {
+            if (manifold.points[i].y < getCenter().y - getExtents().y + EPS) {
+                m_is_standing = true;
+            }
+        }
+    }
+}
+
+void Agent::update(const UpdateParams& params) {
+    m_is_standing = false;
+    Object::update(params);
+}
