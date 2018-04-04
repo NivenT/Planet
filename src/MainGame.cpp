@@ -44,6 +44,10 @@ void MainGame::onFocus() {
     Item* test_item2 = new Item("resources/images/rock.png", SMALL_ITEM_EXTENTS);
     test_item2->add_to_world(m_world.get(), item_params);
 
+    item_params.position = m_planet.getTileCenter(6, 50);
+    Item* test_item3 = new Item("resources/images/shovel.png", SMALL_ITEM_EXTENTS);
+    test_item3->add_to_world(m_world.get(), item_params);
+
     CreationParams enemy_params;
     enemy_params.planet = &m_planet;
     enemy_params.position = m_planet.getTileCenter(6, 2);
@@ -55,6 +59,7 @@ void MainGame::onFocus() {
     m_objects.push_back(m_player);
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
+    m_objects.push_back(test_item3);
     m_objects.push_back(test_enemy);
 
     m_state = ScreenState::RUNNING;

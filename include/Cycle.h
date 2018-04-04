@@ -53,12 +53,12 @@ T Cycle<T>::curr() const {
 
 template<typename T>
 T& Cycle<T>::prev() {
-    return data[(ptr-1)%data.size()];
+    return data[ptr == 0 ? data.size()-1 : ptr-1];
 }
 
 template<typename T>
 T Cycle<T>::prev() const {
-    return data[(ptr-1)%data.size()];
+    return data[ptr == 0 ? data.size()-1 : ptr-1];
 }
 
 template<typename T>
