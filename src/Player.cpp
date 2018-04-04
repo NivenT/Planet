@@ -7,7 +7,8 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Player::Player(uint16_t type) : Agent(PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE),
+Player::Player(uint16_t type) : 
+    Agent(PLAYER_MAX_SPEED, PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE),
     m_inventory_event_id(0) {
     set_flags(AGENT_STATE_SHOW_HEALTH);
 }
@@ -111,9 +112,4 @@ void Player::handle_input(const UpdateParams& params) {
 void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_input(params);
-
-    const vec2 vel = getVelocity();
-    if (m_is_standing && abs(vel.x) > PLAYER_MAX_SPEED) {
-        setVelocity(vec2(PLAYER_MAX_SPEED*sign(vel.x), vel.y));
-    }
 }

@@ -20,7 +20,7 @@ protected:
     bool m_is_standing;
     AgentFlags m_state_flags;
 public:
-    Agent(glm::vec4 color, float health, uint16_t type);
+    Agent(crvec2 speed, crvec4 color, float health, uint16_t type);
     virtual ~Agent();
     virtual glm::vec2 getDirection() const;
     float getHealth() const;

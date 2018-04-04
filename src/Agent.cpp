@@ -7,7 +7,7 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Agent::Agent(glm::vec4 c, float h, uint16_t type) : Object(c, type | AGENT_TYPE), m_health(h),
+Agent::Agent(crvec2 s, crvec4 c, float h, uint16_t type) : Object(s, c, type | AGENT_TYPE), m_health(h),
     m_state_flags(0), m_health_event_id(0), m_max_health(h) {
 }
 

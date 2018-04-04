@@ -6,8 +6,8 @@
 using namespace nta;
 using namespace glm;
 
-Enemy::Enemy(crstring texture, crstring update, float health, float speed, crvec4 color, uint16_t type) : 
-    Agent(color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update), m_max_speed(speed) {
+Enemy::Enemy(crstring texture, crstring update, float health, crvec2 speed, crvec4 color, uint16_t type) : 
+    Agent(speed, color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update) {
     m_tex = ResourceManager::getTexture(texture);
 }
 

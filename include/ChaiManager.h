@@ -58,7 +58,11 @@ template<typename T>
 void ChaiManager::eval_script(crstring file_name, T self) {
     // TODO: Add UpdateParams
     m_chai.set_global(self, "self");
-    get_script(file_name)();
+    try {
+        get_script(file_name)();
+    } catch (const std::exception& e) {
+        nta::Logger::writeErrorToLog("Chaiscript error: " + std::string(e.what()));
+    }
 }
 
 

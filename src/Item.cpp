@@ -5,12 +5,13 @@
 using namespace nta;
 using namespace glm;
 
-Item::Item(crvec4 c, crstring texture, crvec2 extents, uint16_t type) : 
-    Object(c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false) {
+Item::Item(crvec4 c, crstring texture, crvec2 extents, crvec2 speed, uint16_t type) : 
+    Object(speed, c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false) {
     m_tex = ResourceManager::getTexture(texture);
 }
 
-Item::Item(crstring texture, crvec2 extents, uint16_t type) : Item(vec4(1), texture, extents, type) {
+Item::Item(crstring texture, crvec2 extents, crvec2 speed, uint16_t type) : 
+    Item(vec4(1), texture, extents, speed, type) {
 }
 
 Item::~Item() {

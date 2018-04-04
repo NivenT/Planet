@@ -4,13 +4,6 @@ def run() {
     if (self.is_standing) {
         //self.applyForce(0, fx*10);
     }
-
-    var vel = self.getVelocity();
-    if (vel.x > self.max_speed) {
-        self.setVelocity(vec2(self.max_speed, vel.y));
-    } else if (vel.x < -self.max_speed) {
-        self.setVelocity(vec2(-self.max_speed, vel.y));
-    }
 }
 
 run

@@ -4,7 +4,12 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-Object::Object(crvec4 c, uint16_t type) : m_color(c), m_type_mask(type | OBJECT_TYPE) {
+Object::Object(float mx, float my, crvec4 c, uint16_t type) : m_max_speed(mx, my), m_color(c), 
+    m_type_mask(type | OBJECT_TYPE) {
+}
+
+Object::Object(crvec2 m, crvec4 c, uint16_t type) : m_max_speed(m), m_color(c), 
+    m_type_mask(type | OBJECT_TYPE) {
 }
 
 Object::~Object() {
@@ -67,6 +72,7 @@ void Object::render_debug(DebugBatch& _) const {
 void Object::resolve_collision(const UpdateParams& _, b2ContactEdge* __, b2Contact* ___, Object* ____) {
 }
 
+// Should I just move this code direcly into update?
 void Object::handle_collisions(const UpdateParams& params) {
     for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
         void* object = edge->other->GetUserData();
@@ -87,6 +93,16 @@ void Object::update(const UpdateParams& params) {
         m_body->SetTransform(b2Vec2(getCenter().x + planet_width, getCenter().y), 
                              m_body->GetAngle());
     }
+
+    vec2 vel = getVelocity();
+    // Maybe there should only be max speeds when standing?
+    if (abs(vel.x) > m_max_speed.x) {
+        vel.x = m_max_speed.x*sign(vel.x);
+    }
+    if (abs(vel.y) > m_max_speed.y) {
+        vel.y = m_max_speed.y*sign(vel.y);
+    }
+    setVelocity(vel);
 
     handle_collisions(params);
 }

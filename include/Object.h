@@ -37,6 +37,7 @@ private:
     void handle_collisions(const UpdateParams& params);
 
     const uint16_t m_type_mask;
+    const glm::vec2 m_max_speed;
 protected:
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
     void setVelocity(crvec2 vel);
@@ -45,7 +46,8 @@ protected:
     glm::vec4 m_color;
     b2Body* m_body;
 public:
-    Object(crvec4 c, uint16_t type);
+    Object(float mx, float my, crvec4 c, uint16_t type);
+    Object(crvec2 m, crvec4 c, uint16_t type);
     virtual ~Object();
     uint16_t getObjectType() const;
     glm::vec2 getCenter() const;
