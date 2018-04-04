@@ -282,26 +282,11 @@ void MainGame::render_batches() {
     } m_overlayProg->unuse();
 }
 
-// TODO: delete
-void collect_gl_errors() {
-    string err_str;
-
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR) {
-        err_str += err_str == "" ? "" : "\n";
-        err_str += to_string(gluErrorString(err)) + " (" + to_string(err) + ")";
-    }
-    if (err_str != "") {
-        Logger::writeToLog("GL Error(s): " + err_str);
-    }
-}
-
 void MainGame::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     prepare_batches();
     render_batches();
-    collect_gl_errors();
 
     m_window->swapBuffers();
 }
