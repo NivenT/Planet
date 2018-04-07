@@ -61,9 +61,12 @@ b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
+#include <iostream>
+
 // TODO: Account for missing tiles
-b2ChainShape Planet::createOutline() const {
-    b2ChainShape chain_shape;
+vector<b2ChainShape> Planet::createOutline() const {
+    vector<b2ChainShape> chains(1);
+    b2ChainShape& chain_shape = chains[0];
 
     vector<b2Vec2> vertices;
     for (int c = 0; c < m_dimensions[1]; c++) {
@@ -84,7 +87,7 @@ b2ChainShape Planet::createOutline() const {
     }
     
     chain_shape.CreateLoop(vertices.data(), vertices.size());
-    return chain_shape;
+    return chains;
 }
 
 float Planet::getRadius() const {
@@ -101,11 +104,13 @@ void Planet::add_to_world(b2World* world) {
     body_def.position = b2Vec2(0, 0);
     m_body = world->CreateBody(&body_def);
 
-    b2ChainShape chain_shape = createOutline();
-    b2FixtureDef fixture_def;
-    fixture_def.shape = &chain_shape;
-    fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
-    m_body->CreateFixture(&fixture_def);
+    auto chains = createOutline();
+    for (const auto& chain_shape : chains) {
+        b2FixtureDef fixture_def;
+        fixture_def.shape = &chain_shape;
+        fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
+        m_body->CreateFixture(&fixture_def);
+    }
 }
 
 void Planet::render(nta::SpriteBatch& batch) const {

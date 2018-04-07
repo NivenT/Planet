@@ -10,7 +10,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu() : Screen("Main Menu") {
 }
 
 MainMenu::~MainMenu() {
