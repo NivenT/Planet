@@ -20,19 +20,24 @@ void MainMenu::init() {
     Logger::writeToLog("Initializing MainMenu...");
 
     m_state = nta::ScreenState::RUNNING;
-    //nta::Logger::writeToLog("Initializing GLSLPrograms...");
     m_simpleProg = nta::SystemManager::getGLSLProgram("shaders/simple2D");
+    check_error();
     if (!m_simpleProg->isLinked()) {
         m_simpleProg->addAttribute("pos");
+        check_error();
         m_simpleProg->addAttribute("color");
+        check_error();
         m_simpleProg->addAttribute("uv");
+        check_error();
+        m_simpleProg->addAttribute("hasTexture");
+        check_error();
         m_simpleProg->linkShaders();
+        check_error();
     }
 
     m_simpleProg->use();
     glUniform1i(m_simpleProg->getUniformLocation("sampler"), 0);
     m_simpleProg->unuse();
-    //nta::Logger::writeToLog("Initialized GLSLPrograms");
 
     m_hudBatch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
