@@ -33,6 +33,25 @@ Planet Planet::new_test() {
         }
     }
 
+    test.m_tiles[test.m_sea_level][32].active = false;
+    test.m_tiles[test.m_sea_level][33].active = false;
+    test.m_tiles[test.m_sea_level][31].active = false;
+    test.m_tiles[test.m_sea_level][30].active = false;
+    test.m_tiles[test.m_sea_level][34].active = false;
+    test.m_tiles[test.m_sea_level+1][30].active = false;
+    test.m_tiles[test.m_sea_level+1][34].active = false;
+    test.m_tiles[test.m_sea_level+1][32].active = false;
+    test.m_tiles[test.m_sea_level+1][31].active = false;
+    test.m_tiles[test.m_sea_level+1][33].active = false;
+    test.m_tiles[test.m_sea_level+2][32].active = false;
+    test.m_tiles[test.m_sea_level+2][31].active = false;
+    test.m_tiles[test.m_sea_level+2][33].active = false;
+    test.m_tiles[test.m_sea_level+3][32].active = false;
+
+    test.m_tiles[test.m_sea_level+3][35].active = false;
+    test.m_tiles[test.m_sea_level+3][36].active = false;
+    test.m_tiles[test.m_sea_level+2][36].active = false;
+
     test.m_gravity = vec2(0, -9.81);
     return test;
 }
@@ -92,13 +111,13 @@ b2ChainShape Planet::createOutline() const {
 // TODO: less duplicated code
 vector<vector<b2Vec2>> Planet::createOutline() const {
     static const auto invalidHorz = [&](int r, int c) {
-        return !m_tiles[r][c] || (r > m_sea_level && m_tiles[r-1][c].active);
+        return r == m_sea_level ? !m_tiles[r][c] : m_tiles[r][c].active == m_tiles[r-1][c].active;
     };
     static const auto invalidVert = [&](int r, int c, bool type) {
         const int left = c == 0 ? cols - 1 : c - 1;
         const int right = c == cols - 1 ? 0 : c + 1;
-        return !m_tiles[r][c] || (!type && m_tiles[r][left].active) 
-                              || (type && m_tiles[r][right].active);
+        return (!type && m_tiles[r][left].active == m_tiles[r][c].active) 
+                    || (type && m_tiles[r][right].active == m_tiles[r][c].active);
     };
 
     vector<vector<b2Vec2>> chains;
@@ -140,7 +159,7 @@ vector<vector<b2Vec2>> Planet::createOutline() const {
         curr.emplace_back(tl.x, tl.y);
 
         for (int r = m_sea_level; r <= rows; r++) {
-            if (r == rows || invalidVert(r, c, true)) {
+            if (r == rows || invalidVert(r, c, false)) {
                 if (curr.size() > 1) chains.push_back(curr);
                 curr.clear();
             }
@@ -153,7 +172,7 @@ vector<vector<b2Vec2>> Planet::createOutline() const {
     // right row
     const vec2 tr = getTileTopLeft(m_sea_level, cols-1) + TILE_DX;
     for (int r = m_sea_level; r <= rows; r++) {
-        if (r == rows || invalidVert(r, cols-1, false)) {
+        if (r == rows || invalidVert(r, cols-1, true)) {
             if (curr.size() > 1) chains.push_back(curr);
             curr.clear();
         }
@@ -196,9 +215,7 @@ void Planet::render(nta::SpriteBatch& batch) const {
     const vec2 offset = getOffset();
     for (int r = 0; r < m_dimensions[0]; r++) {
         for (int c = 0; c < m_dimensions[1]; c++) {
-            if (m_tiles[r][c].active) {
-                m_tiles[r][c].render(batch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
-            }
+            m_tiles[r][c].render(batch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
         }
     }
 }

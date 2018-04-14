@@ -1,5 +1,5 @@
 def run() {
-    var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
+    var fx = -AGENT_NORMAL_ACCELERATION * self.getMass();
     self.applyForce(fx, 0);
     if (self.is_standing) {
         //self.applyForce(0, fx*10);

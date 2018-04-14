@@ -60,7 +60,7 @@ void MainGame::onFocus() {
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
-    m_objects.push_back(test_enemy);
+    //m_objects.push_back(test_enemy);
 
     m_state = ScreenState::RUNNING;
 }
