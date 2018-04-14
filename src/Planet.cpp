@@ -6,19 +6,17 @@ using namespace std;
 
 Planet::~Planet() {
     m_tiles.clear();
-    for (auto& row : m_layout) {
-        row.clear();
-    }
-    m_layout.clear();
     m_dimensions = vec2(0);
     m_sea_level = -1;
 }
 
 Planet Planet::new_test() {
     Planet test;
-    test.m_tiles.push_back(Tile(vec4(0.4, 0.7, 0.1, 0.8))); // grass
-    test.m_tiles.push_back(Tile(vec4(0.65, 0.85, 1, 0.3))); // sky
-    test.m_tiles.push_back(Tile(vec4(0.5, 0.2, 0.1, 0.5))); // dirt
+
+    vector<Tile> types;
+    types.push_back(Tile(vec4(0.4, 0.7, 0.1, 0.8))); // grass
+    types.push_back(Tile(vec4(0.65, 0.85, 1, 0.3))); // sky
+    types.push_back(Tile(vec4(0.5, 0.2, 0.1, 0.5))); // dirt
 
     test.m_dimensions[0] = 28;
     test.m_dimensions[1] = round(2*M_PI*test.m_dimensions[0]);
@@ -27,10 +25,11 @@ Planet Planet::new_test() {
     const int grass_level = 18;
 
     for (int r = 0; r < test.m_dimensions[0]; r++) {
-        test.m_layout.emplace_back();
+        test.m_tiles.emplace_back();
         for (int c = 0; c < test.m_dimensions[1]; c++) {
-            test.m_layout.back().push_back(r >= grass_level ? 2 :
-                                           r >= test.m_sea_level ? 0 : 1);
+            int type = r >= grass_level ? 2 :
+                       r >= test.m_sea_level ? 0 : 1;
+            test.m_tiles.back().push_back(types[type]);
         }
     }
 
@@ -61,6 +60,7 @@ b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
+/*
 // TODO: Account for missing tiles
 b2ChainShape Planet::createOutline() const {
     b2ChainShape chain_shape;
@@ -86,6 +86,85 @@ b2ChainShape Planet::createOutline() const {
     chain_shape.CreateLoop(vertices.data(), vertices.size());
     return chain_shape;
 }
+*/
+
+// TODO: Make fewer assumptions about m_sea_level
+// TODO: less duplicated code
+vector<vector<b2Vec2>> Planet::createOutline() const {
+    static const auto invalidHorz = [&](int r, int c) {
+        return !m_tiles[r][c] || (r > m_sea_level && m_tiles[r-1][c].active);
+    };
+    static const auto invalidVert = [&](int r, int c, bool type) {
+        const int left = c == 0 ? cols - 1 : c - 1;
+        const int right = c == cols - 1 ? 0 : c + 1;
+        return !m_tiles[r][c] || (!type && m_tiles[r][left].active) 
+                              || (type && m_tiles[r][right].active);
+    };
+
+    vector<vector<b2Vec2>> chains;
+    vector<b2Vec2> curr;
+
+    // horizontal chains
+    for (int r = m_sea_level; r < rows; r++) {
+        const vec2 tl = getTileTopLeft(r, 0);
+        curr.emplace_back(tl.x, tl.y);
+
+        for (int c = 0; c <= cols; c++) {
+            if (c == cols || invalidHorz(r, c)) {
+                if (curr.size() > 1) chains.push_back(curr);
+                curr.clear();
+            }
+            if (c != cols) {
+                const vec2 tr = getTileTopLeft(r, c) + TILE_DX;
+                curr.emplace_back(tr.x, tr.y);
+            }
+        }
+    }
+    // bottom row
+    const vec2 bl = getTileTopLeft(rows-1, 0) - TILE_DY;
+    curr.emplace_back(bl.x, bl.y);
+    for (int c = 0; c <= cols; c++) {
+        if (c == cols || !m_tiles[rows-1][c]) {
+            if (curr.size() > 1) chains.push_back(curr);
+            curr.clear();
+        }
+        if (c != cols) {
+            const vec2 br = getTileTopLeft(rows-1, c) + TILE_DX - TILE_DY;
+            curr.emplace_back(br.x, br.y);
+        }
+    }
+    /// TODO: Confirm below code is correct (likely not, but easier to check after shovel implementation)
+    // vertical chains
+    for (int c = 0; c < cols; c++) {
+        const vec2 tl = getTileTopLeft(m_sea_level, c);
+        curr.emplace_back(tl.x, tl.y);
+
+        for (int r = m_sea_level; r <= rows; r++) {
+            if (r == rows || invalidVert(r, c, true)) {
+                if (curr.size() > 1) chains.push_back(curr);
+                curr.clear();
+            }
+            if (r != rows) {
+                const vec2 bl = getTileTopLeft(r, c) - TILE_DY;
+                curr.emplace_back(bl.x, bl.y);
+            }
+        }
+    }
+    // right row
+    const vec2 tr = getTileTopLeft(m_sea_level, cols-1) + TILE_DX;
+    for (int r = m_sea_level; r <= rows; r++) {
+        if (r == rows || invalidVert(r, cols-1, false)) {
+            if (curr.size() > 1) chains.push_back(curr);
+            curr.clear();
+        }
+        if (r != rows) {
+            const vec2 br = getTileTopLeft(r, cols-1) - TILE_DY + TILE_DX;
+            curr.emplace_back(br.x, br.y);
+        }
+    }
+
+    return chains;
+}
 
 float Planet::getRadius() const {
     return (m_dimensions[0] - m_sea_level)*TILE_SIZE;
@@ -101,23 +180,29 @@ void Planet::add_to_world(b2World* world) {
     body_def.position = b2Vec2(0, 0);
     m_body = world->CreateBody(&body_def);
 
-    b2ChainShape chain_shape = createOutline();
-    b2FixtureDef fixture_def;
-    fixture_def.shape = &chain_shape;
-    fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
-    m_body->CreateFixture(&fixture_def);
+    for (const auto& chain : createOutline()) {
+        b2ChainShape chain_shape;
+        chain_shape.CreateChain(chain.data(), chain.size());
+
+        b2FixtureDef fixture_def;
+        fixture_def.shape = &chain_shape;
+        fixture_def.filter.categoryBits = PLANET_CATEGORY_BITS;
+        m_body->CreateFixture(&fixture_def);
+    }
+    
 }
 
 void Planet::render(nta::SpriteBatch& batch) const {
     const vec2 offset = getOffset();
     for (int r = 0; r < m_dimensions[0]; r++) {
         for (int c = 0; c < m_dimensions[1]; c++) {
-            m_tiles[m_layout[r][c]].render(batch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
+            if (m_tiles[r][c].active) {
+                m_tiles[r][c].render(batch, offset - (float)r*TILE_DY + (float)c*TILE_DX);
+            }
         }
     }
 }
 
-/// TODO: Make lines below sea level DEBUG_BOX2D_AABB_COLOR
 void Planet::render_debug(nta::DebugBatch& dbatch) const {
     static const size_t NUM_PIECES = 150;
     const vec2 offset = getOffset();

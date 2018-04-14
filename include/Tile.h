@@ -7,9 +7,6 @@
 #include "defs.h"
 
 struct Tile {
-    nta::GLTexture m_tex;
-    glm::vec4 m_color;
-
     Tile() {}
     Tile(nta::GLTexture tex, crvec4 color) : m_tex(tex), m_color(color) {
     }
@@ -24,6 +21,14 @@ struct Tile {
         batch.addGlyph(glm::vec4(top_left, TILE_SIZE, TILE_SIZE), glm::vec4(0,0,1,1), 
                        m_tex.id, m_color);
     }
+    bool operator!() const {
+        return !active;
+    }
+
+    nta::GLTexture m_tex;
+    glm::vec4 m_color;
+
+    bool active = true;
 };
 
 #endif // TILE_H_INCLUDED

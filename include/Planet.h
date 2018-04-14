@@ -23,17 +23,20 @@ class Planet {
 private:
     // (0,0) should be center of sea level in world coordinates
     glm::vec2 getOffset() const;
-    b2ChainShape createOutline() const;
+    std::vector<std::vector<b2Vec2>> createOutline() const;
 
-    std::vector<Tile> m_tiles;
-    // indices into m_tiles (may need to change later to allow tiles to have individual characteristics)
-    std::vector<std::vector<int>> m_layout;
+    std::vector<std::vector<Tile>> m_tiles;
     glm::vec2 m_gravity;
     // rows x columns (i.e. not width by height)
-    glm::ivec2 m_dimensions;
-    //b2Body* m_body = nullptr;
-    std::vector<std::vector<b2Body*>> m_bodies;
-    b2Body* m_body;
+    // This feels like it could cause issues later...
+    union {
+        glm::ivec2 m_dimensions;
+        struct {
+            int rows;
+            int cols;
+        };
+    };
+    b2Body* m_body = nullptr;
     // row coordinate considered sea level on this planet
     int m_sea_level; 
 public:
