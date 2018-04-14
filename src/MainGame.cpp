@@ -16,6 +16,8 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
+extern "C" double LambertW(const double z);
+
 MainGame::MainGame() : m_debug(false), m_square_planet(false), 
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
@@ -39,7 +41,8 @@ vec2 MainGame::getMouse() const {
 
         mouse = vec2(mouse.y + radius, mouse.x);
         float x = height * atan(mouse.y/mouse.x);
-        float y = height * (log(dot(mouse, mouse)) - 2*log(radius + x))/2;
+        // I never thought the day would come that I make use of the lambertW function
+        float y = height * LambertW(exp(radius/height)*mouse.y/(height*sin(x/height))) - radius;
         mouse = vec2(x,y);
     }  
     return m_camera.screenToGame(mouse);
@@ -202,7 +205,6 @@ void MainGame::update() {
 
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         auto tile = m_planet.getTile(getMouse());
-        cout<<"Removing tile "<<tile<<" at pos "<<getMouse()<<endl;
         m_planet.remove_tile(tile);
     }
 

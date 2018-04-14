@@ -11,8 +11,6 @@ env:
     - COMPILER=g++-5 CCOMPILER=gcc-5
     - COMPILER=clang++-3.6 CCOMPILER=clang-3.6
     - COMPILER=clang++-3.8 CCOMPILER=clang-3.8
-    - COMPILER=clang++-4.0 CCOMPILER=clang-4.0
-    - COMPILER=clang++-5.0 CCOMPILER=clang-5.0
 
 matrix:
   allow_failures:
@@ -32,8 +30,6 @@ addons:
       - g++-5
       - clang-3.6
       - clang-3.8
-      - clang-4.0
-      - clang-5.0
       - valgrind
       - python-pip
       - python-yaml
