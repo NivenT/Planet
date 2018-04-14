@@ -80,12 +80,19 @@ b2Vec2 Planet::getGravity() const {
 }
 
 ivec2 Planet::getTile(vec2 pos) const {
-    
+    // (0,0) should be top-left of top-left tile
+    pos -= getOffset();
+    pos /= TILE_SIZE;
+    return ivec2((int)abs(pos.y), (int)abs(pos.x));
 }
 
 void Planet::remove_tile(ivec2 coord) {
     if (0 <= coord.x && coord.x < rows && 0 <= coord.y && coord.y < cols) {
         m_tiles[coord.x][coord.y].active = false;
+
+        b2World* world = m_body->GetWorld();
+        world->DestroyBody(m_body);
+        add_to_world(world);
     }
 }
 

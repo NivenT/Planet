@@ -30,14 +30,13 @@ MainGame::~MainGame() {
 
 // Dependent o code in planet.vert
 vec2 MainGame::getMouse() const {
-    const float radius = m_planet.getRadius()/m_camera.getDimensions().x;
-    const float height = m_planet.getHeight()/m_camera.getDimensions().x;
-
     vec2 mouse = InputManager::getMouseCoordsStandard(m_window->getHeight());
     mouse *= 2.f/m_window->getDimensions();
     mouse -= 1.f;
-
     if (!m_square_planet) {
+        const float radius = m_planet.getRadius()/m_camera.getDimensions().x;
+        const float height = m_planet.getHeight()/m_camera.getDimensions().x;
+
         mouse = vec2(mouse.y + radius, mouse.x);
         float x = height * atan(mouse.y/mouse.x);
         float y = height * (log(dot(mouse, mouse)) - 2*log(radius + x))/2;
@@ -80,8 +79,6 @@ void MainGame::onFocus() {
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
     m_objects.push_back(test_enemy);
-
-    ChaiManager::add(chaiscript::fun([&](){return getMouse();}), "getMouse");
 
     m_state = ScreenState::RUNNING;
 }
@@ -145,6 +142,8 @@ void MainGame::init() {
     m_debug_batch.init();
     m_debug_sprite_batch.init();
 
+    ChaiManager::add(chaiscript::fun([&](){return getMouse();}), "getMouse");
+
     Logger::writeToLog("main screen initialized");
 }
 
@@ -199,6 +198,12 @@ void MainGame::update() {
     } if (InputManager::justPressed(SDLK_F1)) {
         m_dev_mode = !m_dev_mode;
         //if (!m_dev_mode) m_debug = false;
+    }
+
+    if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
+        auto tile = m_planet.getTile(getMouse());
+        cout<<"Removing tile "<<tile<<" at pos "<<getMouse()<<endl;
+        m_planet.remove_tile(tile);
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
