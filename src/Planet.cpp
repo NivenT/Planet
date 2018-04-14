@@ -79,6 +79,16 @@ b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
+ivec2 Planet::getTile(vec2 pos) const {
+    
+}
+
+void Planet::remove_tile(ivec2 coord) {
+    if (0 <= coord.x && coord.x < rows && 0 <= coord.y && coord.y < cols) {
+        m_tiles[coord.x][coord.y].active = false;
+    }
+}
+
 /*
 // TODO: Account for missing tiles
 b2ChainShape Planet::createOutline() const {

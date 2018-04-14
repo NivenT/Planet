@@ -12,16 +12,18 @@ private:
     };
     nta::GLTexture m_tex;
     glm::vec2 m_extents;
-    //std::function<void(Item&, UpdateParams)> m_update_func;
-    //std::function<void(const Item&, nta::SpriteBatch&)> m_render_func;
+    std::string m_use_script;
 public:
-    Item(crvec4 c, crstring texture, crvec2 extents, crvec2 speed = ITEM_MAX_SPEED, uint16_t type = 0);
-    Item(crstring texture, crvec2 extents, crvec2 speed = ITEM_MAX_SPEED, uint16_t type = 0);
+    Item(crvec4 c, crstring texture, crvec2 extents, crstring use = "", crvec2 speed = ITEM_MAX_SPEED,
+         uint16_t type = 0);
+    Item(crstring texture, crvec2 extents, crstring use = "", crvec2 speed = ITEM_MAX_SPEED,
+         uint16_t type = 0);
     ~Item();
+    glm::vec2 getExtents() const;
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
     void render_icon(nta::SpriteBatch& batch, crvec2 top_left, float transparency = 1.0) const;
-    //void update(const UpdateParams& params);
+    void use();
     void pickup(Agent* owner, b2World* world);
 };
 

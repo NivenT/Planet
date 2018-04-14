@@ -48,8 +48,10 @@ public:
     b2Vec2 getGravity() const;
     glm::vec2 getTileTopLeft(int row, int col) const;
     glm::vec2 getTileCenter(int row, int col) const;
+    glm::ivec2 getTile(glm::vec2 pos) const;
     float getRadius() const;
     float getHeight() const;
+    void remove_tile(glm::ivec2 coord);
     void add_to_world(b2World* world);
     void render(nta::SpriteBatch& batch) const;
     void render_debug(nta::DebugBatch& dbatch) const;

@@ -27,8 +27,8 @@ void log_defs() {
 
 int main(int argc, char* argv[]) {
     nta::init();
-    ChaiManager::init();
     log_defs();
+    ChaiManager::init();
     
     nta::ScreenManager screenManager(TITLE, TARGET_FPS);
     screenManager.addScreen(new MainMenu);

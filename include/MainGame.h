@@ -23,6 +23,7 @@ private:
     void render_batches();
     void debug_update();
     void dev_update();
+    glm::vec2 getMouse() const;
 
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::GLSLProgram* m_overlayProg = nullptr;

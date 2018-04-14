@@ -10,6 +10,7 @@
 #include <nta/Random.h>
 
 #include "MainGame.h"
+#include "ChaiManager.h"
 
 using namespace std;
 using namespace nta;
@@ -25,6 +26,24 @@ MainGame::MainGame() : m_debug(false), m_square_planet(false),
 
 MainGame::~MainGame() {
     offFocus();
+}
+
+// Dependent o code in planet.vert
+vec2 MainGame::getMouse() const {
+    const float radius = m_planet.getRadius()/m_camera.getDimensions().x;
+    const float height = m_planet.getHeight()/m_camera.getDimensions().x;
+
+    vec2 mouse = InputManager::getMouseCoordsStandard(m_window->getHeight());
+    mouse *= 2.f/m_window->getDimensions();
+    mouse -= 1.f;
+
+    if (!m_square_planet) {
+        mouse = vec2(mouse.y + radius, mouse.x);
+        float x = height * atan(mouse.y/mouse.x);
+        float y = height * (log(dot(mouse, mouse)) - 2*log(radius + x))/2;
+        mouse = vec2(x,y);
+    }  
+    return m_camera.screenToGame(mouse);
 }
 
 void MainGame::onFocus() {
@@ -60,7 +79,9 @@ void MainGame::onFocus() {
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
-    //m_objects.push_back(test_enemy);
+    m_objects.push_back(test_enemy);
+
+    ChaiManager::add(chaiscript::fun([&](){return getMouse();}), "getMouse");
 
     m_state = ScreenState::RUNNING;
 }

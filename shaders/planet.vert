@@ -49,6 +49,11 @@ void main() {
     vec2 circ_pos = (normalized_planet_radius + position.y) * 
                         cmplexp(position.yx/normalized_planet_height);
     gl_Position = vec4(circ_pos.y, circ_pos.x - normalized_planet_radius, pos.z, 1);
+    /**
+    vec3 position = camera * vec3(pos.xy, 1);
+    vec2 circ_pos = (normalized_planet_radius) * 
+                        cmplexp(position.yx/normalized_planet_height);
+    gl_Position = vec4(circ_pos.y, circ_pos.x - normalized_planet_radius, pos.z, 1);
     /**/
     fragColor = color;
     fragUV = uv;

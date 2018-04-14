@@ -1,4 +1,5 @@
 #include <nta/IOManager.h>
+#include <nta/InputManager.h>
 
 #include "ChaiManager.h"
 #include "Enemy.h"
@@ -64,11 +65,20 @@ void ChaiManager::init() {
     add(chaiscript::fun(&UpdateParams::world), "world");
     add(chaiscript::user_type<UpdateParams>(), "UpdateParams");
 
+    add(chaiscript::fun(&Tile::active), "active");
+    add(chaiscript::user_type<Tile>(), "Tile");
+
+    add(chaiscript::fun(&InputManager::isPressed), "isPressed");
+    add(chaiscript::fun(&InputManager::justPressed), "justPressed");
+    add(chaiscript::fun(&InputManager::justReleased), "justReleased");
+    add(chaiscript::user_type<InputManager>(), "InputManager");
+
     add(chaiscript::fun(&glm::vec2::x), "x");
     add(chaiscript::fun(&glm::vec2::y), "y");
     add(chaiscript::constructor<glm::vec2(float, float)>(), "vec2");
-    add(chaiscript::constructor<glm::vec3(float, float, float)>(), "vec3");
-    add(chaiscript::constructor<glm::vec4(float, float, float, float)>(), "vec4");
+    add(chaiscript::fun(&glm::ivec2::x), "x");
+    add(chaiscript::fun(&glm::ivec2::y), "y");
+    add(chaiscript::constructor<glm::vec2(int, int)>(), "ivec2");
 
     add_global_const(chaiscript::const_var(AGENT_SLOW_ACCELERATION), "AGENT_SLOW_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_NORMAL_ACCELERATION), "AGENT_NORMAL_ACCELERATION");

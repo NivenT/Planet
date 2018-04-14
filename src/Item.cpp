@@ -1,21 +1,27 @@
 #include <nta/ResourceManager.h>
 
 #include "Item.h"
+#include "ChaiManager.h"
 
 using namespace nta;
 using namespace glm;
 
-Item::Item(crvec4 c, crstring texture, crvec2 extents, crvec2 speed, uint16_t type) : 
-    Object(speed, c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false) {
+Item::Item(crvec4 c, crstring texture, crvec2 extents, crstring use, crvec2 speed, uint16_t type) : 
+    Object(speed, c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false),
+    m_use_script(use) {
     m_tex = ResourceManager::getTexture(texture);
 }
 
-Item::Item(crstring texture, crvec2 extents, crvec2 speed, uint16_t type) : 
-    Item(vec4(1), texture, extents, speed, type) {
+Item::Item(crstring texture, crvec2 extents, crstring use, crvec2 speed, uint16_t type) : 
+    Item(vec4(1), texture, extents, use, speed, type) {
 }
 
 Item::~Item() {
     m_owner = nullptr;
+}
+
+vec2 Item::getExtents() const {
+    return m_extents;
 }
 
 void Item::add_to_world(b2World* world, const CreationParams& params) {
@@ -57,6 +63,10 @@ void Item::render(SpriteBatch& batch) const {
 void Item::render_icon(SpriteBatch& batch, crvec2 top_left, float transparency) const {
     batch.addGlyph(vec4(top_left, ITEM_ICON_DIMS), vec4(0,0,1,1), m_tex.id,
                    vec4(m_color.r, m_color.g, m_color.b, m_color.a * transparency));
+}
+
+void Item::use() {
+    if (m_use_script != "") ChaiManager::eval_script(m_use_script, chaiscript::var(this));
 }
 
 void Item::pickup(Agent* owner, b2World* world) {
