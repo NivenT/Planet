@@ -3,7 +3,6 @@
 
 #include "Agent.h"
 #include "Light.h"
-#include "Tile.h"
 #include "Item.h"
 #include "Cycle.h"
 

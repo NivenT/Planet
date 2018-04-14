@@ -3,6 +3,8 @@
 
 #include "ChaiManager.h"
 #include "Enemy.h"
+#include "Item.h"
+#include "Player.h"
 
 using namespace std;
 using namespace chaiscript;
@@ -58,8 +60,28 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Object::m_body), "m_body");
     //add(chaiscript::user_type<Object>(), "Object"); 
 
+    m_chai.add(chaiscript::base_class<Object, Agent>());
     m_chai.add(chaiscript::base_class<Object, Enemy>());
     m_chai.add(chaiscript::base_class<Agent, Enemy>());
+
+    add(chaiscript::fun(&Item::m_equipped), "m_equipped");
+    add(chaiscript::fun(&Item::m_equipped), "equipped");
+    add(chaiscript::fun(&Item::m_owner), "m_owner");
+    add(chaiscript::fun(&Item::m_owner), "owner");
+    add(chaiscript::fun(&Item::m_planet), "m_planet");
+    add(chaiscript::fun(&Item::m_planet), "planet");
+    add(chaiscript::user_type<Item>(), "Item");
+
+    m_chai.add(chaiscript::base_class<Object, Item>());
+
+    m_chai.add(chaiscript::user_type<Player>(), "Player");
+    m_chai.add(chaiscript::base_class<Object, Player>());
+    m_chai.add(chaiscript::base_class<Agent, Player>());
+
+    // really gotta figure out this snake case v. camel case thing
+    add(chaiscript::fun(&Planet::getTile), "getTile");
+    add(chaiscript::fun(&Planet::remove_tile), "remove_tile");
+    add(chaiscript::user_type<Planet>(), "Planet");
 
     add(chaiscript::fun(&UpdateParams::planet), "planet");
     add(chaiscript::fun(&UpdateParams::world), "world");
@@ -75,14 +97,18 @@ void ChaiManager::init() {
 
     add(chaiscript::fun(&glm::vec2::x), "x");
     add(chaiscript::fun(&glm::vec2::y), "y");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return a-b;}), "-");
     add(chaiscript::constructor<glm::vec2(float, float)>(), "vec2");
+    add(chaiscript::constructor<glm::vec2(const glm::vec2&)>(), "vec2");
     add(chaiscript::fun(&glm::ivec2::x), "x");
     add(chaiscript::fun(&glm::ivec2::y), "y");
     add(chaiscript::constructor<glm::vec2(int, int)>(), "ivec2");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return glm::dot(a,b);}), "dot");
 
     add_global_const(chaiscript::const_var(AGENT_SLOW_ACCELERATION), "AGENT_SLOW_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_NORMAL_ACCELERATION), "AGENT_NORMAL_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_FAST_ACCELERATION), "AGENT_FAST_ACCELERATION");
+    add_global_const(chaiscript::const_var(PLAYER_EXTENTS), "PLAYER_EXTENTS");
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");

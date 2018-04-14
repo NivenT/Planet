@@ -109,10 +109,7 @@ void Player::handle_input(const UpdateParams& params) {
     }
     if (InputManager::justPressed(SDLK_SPACE) && !m_inventory.is_empty()) {
         CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_SPACE);}, HOLD_TIME);
-        m_inventory.curr()->use();
-
-        // Not sure how I feel about this
-        popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
+        m_inventory.curr()->use(params);
     }
 }
 

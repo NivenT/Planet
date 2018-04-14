@@ -23,8 +23,10 @@ public:
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
     void render_icon(nta::SpriteBatch& batch, crvec2 top_left, float transparency = 1.0) const;
-    void use();
+    void use(const UpdateParams& params);
     void pickup(Agent* owner, b2World* world);
+
+    friend ChaiManager;
 };
 
 #endif // ITEM_H_INCLUDED

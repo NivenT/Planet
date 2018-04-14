@@ -20,8 +20,8 @@ public:
     static chaiscript::ChaiScript& get_chai();
     /// Script must end in the name of a function
     static std::function<void()> get_script(crstring file_name);
-    template<typename T>
-    static void eval_script(crstring file_name, T self);
+    template<typename T, typename S>
+    static void eval_script(crstring file_name, T self, S params);
     template<typename T>
     static T eval_snippet(crstring snippet);
     static void destroy();
@@ -54,10 +54,10 @@ T ChaiManager::eval_snippet(crstring snippet) {
     }
 }
 
-template<typename T>
-void ChaiManager::eval_script(crstring file_name, T self) {
-    // TODO: Add UpdateParams
+template<typename T, typename S>
+void ChaiManager::eval_script(crstring file_name, T self, S params) {
     m_chai.set_global(self, "self");
+    m_chai.set_global(params, "params");
     try {
         get_script(file_name)();
     } catch (const std::exception& e) {

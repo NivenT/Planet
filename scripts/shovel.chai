@@ -1,8 +1,13 @@
 def run() {
-    var fx = -AGENT_NORMAL_ACCELERATION * self.getMass();
-    self.applyForce(fx, 0);
-    if (self.is_standing) {
-        //self.applyForce(0, fx*10);
+    //if (!self.equipped) return;
+
+    var player_exts = self.owner.getExtents();
+    var player_diag2 = player_exts.x*player_exts.x + player_exts.y*player_exts.y;
+
+    var mouse = getMouse();
+    var dist = mouse - self.owner.getCenter();
+    if (dot(dist, dist) < 4*player_diag2) {
+        params.planet.remove_tile(params.planet.getTile(mouse));
     }
 }
 

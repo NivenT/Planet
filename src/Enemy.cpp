@@ -59,5 +59,7 @@ void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b
 
 void Enemy::update(const UpdateParams& params) {
     Agent::update(params);
-    if (m_update_script != "") ChaiManager::eval_script(m_update_script, chaiscript::var(this));
+    if (m_update_script != "") {
+        ChaiManager::eval_script(m_update_script, chaiscript::var(this), chaiscript::var(params));
+    }
 }

@@ -8,7 +8,13 @@ The ChaiScript language is essentially C++ if it were a scripting language. Beyo
 There are a few things to know when writing your own scripts for updating enemies.
 
 * Each script has an implicit `self` object of type `Enemy` that refers to the `Enemy` being updated
-* Not yet, but at some point the `UpdateParams` will be provided to the script as well
+* The `UpdateParams` are provided to the script as well under the name `params`
+
+# Item Script Details
+These are much the same as for Enemy scripts
+
+* Each script has an implicit `self` object of type `Item` that refers to the `Item` being updated
+* Each script has an implicit `params` object of type `UpdateParams` coming from the Player invoking the script
 
 # Issues
 

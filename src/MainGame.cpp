@@ -30,22 +30,26 @@ MainGame::~MainGame() {
     offFocus();
 }
 
-// Dependent o code in planet.vert
+// Dependent on code in planet.vert
 vec2 MainGame::getMouse() const {
     vec2 mouse = InputManager::getMouseCoordsStandard(m_window->getHeight());
     mouse *= 2.f/m_window->getDimensions();
     mouse -= 1.f;
     if (!m_square_planet) {
-        const float radius = m_planet.getRadius()/m_camera.getDimensions().x;
-        const float height = m_planet.getHeight()/m_camera.getDimensions().x;
+        const double radius = m_planet.getRadius()/m_camera.getDimensions().x;
+        const double height = m_planet.getHeight()/m_camera.getDimensions().x;
+        const double half_circum = M_PI * radius;
 
         mouse = vec2(mouse.y + radius, mouse.x);
-        float x = height * atan(mouse.y/mouse.x);
+        double x = height * atan(mouse.y/mouse.x);
+        double z = sqrt(exp(2.0*radius/height)*dot(mouse, mouse)/(height*height));
         // I never thought the day would come that I make use of the lambertW function
-        float y = height * LambertW(exp(radius/height)*mouse.y/(height*sin(x/height))) - radius;
+        double y = height * LambertW(z) - radius;
         mouse = vec2(x,y);
-    }  
-    return m_camera.screenToGame(mouse);
+    }
+    // TODO: Fix clicking past planet edge
+    mouse = m_camera.screenToGame(mouse);
+    return mouse;
 }
 
 void MainGame::onFocus() {
@@ -66,7 +70,8 @@ void MainGame::onFocus() {
     test_item2->add_to_world(m_world.get(), item_params);
 
     item_params.position = m_planet.getTileCenter(6, 50);
-    Item* test_item3 = new Item("resources/images/shovel.png", SMALL_ITEM_EXTENTS);
+    Item* test_item3 = new Item("resources/images/shovel.png", SMALL_ITEM_EXTENTS,
+                                "scripts/shovel.chai");
     test_item3->add_to_world(m_world.get(), item_params);
 
     CreationParams enemy_params;
@@ -81,7 +86,7 @@ void MainGame::onFocus() {
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
-    m_objects.push_back(test_enemy);
+    //m_objects.push_back(test_enemy);
 
     m_state = ScreenState::RUNNING;
 }
@@ -202,12 +207,12 @@ void MainGame::update() {
         m_dev_mode = !m_dev_mode;
         //if (!m_dev_mode) m_debug = false;
     }
-
+    /*
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         auto tile = m_planet.getTile(getMouse());
         m_planet.remove_tile(tile);
     }
-
+    */
     if (!m_paused && m_manager->getFPS() > 0.1) {
         UpdateParams params;
         params.planet = &m_planet;

@@ -86,6 +86,7 @@ As of Feb 27, the controls are as below
 ## Normal Mode
 * WASD - Move and jump
 * EQ - Change selected item
+* Space - Use selected item
 * P - Toggle Paused
 * F1 - Toggle Dev Mode
 

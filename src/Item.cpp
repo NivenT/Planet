@@ -65,8 +65,10 @@ void Item::render_icon(SpriteBatch& batch, crvec2 top_left, float transparency) 
                    vec4(m_color.r, m_color.g, m_color.b, m_color.a * transparency));
 }
 
-void Item::use() {
-    if (m_use_script != "") ChaiManager::eval_script(m_use_script, chaiscript::var(this));
+void Item::use(const UpdateParams& params) {
+    if (m_use_script != "") {
+        ChaiManager::eval_script(m_use_script, chaiscript::var(this), chaiscript::var(params));
+    }
 }
 
 void Item::pickup(Agent* owner, b2World* world) {
