@@ -1,4 +1,6 @@
 # Planet
+[![Build Status](https://travis-ci.org/NivenT/Planet.svg?branch=master)](https://travis-ci.org/NivenT/Planet)
+
 WIP Planet hopping game
 
 <p align="center">
