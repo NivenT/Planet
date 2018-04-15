@@ -1,3 +1,5 @@
+#include <nta/Logger.h>
+
 #include "Planet.h"
 #include "Player.h"
 
@@ -30,6 +32,10 @@ Planet Planet::new_test() {
             int type = r >= grass_level ? 2 :
                        r >= test.m_sea_level ? 0 : 1;
             test.m_tiles.back().push_back(types[type]);
+            if (type == 1) {
+                test.m_tiles.back().back().destructable = false;
+                test.m_tiles.back().back().solid = false;
+            }
         }
     }
 
@@ -79,15 +85,26 @@ b2Vec2 Planet::getGravity() const {
     return b2Vec2(m_gravity.x, m_gravity.y);
 }
 
-ivec2 Planet::getTile(vec2 pos) const {
+ivec2 Planet::getCoord(vec2 pos) const {
     // (0,0) should be top-left of top-left tile
     pos -= getOffset();
     pos /= TILE_SIZE;
     return ivec2((int)abs(pos.y), (int)abs(pos.x));
 }
 
-void Planet::remove_tile(ivec2 coord) {
-    if (0 <= coord.x && coord.x < rows && 0 <= coord.y && coord.y < cols) {
+const Tile& Planet::getTile(const ivec2& coord) const {
+    if (0 <= coord.x && coord.x < rows) {
+        return m_tiles[coord.x][coord.y%cols];
+    }
+    nta::Logger::writeErrorToLog("Planet.getTile: Tried getting nonexistent Tile");
+}
+
+bool Planet::validCoord(const ivec2& coord) const {
+    return 0 <= coord.x && coord.x < rows && 0 <= coord.y && coord.y < cols;
+}
+
+void Planet::remove_tile(const ivec2& coord) {
+    if (validCoord(coord) && m_tiles[coord.x][coord.y].destructable) {
         m_tiles[coord.x][coord.y].active = false;
 
         b2World* world = m_body->GetWorld();
@@ -95,34 +112,6 @@ void Planet::remove_tile(ivec2 coord) {
         add_to_world(world);
     }
 }
-
-/*
-// TODO: Account for missing tiles
-b2ChainShape Planet::createOutline() const {
-    b2ChainShape chain_shape;
-
-    vector<b2Vec2> vertices;
-    for (int c = 0; c < m_dimensions[1]; c++) {
-        const vec2 tl = getTileTopLeft(m_sea_level, c);
-        vertices.emplace_back(tl.x, tl.y);
-    }
-    for (int r = m_sea_level; r < m_dimensions[0]; r++) {
-        const vec2 tr = getTileTopLeft(r, m_dimensions[1]-1) + TILE_DX;
-        vertices.emplace_back(tr.x, tr.y);
-    }
-    for (int c = 0; c < m_dimensions[1]; c++) {
-        const vec2 br = getTileTopLeft(m_dimensions[0]-1, m_dimensions[1]-c-1) + TILE_DX - TILE_DY;
-        vertices.emplace_back(br.x, br.y);
-    }
-    for (int r = m_dimensions[0]; r > m_sea_level; r--) {
-        const vec2 bl = getTileTopLeft(r-1, 0) - TILE_DY;
-        vertices.emplace_back(bl.x, bl.y);
-    }
-    
-    chain_shape.CreateLoop(vertices.data(), vertices.size());
-    return chain_shape;
-}
-*/
 
 // TODO: Make fewer assumptions about m_sea_level
 // TODO: less duplicated code

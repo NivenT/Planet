@@ -31,6 +31,8 @@ struct Tile {
     glm::vec4 color;
 
     bool active = true;
+    bool destructable = true;
+    bool solid = true;
 };
 
 #endif // TILE_H_INCLUDED

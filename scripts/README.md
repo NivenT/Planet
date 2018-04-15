@@ -19,4 +19,5 @@ These are much the same as for Enemy scripts
 # Issues
 
 * Currently, scripts must end with the name of the funtion they are meant to run (c.f. shoe.chai)
+  * Furthermore, no two scripts can name their function the same thing
 * It's possible not everything you need is available to the script. Check out [ChaiManager.cpp](https://github.com/NivenT/Planet/blob/master/src/ChaiManager.cpp) to see what all you have access to (open an issue if you think of something that should be added)

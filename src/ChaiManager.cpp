@@ -79,6 +79,7 @@ void ChaiManager::init() {
     m_chai.add(chaiscript::base_class<Agent, Player>());
 
     // really gotta figure out this snake case v. camel case thing
+    add(chaiscript::fun(&Planet::getCoord), "getCoord");
     add(chaiscript::fun(&Planet::getTile), "getTile");
     add(chaiscript::fun(&Planet::remove_tile), "remove_tile");
     add(chaiscript::user_type<Planet>(), "Planet");
@@ -98,6 +99,7 @@ void ChaiManager::init() {
     add(chaiscript::fun(&glm::vec2::x), "x");
     add(chaiscript::fun(&glm::vec2::y), "y");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a-b;}), "-");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return a+b;}), "+");
     add(chaiscript::constructor<glm::vec2(float, float)>(), "vec2");
     add(chaiscript::constructor<glm::vec2(const glm::vec2&)>(), "vec2");
     add(chaiscript::fun(&glm::ivec2::x), "x");
@@ -109,6 +111,7 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(AGENT_NORMAL_ACCELERATION), "AGENT_NORMAL_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_FAST_ACCELERATION), "AGENT_FAST_ACCELERATION");
     add_global_const(chaiscript::const_var(PLAYER_EXTENTS), "PLAYER_EXTENTS");
+    add_global_const(chaiscript::const_var(TILE_SIZE), "TILE_SIZE");
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");

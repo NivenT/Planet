@@ -14,7 +14,7 @@
 
 using namespace std;
 using namespace nta;
-using namespace glm;
+using namespace glm; 
 
 extern "C" double LambertW(const double z);
 
@@ -76,7 +76,7 @@ void MainGame::onFocus() {
 
     CreationParams enemy_params;
     enemy_params.planet = &m_planet;
-    enemy_params.position = m_planet.getTileCenter(6, 2);
+    enemy_params.position = m_planet.getTileCenter(6, 130);
     enemy_params.extents = ENEMY_UNIT_EXTENTS * vec2(3,1);
     Enemy* test_enemy = new Enemy("resources/images/shoe.png", "scripts/shoe.chai");
 
@@ -86,7 +86,7 @@ void MainGame::onFocus() {
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
-    //m_objects.push_back(test_enemy);
+    m_objects.push_back(test_enemy);
 
     m_state = ScreenState::RUNNING;
 }

@@ -3,3 +3,4 @@ build
 Log.log
 misc
 *.sublime-*
+debug_build

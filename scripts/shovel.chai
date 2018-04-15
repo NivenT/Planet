@@ -1,4 +1,4 @@
-def run() {
+def run_shovel() {
     //if (!self.equipped) return;
 
     var player_exts = self.owner.getExtents();
@@ -7,8 +7,8 @@ def run() {
     var mouse = getMouse();
     var dist = mouse - self.owner.getCenter();
     if (dot(dist, dist) < 4*player_diag2) {
-        params.planet.remove_tile(params.planet.getTile(mouse));
+        params.planet.remove_tile(params.planet.getCoord(mouse));
     }
 }
 
-run
+run_shovel

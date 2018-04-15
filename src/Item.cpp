@@ -76,4 +76,5 @@ void Item::pickup(Agent* owner, b2World* world) {
     m_owner = owner;
 
     world->DestroyBody(m_body);
+    m_body = nullptr;
 }

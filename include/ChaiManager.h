@@ -61,7 +61,8 @@ void ChaiManager::eval_script(crstring file_name, T self, S params) {
     try {
         get_script(file_name)();
     } catch (const std::exception& e) {
-        nta::Logger::writeErrorToLog("Chaiscript error: " + std::string(e.what()));
+        nta::Logger::writeErrorToLog("Chaiscript error while running " + file_name + ": " + 
+                                     std::string(e.what()));
     }
 }
 

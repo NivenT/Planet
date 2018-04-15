@@ -74,6 +74,8 @@ void Object::resolve_collision(const UpdateParams& _, b2ContactEdge* __, b2Conta
 
 // Should I just move this code direcly into update?
 void Object::handle_collisions(const UpdateParams& params) {
+    if (!m_body) return;
+    
     for (b2ContactEdge* edge = m_body->GetContactList(); edge != nullptr; edge = edge->next) {
         void* object = edge->other->GetUserData();
         b2Contact* contact = edge->contact;
@@ -83,6 +85,8 @@ void Object::handle_collisions(const UpdateParams& params) {
 }
 
 void Object::update(const UpdateParams& params) {
+    if (!m_body) return;
+    
     const float planet_width = params.planet->getDimensions().x;
     const float planet_half_width = planet_width/2.f;
     while (getCenter().x > planet_half_width) {
