@@ -47,6 +47,11 @@ void MainMenu::init() {
     m_buttons[0].name = "Play Game";
     m_buttons[0].next_index = MAINGAME_SCREEN_INDEX;
 
+    m_buttons[1].bounds = glm::vec4(-60, -20, 120, 20);
+    m_buttons[1].backgroundColor = glm::vec4(0);
+    m_buttons[1].name = "Level Editor";
+    m_buttons[1].next_index = LEVELEDITOR_SCREEN_INDEX;
+
     Logger::writeToLog("Initialized MainMenu");
 }
 
@@ -64,6 +69,7 @@ void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     static nta::GLTexture backgroundImage = nta::ResourceManager::getTexture("resources/images/background.png");
+
     m_hudBatch.begin();
     m_hudBatch.addGlyph(glm::vec4(-100,100,200,200), glm::vec4(0,0,1,1), backgroundImage.id, 1, glm::vec4(1,1,1,.2));
     m_font->drawText(m_hudBatch, m_window->getTitle(), glm::vec4(-80, 90, 160, 20));
@@ -73,10 +79,10 @@ void MainMenu::render() {
     m_hudBatch.end();
 
     m_simpleProg->use();
-
-    glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE, &m_hudCamera.getCameraMatrix()[0][0]);
+    glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE, 
+                       &m_hudCamera.getCameraMatrix()[0][0]);
     m_hudBatch.render();
-
     m_simpleProg->unuse();
+
     m_window->swapBuffers();
 }

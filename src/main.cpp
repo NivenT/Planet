@@ -5,6 +5,7 @@
 
 #include "MainGame.h"
 #include "MainMenu.h"
+#include "LevelEditor.h"
 #include "ChaiManager.h"
 
 #define log(s) nta::Logger::writeToLog(#s + std::string(": ") + nta::to_string(s))
@@ -33,6 +34,7 @@ int main(int argc, char* argv[]) {
     nta::ScreenManager screenManager(TITLE, TARGET_FPS);
     screenManager.addScreen(new MainMenu);
     screenManager.addScreen(new MainGame, MAINMENU_SCREEN_INDEX);
+    screenManager.addScreen(new LevelEditor, MAINMENU_SCREEN_INDEX);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

@@ -1,9 +1,7 @@
-#ifndef MENU_H_INCLUDED
-#define MENU_H_INCLUDED
+#ifndef MAINMENU_H_INCLUDED
+#define MAINMENU_H_INCLUDED
 
-#include <nta/Window.h>
 #include <nta/SpriteFont.h>
-#include <nta/FPSLimiter.h>
 #include <nta/GLSLProgram.h>
 #include <nta/Camera2D.h>
 #include <nta/Screen.h>
@@ -20,7 +18,7 @@ struct Button {
     glm::vec4 bounds;
     glm::vec4 backgroundColor;
     std::string name;
-    GLuint backgroundTexture;
+    GLuint backgroundTexture = 0;
     int next_index;
 };
 
@@ -30,7 +28,7 @@ private:
     nta::GLSLProgram* m_simpleProg = nullptr;
     nta::SpriteBatch m_hudBatch;
     nta::Camera2D m_hudCamera;
-    Button m_buttons[1];
+    Button m_buttons[2];
 public:
     MainMenu();
     ~MainMenu();
@@ -39,4 +37,4 @@ public:
     void init();
 };
 
-#endif // MENU_H_INCLUDED
+#endif // MAINMENU_H_INCLUDED
