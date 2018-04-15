@@ -244,7 +244,7 @@ void MainGame::prepare_batches() {
     m_player->render_inventory(m_overlay_batch, m_font);
     m_player->render_health(m_batch);
     m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
-                         vec4(85, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
+                         vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
 
     if (m_paused) {
         m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, MEDIUM_TEXT_HEIGHT));

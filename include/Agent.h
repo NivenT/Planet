@@ -30,6 +30,8 @@ public:
     void popup(int flag, uint64_t& eid, int when = STANDARD_POPUP_TIME);
     virtual void render_health(nta::SpriteBatch& batch) const;
     void update(const UpdateParams& params);
+
+    friend ChaiManager;
 };
 
 #endif // AGENT_H_INCLUDED

@@ -39,13 +39,13 @@ void ChaiManager::init() {
 
     add(chaiscript::fun(&Enemy::m_max_speed), "m_max_speed");
     add(chaiscript::fun(&Enemy::m_max_speed), "max_speed");
-    add(chaiscript::fun(&Enemy::m_is_standing), "m_is_standing");
-    add(chaiscript::fun(&Enemy::m_is_standing), "is_standing");
     // this isn't strictly necessary but makes error messages nicer
     add(chaiscript::user_type<Enemy>(), "Enemy");
 
     add(chaiscript::fun(&Agent::getHealth), "getHealth");
     add(chaiscript::fun(&Agent::applyDamage), "applyDamage");
+    add(chaiscript::fun(&Agent::m_is_standing), "m_is_standing");
+    add(chaiscript::fun(&Agent::m_is_standing), "is_standing");
     add(chaiscript::user_type<Agent>(), "Agent");
 
     add(chaiscript::fun(&Object::getObjectType), "getObjectType");
