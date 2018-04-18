@@ -116,4 +116,12 @@ void Player::handle_input(const UpdateParams& params) {
 void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_input(params);
+
+    // Try to stay upright
+    float ang = getOrientation();
+    if (0 < ang && ang < M_PI/2.f) {
+        applyForce(PLAYER_TILT_FORCE, 0);
+    } else if (-M_PI/2.f < ang && ang < 0) {
+        applyForce(-PLAYER_TILT_FORCE, 0);
+    }
 }

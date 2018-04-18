@@ -103,9 +103,11 @@ void Object::update(const UpdateParams& params) {
     if (abs(vel.x) > m_max_speed.x) {
         vel.x = m_max_speed.x*sign(vel.x);
     }
+    /*
     if (abs(vel.y) > m_max_speed.y) {
         vel.y = m_max_speed.y*sign(vel.y);
     }
+    */
     setVelocity(vel);
 
     handle_collisions(params);

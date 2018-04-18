@@ -20,6 +20,7 @@ void log_defs() {
     log(PLAYER_MASS);
     log(PLAYER_FORCE);
     log(PLAYER_JUMP_FORCE);
+    log(PLAYER_TILT_FORCE);
     //log(ENEMY_UNIT_DIMS);
     log(SMALL_ITEM_SIZE);
 
