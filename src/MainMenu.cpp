@@ -49,8 +49,8 @@ void MainMenu::init() {
 
     m_buttons[1].bounds = glm::vec4(-60, -20, 120, 20);
     m_buttons[1].backgroundColor = glm::vec4(0);
-    m_buttons[1].name = "Level Editor";
-    m_buttons[1].next_index = LEVELEDITOR_SCREEN_INDEX;
+    m_buttons[1].name = "World Editor";
+    m_buttons[1].next_index = WORLDEDITOR_SCREEN_INDEX;
 
     Logger::writeToLog("Initialized MainMenu");
 }

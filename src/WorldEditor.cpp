@@ -3,21 +3,21 @@
 #include <nta/ResourceManager.h>
 #include <nta/SystemManager.h>
 
-#include "LevelEditor.h"
+#include "WorldEditor.h"
 #include "defs.h"
 
 using namespace std;
 using namespace nta;
 using namespace glm;
 
-LevelEditor::LevelEditor() : Screen("Level Editor") {
+WorldEditor::WorldEditor() : Screen("World Editor") {
 }
 
-LevelEditor::~LevelEditor() {
+WorldEditor::~WorldEditor() {
 }
 
-void LevelEditor::init() {
-    Logger::writeToLog("Initializing LevelEditor...");
+void WorldEditor::init() {
+    Logger::writeToLog("Initializing WorldEditor...");
 
     m_prog = nta::SystemManager::getGLSLProgram("shaders/simple2D");
     check_error();
@@ -41,20 +41,20 @@ void LevelEditor::init() {
     m_batch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
-    Logger::writeToLog("Initialized LevelEditor");
+    Logger::writeToLog("Initialized WorldEditor");
 }
 
-void LevelEditor::onFocus() {
+void WorldEditor::onFocus() {
     m_state = ScreenState::RUNNING;
 }
 
-void LevelEditor::offFocus() {
+void WorldEditor::offFocus() {
 }
 
-void LevelEditor::update() {
+void WorldEditor::update() {
 }
 
-void LevelEditor::render() {
+void WorldEditor::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_batch.begin();
