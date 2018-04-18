@@ -9,37 +9,45 @@ WIP Planet hopping game
 </p>
 
 Above are (old) screenshots of the game.
-- The left one shows debug mode and the various items/enemies that currently spawn for testing purposes
+- The left one shows the game in debug mode
 - The right one shows the view during regular gameplay (the shoe is what's being used as a test enemy)
 
 The planet is made from square tiles, and all the physics is calculated like on a normal flat world. A shader is used to render the rectangular world as a circle.
 
 # The Vision
-The main premise of the game is that you start off on some simple planet, and start exploring. There will be enemies to shoot, and puzzles to solve; once you complete some objective (maybe reaching the center of the planet, maybe something else) you get to fly to other planets and do the same thing. There's no story with this game, only gameplay; go from planet to planet, solve puzzles, have fun and whatnot. I envision the game having no loading screens or fast travel. Even as you go from planet to planet you'll have to actually fly through the space inbetween.
+The main premise of the game is that you start off on some simple planet, and start exploring. There will be enemies to fight, and puzzles to solve; once you complete some objective (maybe reaching the center of the planet, probably something else) you get to fly to other planets and explore more. There's no story with this game, only gameplay; go from planet to planet, solve puzzles, have fun and whatnot. I envision the game having no loading screens or fast travel. Even as you go from planet to planet you'll have to actually fly through the space inbetween.
 
-A little more on the techincal side of the vision, planets should be round with believable (although almost certainly inaccurate) physics. This is currently acheived by having all the physics work on a rectangular planet, but using shader trickery to render things as if they were round. In addition, I'd like for the different enemy types to have programmable AIs with their logic written in something like [ChaiScript](https://github.com/ChaiScript/ChaiScript). Depending on how well I can implement things, this philosophy might extend to customizable items and who knows what else.
+A little more on the techincal side of the vision, planets should be round with believable (although almost certainly inaccurate) physics. This is currently acheived by having all the physics work on a rectangular planet, but using shader trickery to render things as if they were round. In addition, I am hoping for a good amount of customizability. This includes having enemy AIs and item effects programmed in [ChaiScript](https://github.com/ChaiScript/ChaiScript), and including a world editor where users can build new planets, put together new enemies, etc.
 
-# Current Progress (as of April 7, 2018)
+# Current Progress (as of April 18, 2018)
 There is currently only a single planet which is in development as a testbed for the features being added into the game. You control a little light (will change once I figure out how I'll get decent sprites) that can move around and jump. With you on the planet are a few items which you can pick up to add to your inventory, and a shoe that serves as an enemy.
 
-The shoe's AI is controlled using [code](https://github.com/NivenT/Planet/blob/master/scripts/shoe.chai) written in ChaiScript, and so can be modified without having to recompile to program. The next thing I plan to do is make items useable, and specifically, have a shovel that can dig through tiles.
+The shoe's AI is controlled using [code](https://github.com/NivenT/Planet/blob/master/scripts/shoe.chai) written in ChaiScript, and so can be modified without having to recompile to program. Similarly, one of the items is a shovel, and it's use effect is determined by a ChaiScript [script](https://github.com/NivenT/Planet/blob/master/scripts/shovel.chai) as well.
+
+On the main menu, there is a level editor option, but that is mostly cosmetic for now.
 
 ## Known Bugs
 
 * Rendering issues in round planet mode
   * The edge of the planet is visible as a white line (probably alpha blending issues since the world overlaps a little at the edge)
-* The physics could use some fine tuning
 * The game segfaults when you exit
   * Probably ChaiScript-related
+  * Does not affect gameplay
 * Physics at the edge of the planet can be off
   * This is a fundamental issue in how the physics is set up (e.g. Box2D expects flat worlds, but the game is made to look like a circular planet), and so cannot be "fixed"
  
-## (Very) Rough Roadmap
+## Rough Roadmap
 This is a sketch of what I think I should try to do/add next. The items are not listed exactly in the order they will be taken care of because (I suspect) there will be a lot of going back and forth between different things as the game is being fleshed out.
 
-* Make Items usable
-  * Almost certainly via Chaiscript
-* Build a level editor
+* Add variety/new gameplay elements
+  * Definitely before moving on to the world editor
+    * Make the stick usable as a weapon
+    * Add an enemy spawner
+    * Add obstacles (e.g. a crate)
+  * Not necessary before moving on to the world editor
+    * Add a ladder you can climb up
+    * Make the rock a throwable projectile (ideally, you can pick it back up afterwards but we'll see)
+* Build a world editor
   * Allow custom items and enemies
     * Defined using text files
   * Add (more) properties to tiles
@@ -50,7 +58,7 @@ This is a sketch of what I think I should try to do/add next. The items are not 
 * TBA
 
 # Beyond the Vision
-On the off chance that this thing gets developed enough to realize the (vague) vision I have above, there are a number of extras I have thought about throwing in the keep things interesting. These are low priority until something more playable than the current state is acheived, but in no particular order, some possible features include
+On the off chance that this thing gets developed enough to realize the (vague) vision I have above, there are a number of extras I have thought about throwing in the keep things interesting. These are low priority for the forseeable future, but in no particular order, some possible features include
 
 * A leveling or skill system
 * procedurally generated planets
@@ -73,15 +81,13 @@ make
 
 Once that's setup, you can run the game from the `build` folder using `./game`
 
-Note: If possible, compile with gcc instead of clang. This is not necessary
-
 ## Requirements
 The [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements) are all you should need.
 
 # Controls
 For an up-to-date account of the controls, check out the update functions in [MainGame.cpp](https://github.com/NivenT/Planet/blob/master/src/MainGame.cpp) and [Player.cpp](https://github.com/NivenT/Planet/blob/master/src/Player.cpp). 
 
-As of Feb 27, the controls are as below
+As of Apr 18, the controls are as below
 
 ## Normal Mode
 * WASD - Move and jump
