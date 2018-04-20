@@ -87,6 +87,7 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Player::AttackAnim::dims), "dims");
     add(chaiscript::fun(&Player::AttackAnim::speed), "speed");
     add(chaiscript::fun(&Player::AttackAnim::num_cycles), "num_cycles");
+    add(chaiscript::fun(&Player::AttackAnim::knockback), "knockback");
     add(chaiscript::user_type<Player::AttackAnim>(), "AttackAnim");
 
     // really gotta figure out this snake case v. camel case thing
@@ -133,6 +134,7 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(AGENT_FAST_ACCELERATION), "AGENT_FAST_ACCELERATION");
     add_global_const(chaiscript::const_var(PLAYER_EXTENTS), "PLAYER_EXTENTS");
     add_global_const(chaiscript::const_var(PLAYER_DIMS), "PLAYER_DIMS");
+    add_global_const(chaiscript::const_var(PLAYER_WEAK_ATT_FORCE), "PLAYER_WEAK_ATT_FORCE");
     add_global_const(chaiscript::const_var(SMALL_ITEM_EXTENTS), "SMALL_ITEM_EXTENTS");
     add_global_const(chaiscript::const_var(TILE_SIZE), "TILE_SIZE");
 

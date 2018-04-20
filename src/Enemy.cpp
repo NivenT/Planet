@@ -55,6 +55,9 @@ void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b
             Player* player = (Player*)obj;
             if (player->are_flags_set(AGENT_STATE_ATTACKING)) {
                 applyDamage(1.2);
+
+                vec2 force = player->get_attack_strength()*normalize(getCenter()-player->getCenter());
+                applyForce(force.x, force.y);
             } else if (!are_flags_set(AGENT_STATE_ATTACKING)) {
                 applyDamage(0.5);
             }

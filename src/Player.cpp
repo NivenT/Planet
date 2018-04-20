@@ -25,6 +25,10 @@ vec2 Player::getExtents() const {
     return PLAYER_EXTENTS;
 }
 
+float Player::get_attack_strength() {
+    return are_flags_set(AGENT_STATE_ATTACKING) ? m_attack_anim.knockback : 0;
+}
+
 void Player::set_attacking(Object* requester) {
     if (requester && requester->getObjectType() & ITEM_TYPE) {
         set_flags(AGENT_STATE_ATTACKING);

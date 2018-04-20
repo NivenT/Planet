@@ -17,6 +17,7 @@ public:
         glm::vec2 dims;
         float speed;
         int num_cycles = 1;
+        float knockback = 0;
     };
 private:
     void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
@@ -31,6 +32,7 @@ public:
     // passkey pattern doesn't mix well with ChaiScript so next best thing
     AttackAnim* get_attack_anim(Object* requester);
     glm::vec2 getExtents() const;
+    float get_attack_strength();
     void set_attacking(Object* requester);
     void add_to_world(b2World* world, const CreationParams& params);
     void render(nta::SpriteBatch& batch) const;
