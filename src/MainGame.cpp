@@ -205,14 +205,8 @@ void MainGame::update() {
         m_paused = !m_paused;
     } if (InputManager::justPressed(SDLK_F1)) {
         m_dev_mode = !m_dev_mode;
-        //if (!m_dev_mode) m_debug = false;
     }
-    /*
-    if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
-        auto tile = m_planet.getTile(getMouse());
-        m_planet.remove_tile(tile);
-    }
-    */
+
     if (!m_paused && m_manager->getFPS() > 0.1) {
         UpdateParams params;
         params.planet = &m_planet;
@@ -222,9 +216,8 @@ void MainGame::update() {
             obj->update(params);
         }
         m_world->Step(1./m_manager->getFPS(), 6, 2);
-
-        if (!m_debug) m_camera.setCenter(m_player->getCenter());
     }
+    if (!m_debug) m_camera.setCenter(m_player->getCenter());
 }
 
 void MainGame::prepare_batches() {
