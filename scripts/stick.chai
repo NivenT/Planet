@@ -1,4 +1,5 @@
 def run_stick() {
+    // Assumes self.owner is a Player* and not any other type of Agent*
     if (!self.owner.are_flags_set(AGENT_STATE_ATTACKING)) {
         self.owner.set_attacking(self);
         

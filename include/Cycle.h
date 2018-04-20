@@ -118,7 +118,7 @@ void Cycle<T>::advance() {
 
 template<typename T>
 void Cycle<T>::retreat() {
-    ptr = (ptr-1)%data.size();
+    ptr = ptr == 0 ? data.size() - 1 : ptr - 1;
 }
 
 #endif // CYCLE_H_INCLUDED
