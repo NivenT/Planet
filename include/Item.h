@@ -10,6 +10,7 @@ private:
         Agent* m_owner;
         Planet* m_planet;
     };
+    /// Replace with an animation?
     nta::GLTexture m_tex;
     glm::vec2 m_extents;
     std::string m_use_script;

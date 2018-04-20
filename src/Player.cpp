@@ -2,6 +2,7 @@
 #include <nta/CallbackManager.h>
 
 #include "Player.h"
+#include "Enemy.h"
 
 using namespace std;
 using namespace glm;
@@ -16,8 +17,18 @@ Player::Player(uint16_t type) :
 Player::~Player() {
 }
 
+Player::AttackAnim* Player::get_attack_anim(Object* requester) {
+    return requester && requester->getObjectType() & ITEM_TYPE ? &m_attack_anim : nullptr;
+}
+
 vec2 Player::getExtents() const {
     return PLAYER_EXTENTS;
+}
+
+void Player::set_attacking(Object* requester) {
+    if (requester && requester->getObjectType() & ITEM_TYPE) {
+        set_flags(AGENT_STATE_ATTACKING);
+    }
 }
 
 void Player::add_to_world(b2World* world, const CreationParams& params) {
@@ -62,6 +73,16 @@ void Player::render_inventory(SpriteBatch& batch, SpriteFont* font) const {
     font->drawText(batch, "Inventory", vec4(BOUNDARY/2.f, 100, TEXT_WIDTH, MEDIUM_TEXT_HEIGHT));
 }
 
+void Player::render_attack(SpriteBatch& batch) const {
+    if (!are_flags_set(AGENT_STATE_ATTACKING)) return;
+
+    auto offset = m_attack_anim.offset;
+    offset.x = m_direction ? offset.x : PLAYER_DIMS.x - offset.x - m_attack_anim.dims.x;
+    auto uv = m_direction ? m_attack_anim.anim.get_uv() : m_attack_anim.anim.get_flipped_uv();
+    batch.addGlyph(vec4(getTopLeft() + offset, m_attack_anim.dims),
+                   uv, m_attack_anim.anim.get_tex_id());
+}
+
 void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
                        Object* obj) {
     static const float EPS = 1e-1;
@@ -74,8 +95,13 @@ void Player::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, 
 
             popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
         } else if (obj->getObjectType() & ENEMY_TYPE) {
-            // TODO: Vary damange
-            applyDamage(0.25);
+            Enemy* enemy = (Enemy*)obj;
+            if (enemy->are_flags_set(AGENT_STATE_ATTACKING)) {
+                // TODO: Vary damange
+                applyDamage(0.5);
+            } else if (!are_flags_set(AGENT_STATE_ATTACKING)) {
+                applyDamage(0.25);
+            }
         }
     }
 }
@@ -116,6 +142,13 @@ void Player::handle_input(const UpdateParams& params) {
 void Player::update(const UpdateParams& params) {
     Agent::update(params);
     handle_input(params);
+
+    if (are_flags_set(AGENT_STATE_ATTACKING)) {
+        m_attack_anim.anim.step(params.dt*m_attack_anim.speed);
+        if (m_attack_anim.anim.get_time() > m_attack_anim.anim.get_length()*m_attack_anim.num_cycles) {
+            unset_flags(AGENT_STATE_ATTACKING);
+        }
+    }
 
     // Try to stay upright
     if (m_is_standing) {

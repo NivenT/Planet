@@ -12,5 +12,6 @@ extern void debug_render_body(nta::DebugBatch& dbatch, const b2Body* body,
                               bool draw_aabbs);
 extern void debug_render_world(nta::DebugBatch& dbatch, const b2World* world, 
                                bool draw_aabbs);
+extern float angle(const b2Vec2& a, const b2Vec2& b);
 
 #endif // UTILS_H_INCLUDED

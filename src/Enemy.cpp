@@ -1,6 +1,7 @@
 #include <nta/ResourceManager.h>
 
 #include "Enemy.h"
+#include "Player.h"
 #include "ChaiManager.h"
 
 using namespace nta;
@@ -51,8 +52,12 @@ void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b
     Agent::resolve_collision(params, edge, contact, obj);
     if (obj) {
         if (obj->getObjectType() & PLAYER_TYPE) {
-            // TODO: Vary damange
-            applyDamage(0.5);
+            Player* player = (Player*)obj;
+            if (player->are_flags_set(AGENT_STATE_ATTACKING)) {
+                applyDamage(1.2);
+            } else if (!are_flags_set(AGENT_STATE_ATTACKING)) {
+                applyDamage(0.5);
+            }
         }
     }
 }

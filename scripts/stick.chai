@@ -1,0 +1,14 @@
+def run_stick() {
+    if (!self.owner.are_flags_set(AGENT_STATE_ATTACKING)) {
+        self.owner.set_attacking(self);
+        
+        if (var attack_anim = self.owner.get_attack_anim(self); !attack_anim.is_var_null()) {
+            attack_anim.anim = Animation2D("resources/images/stick2.png", 9, 0, 9);
+            attack_anim.offset = PLAYER_DIMS * vec2(1.3, -0.1);
+            attack_anim.dims = SMALL_ITEM_EXTENTS*vec2(2, 6);
+            attack_anim.speed = 30;
+        }
+    }
+}
+
+run_stick

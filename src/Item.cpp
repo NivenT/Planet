@@ -1,4 +1,5 @@
 #include <nta/ResourceManager.h>
+#include <nta/Animation2D.h>
 
 #include "Item.h"
 #include "ChaiManager.h"

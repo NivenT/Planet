@@ -46,6 +46,7 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Agent::applyDamage), "applyDamage");
     add(chaiscript::fun(&Agent::m_is_standing), "m_is_standing");
     add(chaiscript::fun(&Agent::m_is_standing), "is_standing");
+    add(chaiscript::fun(&Agent::are_flags_set), "are_flags_set");
     add(chaiscript::user_type<Agent>(), "Agent");
 
     add(chaiscript::fun(&Object::getObjectType), "getObjectType");
@@ -74,9 +75,19 @@ void ChaiManager::init() {
 
     m_chai.add(chaiscript::base_class<Object, Item>());
 
-    m_chai.add(chaiscript::user_type<Player>(), "Player");
+    add(chaiscript::fun(&Player::get_attack_anim), "get_attack_anim");
+    add(chaiscript::fun(&Player::set_attacking), "set_attacking");
+    add(chaiscript::user_type<Player>(), "Player");
+    
     m_chai.add(chaiscript::base_class<Object, Player>());
     m_chai.add(chaiscript::base_class<Agent, Player>());
+
+    add(chaiscript::fun(&Player::AttackAnim::anim), "anim");
+    add(chaiscript::fun(&Player::AttackAnim::offset), "offset");
+    add(chaiscript::fun(&Player::AttackAnim::dims), "dims");
+    add(chaiscript::fun(&Player::AttackAnim::speed), "speed");
+    add(chaiscript::fun(&Player::AttackAnim::num_cycles), "num_cycles");
+    add(chaiscript::user_type<Player::AttackAnim>(), "AttackAnim");
 
     // really gotta figure out this snake case v. camel case thing
     add(chaiscript::fun(&Planet::getCoord), "getCoord");
@@ -96,10 +107,18 @@ void ChaiManager::init() {
     add(chaiscript::fun(&InputManager::justReleased), "justReleased");
     add(chaiscript::user_type<InputManager>(), "InputManager");
 
+    add(chaiscript::constructor<Animation2D(crstring, int, size_t, size_t)>(), "Animation2D");
+    add(chaiscript::constructor<Animation2D(crstring, crivec2, size_t, size_t)>(), "Animation2D");
+    add(chaiscript::fun([](Animation2D& a, const Animation2D& b){a = b;}), "=");
+    add(chaiscript::user_type<Animation2D>(), "Animation2D");
+
     add(chaiscript::fun(&glm::vec2::x), "x");
     add(chaiscript::fun(&glm::vec2::y), "y");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a-b;}), "-");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a+b;}), "+");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return a*b;}), "*");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return a/b;}), "/");
+    add(chaiscript::fun([](glm::vec2& a, crvec2 b){return a=b;}), "=");
     add(chaiscript::constructor<glm::vec2(float, float)>(), "vec2");
     add(chaiscript::constructor<glm::vec2(const glm::vec2&)>(), "vec2");
     add(chaiscript::fun(&glm::ivec2::x), "x");
@@ -107,10 +126,14 @@ void ChaiManager::init() {
     add(chaiscript::constructor<glm::vec2(int, int)>(), "ivec2");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return glm::dot(a,b);}), "dot");
 
+    add_global_const(chaiscript::const_var(AGENT_STATE_SHOW_HEALTH), "AGENT_STATE_SHOW_HEALTH");
+    add_global_const(chaiscript::const_var(AGENT_STATE_ATTACKING), "AGENT_STATE_ATTACKING");
     add_global_const(chaiscript::const_var(AGENT_SLOW_ACCELERATION), "AGENT_SLOW_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_NORMAL_ACCELERATION), "AGENT_NORMAL_ACCELERATION");
     add_global_const(chaiscript::const_var(AGENT_FAST_ACCELERATION), "AGENT_FAST_ACCELERATION");
     add_global_const(chaiscript::const_var(PLAYER_EXTENTS), "PLAYER_EXTENTS");
+    add_global_const(chaiscript::const_var(PLAYER_DIMS), "PLAYER_DIMS");
+    add_global_const(chaiscript::const_var(SMALL_ITEM_EXTENTS), "SMALL_ITEM_EXTENTS");
     add_global_const(chaiscript::const_var(TILE_SIZE), "TILE_SIZE");
 
     Logger::unindent();

@@ -16,6 +16,7 @@ struct UpdateParams {
 
     Planet* planet;
     b2World* world;
+    float dt;
 };
 
 struct CreationParams {
@@ -45,6 +46,9 @@ protected:
 
     glm::vec4 m_color;
     b2Body* m_body;
+    bool m_is_standing;
+    // true when facing right
+    bool m_direction;
 public:
     Object(float mx, float my, crvec4 c, uint16_t type);
     Object(crvec2 m, crvec4 c, uint16_t type);

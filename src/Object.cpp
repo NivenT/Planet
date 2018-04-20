@@ -1,15 +1,16 @@
 #include "Object.h"
+#include "utils.h"
 
 using namespace std;
 using namespace glm;
 using namespace nta;
 
 Object::Object(float mx, float my, crvec4 c, uint16_t type) : m_max_speed(mx, my), m_color(c), 
-    m_type_mask(type | OBJECT_TYPE) {
+    m_type_mask(type | OBJECT_TYPE), m_direction(true) {
 }
 
 Object::Object(crvec2 m, crvec4 c, uint16_t type) : m_max_speed(m), m_color(c), 
-    m_type_mask(type | OBJECT_TYPE) {
+    m_type_mask(type | OBJECT_TYPE), m_direction(true) {
 }
 
 Object::~Object() {
@@ -69,7 +70,23 @@ void Object::add_to_world(b2World* world, const CreationParams& params) {
 void Object::render_debug(DebugBatch& _) const {
 }
 
-void Object::resolve_collision(const UpdateParams& _, b2ContactEdge* __, b2Contact* ___, Object* ____) {
+void Object::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
+                               Object* obj) {
+    static const float EPS = 1e-1;
+    if (contact->IsTouching() && 
+            !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
+        b2WorldManifold manifold;
+        contact->GetWorldManifold(&manifold);
+
+        float c = angle(manifold.points[0]-manifold.points[1], b2Vec2(1,0));
+        if (abs(c) >= 0.707) {
+            for (int i = 0; i < b2_maxManifoldPoints; i++) {
+                if (manifold.points[i].y < getCenter().y - getExtents().y + EPS) {
+                    m_is_standing = true;
+                }
+            }
+        }
+    }
 }
 
 // Should I just move this code direcly into update?
@@ -98,17 +115,17 @@ void Object::update(const UpdateParams& params) {
                              m_body->GetAngle());
     }
 
+    m_is_standing = false;
+    handle_collisions(params);
+
     vec2 vel = getVelocity();
-    // Maybe there should only be max speeds when standing?
     if (abs(vel.x) > m_max_speed.x) {
         vel.x = m_max_speed.x*sign(vel.x);
     }
-    /*
     if (abs(vel.y) > m_max_speed.y) {
         vel.y = m_max_speed.y*sign(vel.y);
     }
-    */
     setVelocity(vel);
 
-    handle_collisions(params);
+    if (abs(vel.x) >= OBJECT_FACING_THRESHOLD) m_direction = vel.x > 0;
 }

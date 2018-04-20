@@ -70,3 +70,7 @@ void debug_render_world(DebugBatch& dbatch, const b2World* world, bool draw_aabb
         curr = curr->GetNext();
     }
 }
+
+float angle(const b2Vec2& a, const b2Vec2& b) {
+    return (a.x*b.x + a.y*b.y)/sqrt((a.x*a.x + a.y*a.y)*(b.x*b.x+b.y*b.y));
+}

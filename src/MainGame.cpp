@@ -62,7 +62,8 @@ void MainGame::onFocus() {
     item_params.planet = &m_planet;
     item_params.position = m_planet.getTileCenter(6, 35);
 
-    Item* test_item = new Item("resources/images/stick.png", SMALL_ITEM_EXTENTS);
+    Item* test_item = new Item("resources/images/stick.png", SMALL_ITEM_EXTENTS,
+                               "scripts/stick.chai");
     test_item->add_to_world(m_world.get(), item_params);
 
     item_params.position = m_planet.getTileCenter(6, 10);
@@ -211,11 +212,12 @@ void MainGame::update() {
         UpdateParams params;
         params.planet = &m_planet;
         params.world = m_world.get();
+        params.dt = 1./m_manager->getFPS();
 
         for (auto& obj : m_objects) {
             obj->update(params);
         }
-        m_world->Step(1./m_manager->getFPS(), 6, 2);
+        m_world->Step(params.dt, 6, 2);
     }
     if (!m_debug) m_camera.setCenter(m_player->getCenter());
 }
@@ -236,6 +238,7 @@ void MainGame::prepare_batches() {
     m_player->render(m_light_batch);
     m_player->render_inventory(m_overlay_batch, m_font);
     m_player->render_health(m_batch);
+    m_player->render_attack(m_batch);
     m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                          vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
 

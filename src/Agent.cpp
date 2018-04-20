@@ -27,10 +27,10 @@ float Agent::getHealth() const {
 bool Agent::applyDamage(float damage) {
     m_health -= damage;
     popup(AGENT_STATE_SHOW_HEALTH, m_health_event_id);
-    /*
+
     // temporary, of course
     m_health += m_health <= 0 ? m_max_health : 0;
-    */
+
     return m_health <= 0;
 }
 
@@ -85,32 +85,13 @@ void Agent::render_health(SpriteBatch& batch) const {
     batch.addGlyph(vec4(bl.x, bl.y + HEIGHT, width*m_health/m_max_health, HEIGHT), vec4(0, 0, 1, 1), 
                    tex, vec4(c.r, c.g, c.b, 1));
 }
-
-float angle(const b2Vec2& a, const b2Vec2& b) {
-    return (a.x*b.x + a.y*b.y)/sqrt((a.x*a.x + a.y*a.y)*(b.x*b.x+b.y*b.y));
-}
-
+/*
 void Agent::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
                               Object* obj) {
-    static const float EPS = 1e-1;
     Object::resolve_collision(params, edge, contact, obj);
-    if (contact->IsTouching() && 
-            !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
-        b2WorldManifold manifold;
-        contact->GetWorldManifold(&manifold);
-
-        float c = angle(manifold.points[0]-manifold.points[1], b2Vec2(1,0));
-        if (abs(c) >= 0.707) {
-            for (int i = 0; i < b2_maxManifoldPoints; i++) {
-                if (manifold.points[i].y < getCenter().y - getExtents().y + EPS) {
-                    m_is_standing = true;
-                }
-            }
-        }
-    }
 }
 
 void Agent::update(const UpdateParams& params) {
-    m_is_standing = false;
     Object::update(params);
 }
+*/
