@@ -215,7 +215,7 @@ void MainGame::post_update() {
                     // don't wanna delete player
                     curr->destroyBody(m_world.get());
                     delete curr;
-                    
+
                     std::swap(m_objects[i], m_objects.back());
                     m_objects.pop_back();
                     i--;
@@ -244,8 +244,8 @@ void MainGame::update() {
         params.world = m_world.get();
         params.dt = 1./m_manager->getFPS();
 
-        for (auto& obj : m_objects) {
-            obj->update(params);
+        for (int i = 0; i < m_objects.size(); i++) {
+            m_objects[i]->update(params);
         }
         m_world->Step(params.dt, 6, 2);
 
