@@ -218,6 +218,21 @@ void MainGame::update() {
             obj->update(params);
         }
         m_world->Step(params.dt, 6, 2);
+
+        for (size_t i = 0; i < m_objects.size(); i++) {
+            const uint16_t type = m_objects[i]->getObjectType();
+            if (type & ENEMY_TYPE) {
+                Enemy* curr = (Enemy*)m_objects[i];
+                if (curr->getHealth() <= 0) {
+                    curr->destroyBody(params.world);
+                    delete curr;
+
+                    std::swap(m_objects[i], m_objects.back());
+                    m_objects.pop_back();
+                    i--;
+                }
+            }
+        }
     }
     if (!m_debug) m_camera.setCenter(m_player->getCenter());
 }

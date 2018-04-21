@@ -129,3 +129,8 @@ void Object::update(const UpdateParams& params) {
 
     if (abs(vel.x) >= OBJECT_FACING_THRESHOLD) m_direction = vel.x > 0;
 }
+
+void Object::destroyBody(b2World* world) {
+    if (m_body) world->DestroyBody(m_body);
+    m_body = nullptr;
+}

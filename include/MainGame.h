@@ -45,7 +45,6 @@ private:
     Planet m_planet;
 
     // This is getting ridiculous
-    float m_time; // When am I gonna get rid of this?
     bool m_debug;
     bool m_soft_debug;
     bool m_draw_aabbs;

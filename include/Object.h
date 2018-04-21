@@ -58,6 +58,7 @@ public:
     glm::vec2 getVelocity() const;
     float getOrientation() const;
     float getMass() const;
+    void destroyBody(b2World* world);
     virtual glm::vec2 getTopLeft() const;
     virtual glm::vec2 getExtents() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);
