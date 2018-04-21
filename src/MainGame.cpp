@@ -11,6 +11,8 @@
 
 #include "MainGame.h"
 #include "ChaiManager.h"
+#include "Spawner.h"
+#include "utils.h"
 
 using namespace std;
 using namespace nta;
@@ -80,14 +82,20 @@ void MainGame::onFocus() {
     enemy_params.position = m_planet.getTileCenter(6, 130);
     enemy_params.extents = ENEMY_UNIT_EXTENTS * vec2(3,1);
     Enemy* test_enemy = new Enemy("resources/images/shoe.png", "scripts/shoe.chai");
-
     test_enemy->add_to_world(m_world.get(), enemy_params);
+
+    enemy_params.position = m_planet.getTileCenter(6, 100);
+    Spawner* test_spawner = new Spawner("resources/images/shoe_spawner.png", *test_enemy,
+                                        m_objects);
+    test_spawner->set_creation_params(enemy_params);
+    test_spawner->add_to_world(m_world.get(), enemy_params);
 
     m_objects.push_back(m_player);
     m_objects.push_back(test_item);
     m_objects.push_back(test_item2);
     m_objects.push_back(test_item3);
     m_objects.push_back(test_enemy);
+    m_objects.push_back(test_spawner);
 
     m_state = ScreenState::RUNNING;
 }
@@ -195,6 +203,28 @@ void MainGame::dev_update() {
     }
 }
 
+void MainGame::post_update() {
+    for (size_t i = 0; i < m_objects.size(); i++) {
+        const uint16_t type = m_objects[i]->getObjectType();
+        if (type & AGENT_TYPE) {
+            Agent* curr = (Agent*)m_objects[i];
+            if (curr->getHealth() <= 0) {
+                if (type & PLAYER_TYPE) {
+                    m_state = ScreenState::SWITCH_ESC;
+                } else {
+                    // don't wanna delete player
+                    curr->destroyBody(m_world.get());
+                    delete curr;
+                    
+                    std::swap(m_objects[i], m_objects.back());
+                    m_objects.pop_back();
+                    i--;
+                }
+            }
+        }
+    }
+}
+
 void MainGame::update() {
     if (m_dev_mode) {
         dev_update();
@@ -219,20 +249,7 @@ void MainGame::update() {
         }
         m_world->Step(params.dt, 6, 2);
 
-        for (size_t i = 0; i < m_objects.size(); i++) {
-            const uint16_t type = m_objects[i]->getObjectType();
-            if (type & ENEMY_TYPE) {
-                Enemy* curr = (Enemy*)m_objects[i];
-                if (curr->getHealth() <= 0) {
-                    curr->destroyBody(params.world);
-                    delete curr;
-
-                    std::swap(m_objects[i], m_objects.back());
-                    m_objects.pop_back();
-                    i--;
-                }
-            }
-        }
+        post_update();
     }
     if (!m_debug) m_camera.setCenter(m_player->getCenter());
 }

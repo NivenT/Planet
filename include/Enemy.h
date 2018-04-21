@@ -4,12 +4,12 @@
 #include "Agent.h"
 
 class Enemy : public Agent {
-private:
+protected:
+    void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
+
     nta::GLTexture m_tex;
     glm::vec2 m_extents;
     std::string m_update_script;
-protected:
-    void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
 public:
     Enemy(crstring texture, crstring update = "", float health = NORMAL_ENEMY_INIT_HEALTH, 
           crvec2 speed = NORMAL_ENEMY_MAX_SPEED, crvec4 color = glm::vec4(1), uint16_t type = 0);

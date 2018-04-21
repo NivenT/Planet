@@ -14,8 +14,6 @@
 
 #include "Planet.h"
 #include "Player.h"
-#include "Enemy.h"
-#include "utils.h"
 
 class MainGame : public nta::Screen {
 private:
@@ -23,6 +21,7 @@ private:
     void render_batches();
     void debug_update();
     void dev_update();
+    void post_update();
     glm::vec2 getMouse() const;
 
     nta::GLSLProgram* m_simpleProg = nullptr;
