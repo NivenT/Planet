@@ -15,7 +15,6 @@ matrix:
     - os: osx
   allow_failures:
     - env: COMPILER=clang++-3.6 CCOMPILER=clang-3.6
-    - os: osx
 
 addons:
   apt:
