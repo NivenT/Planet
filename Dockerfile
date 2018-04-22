@@ -1,10 +1,9 @@
 # Use an Ubuntu parent image
-#FROM evbauer/mesa_lean:10108.01
 FROM ubuntu:17.10
 
 # -qq suppresses output
 RUN apt-get update
-RUN apt-get -qq -y install libbox2d-dev libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev \
+RUN apt-get -qq -y install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev \
 		libdevil-dev libglew-dev freeglut3-dev libxmu-dev libxi-dev libglm-dev cmake gcc g++
 
 # Based off of http://fabiorehm.com/blog/2014/09/11/running-gui-apps-with-docker/
@@ -25,10 +24,9 @@ WORKDIR /planet
 ADD . /planet
 
 WORKDIR /planet/build
+RUN rm -rf *
 RUN cmake ../
 RUN make
-RUN ln -s ../resources
-RUN ln -s ../shaders
 
 USER developer
 ENV HOME /home/developer
