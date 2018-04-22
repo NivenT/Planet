@@ -89,14 +89,18 @@ ivec2 Planet::getCoord(vec2 pos) const {
     // (0,0) should be top-left of top-left tile
     pos -= getOffset();
     pos /= TILE_SIZE;
-    return ivec2((int)abs(pos.y), (int)abs(pos.x));
+
+    while (pos.y > 0) pos.y -= rows;
+    while (pos.x < 0) pos.x += cols;
+    return ivec2((-(int)pos.y)%rows, ((int)pos.x)%cols);
 }
 
 const Tile& Planet::getTile(const ivec2& coord) const {
     if (0 <= coord.x && coord.x < rows) {
         return m_tiles[coord.x][coord.y%cols];
     }
-    nta::Logger::writeErrorToLog("Planet.getTile: Tried getting nonexistent Tile");
+    nta::Logger::writeErrorToLog("Planet.getTile: Tried getting nonexistent Tile at (" +
+                                 nta::to_string(coord.x) + ", " + nta::to_string(coord.y) + ")");
 }
 
 bool Planet::validCoord(const ivec2& coord) const {

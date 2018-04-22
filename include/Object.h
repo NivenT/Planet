@@ -41,8 +41,8 @@ private:
     const glm::vec2 m_max_speed;
 protected:
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
-    void setVelocity(crvec2 vel);
-    void applyForce(float x, float y);
+    virtual void setVelocity(crvec2 vel);
+    virtual void applyForce(float x, float y);
 
     glm::vec4 m_color;
     b2Body* m_body;

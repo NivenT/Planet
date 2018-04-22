@@ -5,6 +5,8 @@
 
 class Spawner : public Enemy {
 private:
+    void applyForce(float x, float y) {}
+    
     // read right -> left: A constant pointer to a constant Enemy
     const Enemy m_spawn;
     std::vector<Object*>& m_objs;
