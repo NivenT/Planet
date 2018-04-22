@@ -5,7 +5,7 @@
 
 struct Light {
     Light() {}
-    Light(crvec2 pos, glm::vec3 col, float s, float b = 1.0) : 
+    Light(crvec2 pos, crvec3 col, float s, float b = 1.0) : 
         center(pos), color(col), radius(s), brightness(b) {
     }
     Light(crvec2 pos, crvec4 col, float s, float b = 1.0) :

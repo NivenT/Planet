@@ -81,6 +81,20 @@ make
 
 Once that's setup, you can run the game from the `build` folder using `./game`
 
+## Alternate How to Build
+If you have issues with getting all the dependencies or don't want to install them globally, you also have the option of running the code using [docker](https://www.docker.com/community-edition). For this, you'll run
+
+```bash
+git clone https://github.com/NivenT/Planet
+cd Planet
+git submodule update --init --recursive
+# You can replace "game" below with whatever you want to name the container
+docker build -t game .
+docker run game
+```
+
+If the docker commands fail to run, try adding `sudo`. If they run but something in the container goes wrong, open an isue. Admittedly, this will not work quite yet because I haven't figured out how to configure the docker container to use the host machines display for rendering the window and game and whatnot.
+
 ## Requirements
 The [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements) are all you should need. Technically, you do not need SDL2_mixer since this game has no audio.
 
