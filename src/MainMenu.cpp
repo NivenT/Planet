@@ -67,6 +67,7 @@ void MainMenu::update() {
 
 void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, m_window->getDimensions().x, m_window->getDimensions().y);
 
     static nta::GLTexture backgroundImage = nta::ResourceManager::getTexture("resources/images/background.png");
 
@@ -81,6 +82,7 @@ void MainMenu::render() {
     m_simpleProg->use();
     glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE, 
                        &m_hudCamera.getCameraMatrix()[0][0]);
+    glUniform1f(m_simpleProg->getUniformLocation("is_light"), 0.0);
     m_hudBatch.render();
     m_simpleProg->unuse();
 

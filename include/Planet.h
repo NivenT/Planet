@@ -19,10 +19,10 @@
  * (NUM_ROWS-1, 0)  ...  (NUM_ROWS-1, NUM_COLS-1)
  */
 
+class WorldEditor;
+
 class Planet {
 private:
-    // (0,0) should be center of sea level in world coordinates
-    glm::vec2 getOffset() const;
     std::vector<std::vector<b2Vec2>> createOutline() const;
     bool validCoord(const glm::ivec2& coord) const;
 
@@ -50,6 +50,8 @@ public:
     glm::vec2 getTileTopLeft(int row, int col) const;
     glm::vec2 getTileCenter(int row, int col) const;
     glm::ivec2 getCoord(glm::vec2 pos) const;
+    // (0,0) should be center of sea level in world coordinates
+    glm::vec2 getOffset() const;
     const Tile& getTile(const glm::ivec2& coord) const;
     float getRadius() const;
     float getHeight() const;
@@ -57,6 +59,8 @@ public:
     void add_to_world(b2World* world);
     void render(nta::SpriteBatch& batch) const;
     void render_debug(nta::DebugBatch& dbatch) const;
+
+    friend WorldEditor;
 };
 
 #endif // PLANET_H_INCLUDED

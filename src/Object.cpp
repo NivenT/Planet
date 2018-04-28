@@ -49,6 +49,10 @@ float Object::getMass() const {
     return m_body->GetMass();
 }
 
+bool Object::hasBody() const {
+    return m_body != nullptr;
+}
+
 void Object::setVelocity(crvec2 vel) {
     m_body->SetLinearVelocity(b2Vec2(vel.x, vel.y));
 }

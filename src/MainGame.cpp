@@ -23,7 +23,7 @@ extern "C" double LambertW(const double z);
 MainGame::MainGame() : m_debug(false), m_square_planet(false), 
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
-                       m_dev_mode(false), Screen("Main Game") {
+                       m_dev_mode(false), m_light_mode(false), Screen("Main Game") {
     m_planet = Planet::new_test();
     m_world = make_unique<b2World>(m_planet.getGravity());
 }
@@ -180,7 +180,7 @@ void MainGame::debug_update() {
     } if (InputManager::getMouseWheelMotion() < 0) {
         m_camera.scaleDimensions(ds, ds);
     } if (InputManager::isPressed(SDLK_g)) {
-        m_camera = Camera2D();
+        m_camera = Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
     }
 
     if (InputManager::justPressed(SDLK_RETURN)) {
@@ -233,6 +233,8 @@ void MainGame::update() {
         m_paused = !m_paused;
     } if (InputManager::justPressed(SDLK_F1)) {
         m_dev_mode = !m_dev_mode;
+    } if (InputManager::justPressed(SDLK_F2)) {
+        m_light_mode = !m_light_mode;
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
@@ -259,9 +261,21 @@ void MainGame::prepare_batches() {
     m_debug_sprite_batch.begin();
 
     
+    const float radA = sqrt(dot(m_camera.getDimensions(), m_camera.getDimensions()));
+
     m_planet.render(m_batch);
     // +1 to skip the player
     for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
+        /*
+        if (!(*it)->hasBody()) continue;
+        vec2 extents = (*it)->getExtents();
+        float radB = sqrt(dot(extents, extents));
+
+        vec2 dist = (*it)->getCenter() - m_camera.getCenter();
+        if (dot(dist, dist) < (radA + radB)*(radA + radB)) {
+            (*it)->render(m_batch);
+        }
+        */
         (*it)->render(m_batch);
     }
     m_player->render(m_light_batch);
@@ -298,7 +312,7 @@ void MainGame::render_batches() {
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
-        glUniform1f(m_planetProg->getUniformLocation("is_light"), 0.0);
+        glUniform1f(m_planetProg->getUniformLocation("is_light"), m_light_mode);
         glUniform1f(m_planetProg->getUniformLocation("normalized_planet_radius"), 
                     m_planet.getRadius()/scale);
         glUniform1f(m_planetProg->getUniformLocation("normalized_planet_height"), 
@@ -312,7 +326,7 @@ void MainGame::render_batches() {
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
             glUniform1f(m_planetProg->getUniformLocation("is_light"), 1.0);
             m_light_batch.render();
-            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 0.0);
+            glUniform1f(m_planetProg->getUniformLocation("is_light"), 0.0);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
     } m_planetProg->unuse();
@@ -320,6 +334,7 @@ void MainGame::render_batches() {
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
+        glUniform1f(m_simpleProg->getUniformLocation("is_light"), m_light_mode);
         
         if (m_square_planet) {
             m_batch.render();
@@ -341,6 +356,7 @@ void MainGame::render_batches() {
 
 void MainGame::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, m_window->getDimensions().x, m_window->getDimensions().y);
 
     prepare_batches();
     render_batches();

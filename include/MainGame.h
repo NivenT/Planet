@@ -1,18 +1,14 @@
 #ifndef MAINGAME_H_INCLUDED
 #define MAINGAME_H_INCLUDED
 
-#include <memory>
-
 #include <Box2D/Box2D.h>
 
 #include <nta/DebugBatch.h>
-#include <nta/SpriteBatch.h>
 #include <nta/SpriteFont.h>
 #include <nta/GLSLProgram.h>
 #include <nta/Camera2D.h>
 #include <nta/Screen.h>
 
-#include "Planet.h"
 #include "Player.h"
 
 class MainGame : public nta::Screen {
@@ -50,6 +46,8 @@ private:
     bool m_square_planet;
     bool m_paused;
     bool m_dev_mode;
+    // When you turn a bug into a feature
+    bool m_light_mode;
 public:
     MainGame();
     ~MainGame();
