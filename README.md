@@ -100,6 +100,8 @@ If the `./docker-build.sh` command fails, try adding `sudo`. If it runs but some
 ## Requirements
 The [jubilant-funicular](https://github.com/NivenT/jubilant-funicular) submodule (+ its requirements) are all you should need. Technically, you do not need SDL2_mixer since this game has no audio.
 
+This project also makes use of the [Box2D](https://github.com/erincatto/Box2D) library but it is already included here.
+
 # Controls
 For an up-to-date account of the controls, check out the update functions in [MainGame.cpp](https://github.com/NivenT/Planet/blob/master/src/MainGame.cpp) and [Player.cpp](https://github.com/NivenT/Planet/blob/master/src/Player.cpp). 
 
