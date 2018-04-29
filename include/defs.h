@@ -87,6 +87,10 @@
 #define ITEM_ICON_DIMS glm::vec2(ITEM_ICON_SIZE)
 #define ITEM_MAX_SPEED glm::vec2(0, 20)
 
+/// GUI
+#define WORLDEDITOR_GUI_DIMS glm::vec2(0.35f, 1.0f)
+#define GUI_TEXT_MAX_LENGTH  30
+
 /// Rendering
 #define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)
 #define DEFAULT_CAMERA_DIMENSIONS (PLAYER_DIMS * 8.f)

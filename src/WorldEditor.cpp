@@ -10,6 +10,8 @@
 #include "utils.h"
 #include "defs.h"
 
+#define GUI_CMD(cmd) if (cmd) { gui_active = true; }
+
 using namespace std;
 using namespace nta;
 using namespace glm;
@@ -65,6 +67,8 @@ void WorldEditor::init() {
     m_batch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
+    m_window->resize(1000, 600);
+
     Logger::writeToLog("Initialized WorldEditor");
 }
 
@@ -76,6 +80,8 @@ void WorldEditor::offFocus() {
 }
 
 void WorldEditor::update() {
+    if (gui_active) return;
+
     static const float dx = 0.618, dy = 0.618, ds = 1.01;
     if (InputManager::isPressed(SDLK_w)) {
         m_camera.translateCenter(0, dy);
@@ -163,8 +169,15 @@ void WorldEditor::render_miniworld() {
 }
 
 void WorldEditor::render_gui() {
-    bool active = true;
-    ImGui::Begin("Test Window", &active); {
+    static string tile_tex = "resources/images/";
+    tile_tex.reserve(GUI_TEXT_MAX_LENGTH);
+
+    gui_active = false;
+
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
+    ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+    ImGui::Begin("Test Window", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove); {
         ImGui::BeginTabBar("#Bar"); {
             ImGui::DrawTabsBackground();
 
@@ -172,10 +185,15 @@ void WorldEditor::render_gui() {
                 ImGui::Text("The quick brown fox jumps over the lazy dog");
                 ImGui::ColorEdit3("clear color", (float*)&clear_color);
             } if (ImGui::AddTab("Tile")){
-                ImGui::ColorEdit4("color", (float*)&m_active_tile.color);
-                ImGui::Checkbox("Destructable", &m_active_tile.destructable);
-                ImGui::Checkbox("solid", &m_active_tile.solid);
-                ImGui::Checkbox("active", &m_active_tile.active);
+                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_tile.color))
+                GUI_CMD(ImGui::Checkbox("Destructable", &m_active_tile.destructable))
+                GUI_CMD(ImGui::Checkbox("solid", &m_active_tile.solid))
+                GUI_CMD(ImGui::Checkbox("active", &m_active_tile.active))
+                GUI_CMD(ImGui::InputText("texture", (char*)tile_tex.data(), GUI_TEXT_MAX_LENGTH))
+                if (ImGui::Button("Update texture")) {
+                    gui_active = true;
+                    m_active_tile.tex = ResourceManager::getTexture(tile_tex);
+                }
             } if (ImGui::AddTab("Item")){
                 ImGui::Text("Working on it...");
             } if (ImGui::AddTab("Enemy")){

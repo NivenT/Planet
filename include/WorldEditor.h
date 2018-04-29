@@ -25,6 +25,7 @@ private:
     Planet m_planet;
     Tile m_active_tile;
     bool m_square_planet = false;
+    bool gui_active = false;
     // temporary
     glm::vec4 clear_color;
 public:
