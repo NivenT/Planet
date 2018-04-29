@@ -16,7 +16,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0), m_active_tile(vec4(1)),
+WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0), m_active_tile(vec4(0.4, 0.7, 0.1, 0.8)),
                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
 }
@@ -108,14 +108,21 @@ void WorldEditor::update() {
 
     if (InputManager::justPressed(SDLK_RETURN)) {
         m_square_planet = !m_square_planet;
-    } else if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-        vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-        auto coord = m_planet.getCoord(mouse);
-        m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
-    } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
-        vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-        auto coord = m_planet.getCoord(mouse);
-        m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+    } 
+
+
+    vec2 mouse = InputManager::getMouseCoords();
+    vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
+    if (mouse.x > gui_region.x || mouse.y > gui_region.y) {
+        if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
+            vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+            auto coord = m_planet.getCoord(mouse);
+            m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+        } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
+            vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+            auto coord = m_planet.getCoord(mouse);
+            m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+        }
     }
 }
 
