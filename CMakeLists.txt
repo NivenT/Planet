@@ -49,6 +49,13 @@ add_subdirectory(jubilant-funicular)
 set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "Build Box2D examples" FORCE)
 add_subdirectory(Box2D)
 
+add_library(lambertw lambertw/LambertW.c)
+
+find_package(SDL2 REQUIRED)
+add_library(imgui imgui/imgui.cpp
+                  imgui/imgui_draw.cpp
+                  imgui/imgui_impl_sdl_gl3.cpp)
+
 add_executable(game src/main.cpp 
                     src/MainGame.cpp 
                     src/Planet.cpp 
@@ -61,10 +68,9 @@ add_executable(game src/main.cpp
                     src/MainMenu.cpp
                     src/ChaiManager.cpp
                     src/WorldEditor.cpp
-                    src/Spawner.cpp
-                    lambertw/LambertW.c)
+                    src/Spawner.cpp)
 # What is dl? (Needed for ChaiScript)
-target_link_libraries(game ${NTA_LIBRARIES} Box2D dl)
+target_link_libraries(game ${NTA_LIBRARIES} Box2D dl lambertw imgui)
 include_directories(include ${NTA_INCLUDE_DIR} 
                             ${CMAKE_CURRENT_SOURCE_DIR}/Box2D
                             ${CMAKE_CURRENT_SOURCE_DIR}/chaiscript)
