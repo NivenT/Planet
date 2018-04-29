@@ -44,17 +44,13 @@ option(LINK_RESOURCES "Automatically creates links to resources/shaders" ON)
 # Uncomment to use CImg instead of DevIL
 #set(NTA_USE_DEVIL OFF CACHE BOOL "" FORCE)
 set(NTA_USE_AUDIO OFF CACHE BOOL "" FORCE)
+set(NTA_USE_IMGUI ON CACHE BOOL "" FORCE)
 add_subdirectory(jubilant-funicular)
 
 set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "Build Box2D examples" FORCE)
 add_subdirectory(Box2D)
 
 add_library(lambertw lambertw/LambertW.c)
-
-find_package(SDL2 REQUIRED)
-add_library(imgui imgui/imgui/imgui.cpp
-                  imgui/imgui/imgui_draw.cpp
-                  imgui/imgui/imgui_impl_sdl_gl3.cpp)
 
 add_executable(game src/main.cpp 
                     src/MainGame.cpp 
@@ -70,11 +66,11 @@ add_executable(game src/main.cpp
                     src/WorldEditor.cpp
                     src/Spawner.cpp)
 # What is dl? (Needed for ChaiScript)
-target_link_libraries(game ${NTA_LIBRARIES} Box2D dl lambertw imgui)
-include_directories(include ${NTA_INCLUDE_DIR} 
-                            ${CMAKE_CURRENT_SOURCE_DIR}/Box2D
-                            ${CMAKE_CURRENT_SOURCE_DIR}/chaiscript
-                            ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+target_link_libraries(game ${NTA_LIBRARIES} Box2D dl lambertw)
+target_include_directories(game PUBLIC include 
+                                       ${NTA_INCLUDE_DIR} 
+                                       ${CMAKE_CURRENT_SOURCE_DIR}/Box2D
+                                       ${CMAKE_CURRENT_SOURCE_DIR}/chaiscript)
 
 if(${LINK_RESOURCES})
 	if (NOT EXISTS "${CMAKE_BINARY_DIR}/resources")

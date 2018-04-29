@@ -29,7 +29,6 @@ public:
     ~WorldEditor();
     void onFocus();
     void offFocus();
-    void handleInput(); // Hate having to make this explicit
     void update();
     void render();
     void init();
