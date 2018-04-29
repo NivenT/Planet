@@ -74,3 +74,22 @@ void debug_render_world(DebugBatch& dbatch, const b2World* world, bool draw_aabb
 float angle(const b2Vec2& a, const b2Vec2& b) {
     return (a.x*b.x + a.y*b.y)/sqrt((a.x*a.x + a.y*a.y)*(b.x*b.x+b.y*b.y));
 }
+
+// Dependent on code in planet.vert
+vec2 screenToGame(vec2 screen, crvec2 win_dims, const Camera2D& camera, 
+                  const Planet& planet, bool square_planet) {
+    screen *= 2.f/win_dims;
+    screen -= 1.f;
+    if (!square_planet) {
+        const double radius = planet.getRadius()/camera.getDimensions().x;
+        const double height = planet.getHeight()/camera.getDimensions().x;
+
+        screen = vec2(screen.y + radius, screen.x);
+        double x = height * atan(screen.y/screen.x);
+        double z = sqrt(exp(2.0*radius/height)*dot(screen, screen)/(height*height));
+        // I never thought the day would come that I make use of the lambertW function
+        double y = height * LambertW(z) - radius;
+        screen = vec2(x,y);
+    }
+    return camera.screenToGame(screen);
+}

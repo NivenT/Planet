@@ -3,22 +3,28 @@
 #include <nta/ResourceManager.h>
 #include <nta/SystemManager.h>
 
-#include <imgui/imgui.h>
+#include <imgui/imgui_tabs.h>
 #include <imgui/imgui_impl_sdl_gl3.h>
 
 #include "WorldEditor.h"
+#include "utils.h"
 #include "defs.h"
 
 using namespace std;
 using namespace nta;
 using namespace glm;
 
-WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0),
+WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0), m_active_tile(vec4(1)),
                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
 }
 
 WorldEditor::~WorldEditor() {
+}
+
+// Dependent on code in planet.vert
+vec2 WorldEditor::screen_to_game(crvec2 screen) const {
+    return screenToGame(screen, m_window->getDimensions(), m_camera, m_planet, m_square_planet);
 }
 
 void WorldEditor::init() {
@@ -87,8 +93,23 @@ void WorldEditor::update() {
         m_camera = Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
     }
 
+    while (m_camera.getCenter().x > m_planet.getDimensions().x/2.f) {
+        m_camera.translateCenter(-m_planet.getDimensions().x, 0);
+    }
+    while (m_camera.getCenter().x < -m_planet.getDimensions().x/2.f) {
+        m_camera.translateCenter(m_planet.getDimensions().x, 0);
+    }
+
     if (InputManager::justPressed(SDLK_RETURN)) {
         m_square_planet = !m_square_planet;
+    } else if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
+        vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+        auto coord = m_planet.getCoord(mouse);
+        m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+    } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
+        vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+        auto coord = m_planet.getCoord(mouse);
+        m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
     }
 }
 
@@ -97,6 +118,9 @@ void WorldEditor::prepare_batches() {
 
     //m_font->drawText(m_batch, "Under Development...", glm::vec4(-75, 20, 150, 40));
     m_planet.render(m_batch);
+
+    vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+    m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
     
     m_batch.end();
 }
@@ -132,20 +156,39 @@ void WorldEditor::render_miniworld() {
 
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
-    const vec2 dims = m_square_planet ? m_planet.getDimensions() * TILE_SIZE * vec2(0.55, 3):
+    const vec2 dims = m_square_planet ? m_planet.getDimensions() * vec2(0.55, 3):
                                         m_planet.getRadius() * vec2(2.1);
     const vec2 cen = m_square_planet ? vec2(0) : vec2(0);
     render_batches(Camera2D(cen, dims)); 
 }
 
-void WorldEditor::render() {
-    const vec2 window_dims = m_window->getDimensions();
-    
+void WorldEditor::render_gui() {
     bool active = true;
     ImGui::Begin("Test Window", &active); {
-        ImGui::Text("The quick brown fox jumps over the lazy dog");
-        ImGui::ColorEdit3("clear color", (float*)&clear_color);
+        ImGui::BeginTabBar("#Bar"); {
+            ImGui::DrawTabsBackground();
+
+            if (ImGui::AddTab("General")) {
+                ImGui::Text("The quick brown fox jumps over the lazy dog");
+                ImGui::ColorEdit3("clear color", (float*)&clear_color);
+            } if (ImGui::AddTab("Tile")){
+                ImGui::ColorEdit4("color", (float*)&m_active_tile.color);
+                ImGui::Checkbox("Destructable", &m_active_tile.destructable);
+                ImGui::Checkbox("solid", &m_active_tile.solid);
+                ImGui::Checkbox("active", &m_active_tile.active);
+            } if (ImGui::AddTab("Item")){
+                ImGui::Text("Working on it...");
+            } if (ImGui::AddTab("Enemy")){
+                ImGui::Text("Working on it...");
+            } if (ImGui::AddTab("Obstacle")){
+                ImGui::Text("Working on it...");
+            }
+        } ImGui::EndTabBar();
     } ImGui::End();
+}
+
+void WorldEditor::render() {
+    const vec2 window_dims = m_window->getDimensions();
     
     glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -154,6 +197,7 @@ void WorldEditor::render() {
     prepare_batches();
     render_batches(m_camera);
     render_miniworld();
+    render_gui();
 
     m_window->swapBuffers();
 }

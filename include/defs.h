@@ -32,7 +32,7 @@
 #define TILE_DY glm::vec2(0, TILE_SIZE)
 #define TILE_DIMS glm::vec2(TILE_SIZE)
 #define TILE_EXTENTS (TILE_DIMS/2.f)
-#define TILE_UNACTIVE_ALPHA 0.35
+#define TILE_INACTIVE_ALPHA 0.35
 
 /// Agents
 #define AGENT_STATE_SHOW_HEALTH 0b0000'0000'0000'0001

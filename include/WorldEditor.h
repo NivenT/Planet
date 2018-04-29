@@ -10,9 +10,11 @@
 
 class WorldEditor : public nta::Screen {
 private:
+    glm::vec2 screen_to_game(crvec2 screen) const;
     void prepare_batches();
     void render_batches(const nta::Camera2D camera);
     void render_miniworld();
+    void render_gui();
 
     nta::SpriteFont* m_font = nullptr;
     nta::GLSLProgram* m_prog = nullptr;
@@ -21,6 +23,7 @@ private:
     nta::Camera2D m_camera;
 
     Planet m_planet;
+    Tile m_active_tile;
     bool m_square_planet = false;
     // temporary
     glm::vec4 clear_color;

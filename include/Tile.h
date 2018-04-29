@@ -19,7 +19,7 @@ struct Tile {
     }
     void render(nta::SpriteBatch& batch, glm::vec2 top_left) const {
         glm::vec4 col = color;
-        col.a *= active ? 1 : TILE_UNACTIVE_ALPHA;
+        col.a *= active ? 1 : TILE_INACTIVE_ALPHA;
         batch.addGlyph(glm::vec4(top_left, TILE_SIZE, TILE_SIZE), glm::vec4(0,0,1,1), 
                        tex.id, col);
     }

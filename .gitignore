@@ -4,3 +4,4 @@ Log.log
 misc
 *.sublime-*
 debug_build
+imgui.ini

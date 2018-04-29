@@ -18,8 +18,6 @@ using namespace std;
 using namespace nta;
 using namespace glm; 
 
-extern "C" double LambertW(const double z);
-
 MainGame::MainGame() : m_debug(false), m_square_planet(false), 
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
@@ -34,21 +32,8 @@ MainGame::~MainGame() {
 
 // Dependent on code in planet.vert
 vec2 MainGame::getMouse() const {
-    vec2 mouse = InputManager::getMouseCoordsStandard(m_window->getHeight());
-    mouse *= 2.f/m_window->getDimensions();
-    mouse -= 1.f;
-    if (!m_square_planet) {
-        const double radius = m_planet.getRadius()/m_camera.getDimensions().x;
-        const double height = m_planet.getHeight()/m_camera.getDimensions().x;
-
-        mouse = vec2(mouse.y + radius, mouse.x);
-        double x = height * atan(mouse.y/mouse.x);
-        double z = sqrt(exp(2.0*radius/height)*dot(mouse, mouse)/(height*height));
-        // I never thought the day would come that I make use of the lambertW function
-        double y = height * LambertW(z) - radius;
-        mouse = vec2(x,y);
-    }
-    return m_camera.screenToGame(mouse);
+    return screenToGame(InputManager::getMouseCoordsStandard(m_window->getHeight()),
+                        m_window->getDimensions(), m_camera, m_planet, m_square_planet);
 }
 
 void MainGame::onFocus() {
