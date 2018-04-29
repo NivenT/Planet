@@ -3,6 +3,9 @@
 #include <nta/ResourceManager.h>
 #include <nta/SystemManager.h>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl_gl3.h>
+
 #include "WorldEditor.h"
 #include "defs.h"
 
@@ -10,7 +13,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-WorldEditor::WorldEditor() : Screen("World Editor"),
+WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0),
                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
 }
@@ -56,6 +59,8 @@ void WorldEditor::init() {
     m_batch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
+    ImGui_ImplSdlGL3_Init(m_window->getSDLWindow());
+
     Logger::writeToLog("Initialized WorldEditor");
 }
 
@@ -66,8 +71,33 @@ void WorldEditor::onFocus() {
 void WorldEditor::offFocus() {
 }
 
+void WorldEditor::handleInput() {
+    SDL_Event event;
+
+    InputManager::updatePrev();
+    InputManager::setMouseWheelMotion(MouseWheelMotion::STATIONARY);
+    while (SDL_PollEvent(&event)) {
+        InputManager::update(event);
+        ImGui_ImplSdlGL3_ProcessEvent(&event);
+        switch(event.type) {
+        case SDL_QUIT:
+            m_state = ScreenState::SWITCH_X;
+            break;
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                glViewport(0, 0, event.window.data1, event.window.data2);
+                m_window->setDimensions(event.window.data1, event.window.data2);
+            }
+            break;
+        }
+    }
+    if (InputManager::justPressed(SDLK_ESCAPE)) {
+        m_state = ScreenState::SWITCH_ESC;
+    }
+}
+
 void WorldEditor::update() {
-    static const float dx = 0.618, dy = 1.618, ds = 1.01;
+    static const float dx = 0.618, dy = 0.618, ds = 1.01;
     if (InputManager::isPressed(SDLK_w)) {
         m_camera.translateCenter(0, dy);
     } if (InputManager::isPressed(SDLK_a)) {
@@ -138,12 +168,23 @@ void WorldEditor::render_miniworld() {
 void WorldEditor::render() {
     const vec2 window_dims = m_window->getDimensions();
 
+    bool active = true;
+    ImGui_ImplSdlGL3_NewFrame(m_window->getSDLWindow()); 
+    ImGui::Begin("Test Window", &active); {
+        ImGui::Text("The quick brown fox jumps over the lazy dog");
+        ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    } ImGui::End();
+
+    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, window_dims.x, window_dims.y);
 
     prepare_batches();
     render_batches(m_camera);
     render_miniworld();
+
+    ImGui::Render();
+    ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
 
     m_window->swapBuffers();
 }

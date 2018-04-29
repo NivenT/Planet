@@ -3,6 +3,9 @@
 #include <nta/Logger.h>
 #include <nta/MyEngine.h>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl_gl3.h>
+
 #include "MainGame.h"
 #include "MainMenu.h"
 #include "WorldEditor.h"
@@ -31,11 +34,22 @@ void log_defs() {
     nta::Logger::unindent();
 }
 
+void setup_imgui() {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+}
+
+void destroy_imgui() {
+    ImGui::DestroyContext();
+}
+
 int main(int argc, char* argv[]) {
     nta::init();
     log_defs();
     ChaiManager::init();
-    
+    setup_imgui();
+
     nta::ScreenManager screenManager(TITLE, TARGET_FPS);
     screenManager.addScreen(new MainMenu);
     screenManager.addScreen(new MainGame, MAINMENU_SCREEN_INDEX);
@@ -46,6 +60,7 @@ int main(int argc, char* argv[]) {
     screenManager.run(); 
     
     screenManager.destroy();
+    destroy_imgui();
     ChaiManager::destroy();
     nta::cleanup();
     nta::Logger::writeToLog("Program exited cleanly");

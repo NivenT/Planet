@@ -66,6 +66,7 @@ void MainMenu::update() {
 }
 
 void MainMenu::render() {
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, m_window->getDimensions().x, m_window->getDimensions().y);
 

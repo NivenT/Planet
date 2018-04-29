@@ -22,11 +22,14 @@ private:
 
     Planet m_planet;
     bool m_square_planet = false;
+    // temporary
+    glm::vec4 clear_color;
 public:
     WorldEditor();
     ~WorldEditor();
     void onFocus();
     void offFocus();
+    void handleInput(); // Hate having to make this explicit
     void update();
     void render();
     void init();

@@ -43,9 +43,9 @@
 #include "imgui_impl_sdl_gl3.h"
 
 // SDL,GL3W
-#include <SDL.h>
-#include <SDL_syswm.h>
-#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <GL/glew.h>    // This example is using glew to access OpenGL functions. You may use gl3w/glad/glLoadGen/etc. whatever already works for you.
 
 // SDL data
 static Uint64       g_Time = 0;
