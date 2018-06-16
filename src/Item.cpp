@@ -17,6 +17,10 @@ Item::Item(crstring texture, crvec2 extents, crstring use, crvec2 speed, uint16_
     Item(vec4(1), texture, extents, use, speed, type) {
 }
 
+Item::Item(const ItemParams& p, uint16_t type) : 
+    Item(p.color, p.tex, p.extents, p.use_script, p.max_speed, type) {
+}
+
 Item::~Item() {
     m_owner = nullptr;
 }

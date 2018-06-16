@@ -6,7 +6,8 @@
 #include <nta/GLSLProgram.h>
 #include <nta/SpriteFont.h>
 
-#include "Planet.h"
+#include "Spawner.h"
+#include "Item.h"
 
 class WorldEditor : public nta::Screen {
 private:
@@ -26,6 +27,8 @@ private:
 
     Planet m_planet;
     Tile m_active_tile;
+    ItemParams m_active_item;
+
     bool m_gui_focus = false;
     bool m_square_planet = false;
     // temporary

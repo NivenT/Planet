@@ -126,15 +126,14 @@ void WorldEditor::update() {
     vec2 mouse = InputManager::getMouseCoords();
     vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     if (!m_gui_focus && (mouse.x > gui_region.x || mouse.y > gui_region.y)) {
+        vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+        auto coord = m_planet.getCoord(mouse);
+        
         if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-            vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-            auto coord = m_planet.getCoord(mouse);
             if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
                 m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
             }
         } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
-            vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-            auto coord = m_planet.getCoord(mouse);
             if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
                 m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
             }
@@ -203,7 +202,10 @@ void WorldEditor::render_miniworld() {
 
 void WorldEditor::render_gui() {
     static string tile_tex = "resources/images/";
+    static string item_tex = "resources/images/";
+
     tile_tex.reserve(GUI_TEXT_MAX_LENGTH);
+    item_tex.reserve(GUI_TEXT_MAX_LENGTH);
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
@@ -226,7 +228,12 @@ void WorldEditor::render_gui() {
                     m_active_tile.tex = ResourceManager::getTexture(tile_tex);
                 }
             } if (ImGui::AddTab("Item")){
-                ImGui::Text("Working on it...");
+                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
+                GUI_CMD(ImGui::InputText("texture", (char*)item_tex.data(), GUI_TEXT_MAX_LENGTH))
+                if (ImGui::Button("Update texture")) {
+                    m_gui_focus = true;
+                    m_active_tile.tex = ResourceManager::getTexture(item_tex);
+                }
             } if (ImGui::AddTab("Enemy")){
                 ImGui::Text("Working on it...");
             } if (ImGui::AddTab("Obstacle")){
