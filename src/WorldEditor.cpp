@@ -10,7 +10,7 @@
 #include "utils.h"
 #include "defs.h"
 
-#define GUI_CMD(cmd) if (cmd) { gui_active = true; }
+#define GUI_CMD(cmd) if (cmd) { m_gui_focus = true; }
 
 using namespace std;
 using namespace nta;
@@ -64,11 +64,23 @@ void WorldEditor::init() {
     glUniform1i(m_planet_prog->getUniformLocation("sampler"), 0);
     m_planet_prog->unuse();
 
+    m_overlay_prog = SystemManager::getGLSLProgram("shaders/overlay");
+    if (!m_overlay_prog->isLinked()) {
+        m_overlay_prog->addAttribute("pos");
+        m_overlay_prog->addAttribute("color");
+        m_overlay_prog->addAttribute("uv");
+        m_overlay_prog->addAttribute("hasTexture");
+        m_overlay_prog->linkShaders();
+    }
+    m_overlay_prog->use();
+    glUniform1i(m_overlay_prog->getUniformLocation("sampler"), 0);
+    m_overlay_prog->unuse();
+
     m_batch.init();
+    m_overlay_batch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
     m_window->resize(1000, 600);
-
     Logger::writeToLog("Initialized WorldEditor");
 }
 
@@ -80,8 +92,6 @@ void WorldEditor::offFocus() {
 }
 
 void WorldEditor::update() {
-    if (gui_active) return;
-
     static const float dx = 0.618, dy = 0.618, ds = 1.01;
     if (InputManager::isPressed(SDLK_w)) {
         m_camera.translateCenter(0, dy);
@@ -108,33 +118,45 @@ void WorldEditor::update() {
 
     if (InputManager::justPressed(SDLK_RETURN)) {
         m_square_planet = !m_square_planet;
-    } 
+    } else if (InputManager::justPressed(SDLK_SPACE)) {
+        m_gui_focus = !m_gui_focus;
+    }
 
 
     vec2 mouse = InputManager::getMouseCoords();
     vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
-    if (mouse.x > gui_region.x || mouse.y > gui_region.y) {
+    if (!m_gui_focus && (mouse.x > gui_region.x || mouse.y > gui_region.y)) {
         if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
             vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
             auto coord = m_planet.getCoord(mouse);
-            m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+            if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
+                m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+            }
         } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
             vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
             auto coord = m_planet.getCoord(mouse);
-            m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+            if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
+                m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+            }
         }
+    } else if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
+        m_gui_focus = true;
     }
 }
 
 void WorldEditor::prepare_batches() {
     m_batch.begin(); 
+    m_overlay_batch.begin();
 
-    //m_font->drawText(m_batch, "Under Development...", glm::vec4(-75, 20, 150, 40));
+    auto text = m_gui_focus ? "GUI Focus" : "Planet Focus";
+    m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
+    
     m_planet.render(m_batch);
 
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
     m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
     
+    m_overlay_batch.end();
     m_batch.end();
 }
 
@@ -156,6 +178,10 @@ void WorldEditor::render_batches(const nta::Camera2D camera) {
 
         if (!m_square_planet) m_batch.render();
     } m_planet_prog->unuse();
+
+    m_overlay_prog->use(); {
+        m_overlay_batch.render();
+    } m_overlay_prog->unuse();
 }
 
 void WorldEditor::render_miniworld() {
@@ -179,8 +205,6 @@ void WorldEditor::render_gui() {
     static string tile_tex = "resources/images/";
     tile_tex.reserve(GUI_TEXT_MAX_LENGTH);
 
-    gui_active = false;
-
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
@@ -198,7 +222,7 @@ void WorldEditor::render_gui() {
                 GUI_CMD(ImGui::Checkbox("active", &m_active_tile.active))
                 GUI_CMD(ImGui::InputText("texture", (char*)tile_tex.data(), GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
-                    gui_active = true;
+                    m_gui_focus = true;
                     m_active_tile.tex = ResourceManager::getTexture(tile_tex);
                 }
             } if (ImGui::AddTab("Item")){

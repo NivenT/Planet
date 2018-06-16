@@ -27,8 +27,9 @@ WORKDIR /planet/build
 RUN rm -rf *
 RUN cmake ../
 RUN make
+#RUN glxinfo | grep version
 
 USER developer
 ENV HOME /home/developer
 
-CMD ./game
+CMD ./game && cat Log.log

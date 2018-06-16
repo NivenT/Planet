@@ -18,14 +18,16 @@ private:
 
     nta::SpriteFont* m_font = nullptr;
     nta::GLSLProgram* m_prog = nullptr;
+    nta::GLSLProgram* m_overlay_prog = nullptr;
     nta::GLSLProgram* m_planet_prog = nullptr;
     nta::SpriteBatch m_batch;
+    nta::SpriteBatch m_overlay_batch;
     nta::Camera2D m_camera;
 
     Planet m_planet;
     Tile m_active_tile;
+    bool m_gui_focus = false;
     bool m_square_planet = false;
-    bool gui_active = false;
     // temporary
     glm::vec4 clear_color;
 public:

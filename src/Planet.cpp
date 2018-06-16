@@ -90,9 +90,9 @@ ivec2 Planet::getCoord(vec2 pos) const {
     pos -= getOffset();
     pos /= TILE_SIZE;
 
-    while (pos.y > 0) pos.y -= rows;
+    //while (pos.y > 0) pos.y -= rows;
     while (pos.x < 0) pos.x += cols;
-    return ivec2((-(int)pos.y)%rows, ((int)pos.x)%cols);
+    return ivec2((-(int)pos.y)/*%rows*/, ((int)pos.x)%cols);
 }
 
 const Tile& Planet::getTile(const ivec2& coord) const {
