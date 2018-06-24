@@ -29,10 +29,9 @@ private:
     Tile m_active_tile;
     ItemParams m_active_item;
 
+    int m_curr_tab = GUI_GENERAL_TAB;
     bool m_gui_focus = false;
     bool m_square_planet = false;
-    // temporary
-    glm::vec4 clear_color;
 public:
     WorldEditor();
     ~WorldEditor();

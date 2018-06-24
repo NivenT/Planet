@@ -16,7 +16,7 @@ using namespace std;
 using namespace nta;
 using namespace glm;
 
-WorldEditor::WorldEditor() : Screen("World Editor"), clear_color(0), m_active_tile(vec4(0.4, 0.7, 0.1, 0.8)),
+WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, .1, .8)),
                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
 }
@@ -129,13 +129,22 @@ void WorldEditor::update() {
         vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
         auto coord = m_planet.getCoord(mouse);
         
+        // Can I make this less redundant?
         if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-            if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
-                m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+            switch(m_curr_tab) {
+            case GUI_TILE_TAB:
+                if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
+                    m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+                }
+                break;
             }
         } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
-            if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
-                m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+            switch(m_curr_tab) {
+            case GUI_TILE_TAB:
+                if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
+                    m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+                }
+                break;
             }
         }
     } else if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
@@ -153,7 +162,11 @@ void WorldEditor::prepare_batches() {
     m_planet.render(m_batch);
 
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-    m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
+    switch(m_curr_tab) {
+    case GUI_TILE_TAB:
+        m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
+        break;
+    }
     
     m_overlay_batch.end();
     m_batch.end();
@@ -216,7 +229,8 @@ void WorldEditor::render_gui() {
 
             if (ImGui::AddTab("General")) {
                 ImGui::Text("The quick brown fox jumps over the lazy dog");
-                ImGui::ColorEdit3("clear color", (float*)&clear_color);
+
+                m_curr_tab = GUI_GENERAL_TAB;
             } if (ImGui::AddTab("Tile")){
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_tile.color))
                 GUI_CMD(ImGui::Checkbox("Destructable", &m_active_tile.destructable))
@@ -227,6 +241,8 @@ void WorldEditor::render_gui() {
                     m_gui_focus = true;
                     m_active_tile.tex = ResourceManager::getTexture(tile_tex);
                 }
+
+                m_curr_tab = GUI_TILE_TAB;
             } if (ImGui::AddTab("Item")){
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
                 GUI_CMD(ImGui::InputText("texture", (char*)item_tex.data(), GUI_TEXT_MAX_LENGTH))
@@ -234,10 +250,16 @@ void WorldEditor::render_gui() {
                     m_gui_focus = true;
                     m_active_tile.tex = ResourceManager::getTexture(item_tex);
                 }
+
+                m_curr_tab = GUI_ITEM_TAB;
             } if (ImGui::AddTab("Enemy")){
                 ImGui::Text("Working on it...");
+
+                m_curr_tab = GUI_ENEMY_TAB;
             } if (ImGui::AddTab("Obstacle")){
                 ImGui::Text("Working on it...");
+
+                m_curr_tab = GUI_OBSTACLE_TAB;
             }
         } ImGui::EndTabBar();
     } ImGui::End();
@@ -246,7 +268,7 @@ void WorldEditor::render_gui() {
 void WorldEditor::render() {
     const vec2 window_dims = m_window->getDimensions();
     
-    glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a);
+    glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, window_dims.x, window_dims.y);
 
