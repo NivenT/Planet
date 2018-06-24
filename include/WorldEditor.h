@@ -9,6 +9,7 @@
 #include "Spawner.h"
 #include "Item.h"
 
+// This is gonna end up having an obscene amount of functions...
 class WorldEditor : public nta::Screen {
 private:
     glm::vec2 screen_to_game(crvec2 screen) const;

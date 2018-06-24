@@ -71,6 +71,13 @@ void Object::add_to_world(b2World* world, const CreationParams& params) {
     m_body->SetUserData(this);
 }
 
+void Object::render_at(SpriteBatch& batch, crvec2 center, RenderKey key) {
+    vec2 orig = getCenter();
+    m_body->SetTransform(b2Vec2(center.x, center.y), getOrientation());
+    render(batch);
+    m_body->SetTransform(b2Vec2(orig.x, orig.y), getOrientation());
+}
+
 void Object::render_debug(DebugBatch& _) const {
 }
 

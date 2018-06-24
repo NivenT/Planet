@@ -19,6 +19,9 @@ using namespace glm;
 WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, .1, .8)),
                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_planet = Planet::new_test();
+
+    m_active_item.tex = "resources/images/stick.png";
+    m_active_item.use_script = "scripts/stick.chai";
 }
 
 WorldEditor::~WorldEditor() {
@@ -93,20 +96,22 @@ void WorldEditor::offFocus() {
 
 void WorldEditor::update() {
     static const float dx = 0.618, dy = 0.618, ds = 1.01;
-    if (InputManager::isPressed(SDLK_w)) {
-        m_camera.translateCenter(0, dy);
-    } if (InputManager::isPressed(SDLK_a)) {
-        m_camera.translateCenter(-dx, 0);
-    } if (InputManager::isPressed(SDLK_s)) {
-        m_camera.translateCenter(0, -dy);
-    } if (InputManager::isPressed(SDLK_d)) {
-        m_camera.translateCenter(dx, 0);
-    } if (InputManager::getMouseWheelMotion() > 0) {
-        m_camera.scaleDimensions(1./ds, 1./ds);
-    } if (InputManager::getMouseWheelMotion() < 0) {
-        m_camera.scaleDimensions(ds, ds);
-    } if (InputManager::isPressed(SDLK_g)) {
-        m_camera = Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
+    if (!m_gui_focus) {
+        if (InputManager::isPressed(SDLK_w)) {
+            m_camera.translateCenter(0, dy);
+        } if (InputManager::isPressed(SDLK_a)) {
+            m_camera.translateCenter(-dx, 0);
+        } if (InputManager::isPressed(SDLK_s)) {
+            m_camera.translateCenter(0, -dy);
+        } if (InputManager::isPressed(SDLK_d)) {
+            m_camera.translateCenter(dx, 0);
+        } if (InputManager::getMouseWheelMotion() > 0) {
+            m_camera.scaleDimensions(1./ds, 1./ds);
+        } if (InputManager::getMouseWheelMotion() < 0) {
+            m_camera.scaleDimensions(ds, ds);
+        } if (InputManager::isPressed(SDLK_g)) {
+            m_camera = Camera2D(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS);
+        }
     }
 
     while (m_camera.getCenter().x > m_planet.getDimensions().x/2.f) {
@@ -166,6 +171,11 @@ void WorldEditor::prepare_batches() {
     case GUI_TILE_TAB:
         m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
         break;
+    case GUI_ITEM_TAB: {
+        Item temp(m_active_item);
+        vec2 e = m_active_item.extents;
+        temp.render_at(m_batch, mouse, RenderKey());
+    } break;
     }
     
     m_overlay_batch.end();
@@ -216,9 +226,11 @@ void WorldEditor::render_miniworld() {
 void WorldEditor::render_gui() {
     static string tile_tex = "resources/images/";
     static string item_tex = "resources/images/";
+    static string item_use = "scripts/";
 
     tile_tex.reserve(GUI_TEXT_MAX_LENGTH);
     item_tex.reserve(GUI_TEXT_MAX_LENGTH);
+    item_use.reserve(GUI_TEXT_MAX_LENGTH);
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
@@ -246,9 +258,13 @@ void WorldEditor::render_gui() {
             } if (ImGui::AddTab("Item")){
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
                 GUI_CMD(ImGui::InputText("texture", (char*)item_tex.data(), GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::InputText("script", (char*)item_use.data(), GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
-                    m_active_tile.tex = ResourceManager::getTexture(item_tex);
+                    m_active_item.tex = item_tex;
+                } else if (ImGui::Button("Update script")) {
+                    m_gui_focus = true;
+                    m_active_item.use_script = item_use;
                 }
 
                 m_curr_tab = GUI_ITEM_TAB;
