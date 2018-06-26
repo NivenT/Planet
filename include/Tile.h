@@ -15,7 +15,9 @@ struct Tile {
     }
     // This is almost certainly Rust influence gettting the better of me
     static Tile new_outline() {
-        return {nta::ResourceManager::getTexture("outline.png"), glm::vec4(1,1,1,1)};
+        // unsafe but meh
+        return {nta::ResourceManager::getTexture("outline.png").get_data(), 
+                glm::vec4(1,1,1,1)};
     }
     void render(nta::SpriteBatch& batch, glm::vec2 top_left) const {
         glm::vec4 col = color;

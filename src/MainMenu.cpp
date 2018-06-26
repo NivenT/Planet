@@ -70,7 +70,7 @@ void MainMenu::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, m_window->getDimensions().x, m_window->getDimensions().y);
 
-    static nta::GLTexture backgroundImage = nta::ResourceManager::getTexture("resources/images/background.png");
+    static nta::GLTexture backgroundImage = nta::ResourceManager::getTexture("resources/images/background.png").get_data();
 
     m_hudBatch.begin();
     m_hudBatch.addGlyph(glm::vec4(-100,100,200,200), glm::vec4(0,0,1,1), backgroundImage.id, 1, glm::vec4(1,1,1,.2));

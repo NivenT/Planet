@@ -5,7 +5,7 @@
 ///       in the files that include this header (e.g. glm). I'm not sure how I
 ///       feel about that
 
-#define TITLE "Planet (WIP title)"
+#define TITLE "Planet (WIP Title)"
 #define TARGET_FPS 60
 
 /// Collisions

@@ -10,7 +10,8 @@ using namespace glm;
 Item::Item(crvec4 c, crstring texture, crvec2 extents, crstring use, crvec2 speed, uint16_t type) : 
     Object(speed, c, type | ITEM_TYPE), m_owner(nullptr), m_extents(extents), m_equipped(false),
     m_use_script(use) {
-    m_tex = ResourceManager::getTexture(texture);
+    // unsafe but meh
+    m_tex = ResourceManager::getTexture(texture).get_data();
 }
 
 Item::Item(crstring texture, crvec2 extents, crstring use, crvec2 speed, uint16_t type) : 

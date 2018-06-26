@@ -251,7 +251,11 @@ void WorldEditor::render_gui() {
                 GUI_CMD(ImGui::InputText("texture", (char*)tile_tex.data(), GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
-                    m_active_tile.tex = ResourceManager::getTexture(tile_tex);
+
+                    auto tex = ResourceManager::getTexture(tile_tex);
+                    if (tex.is_ok()) {
+                        m_active_tile.tex = tex.get_data();
+                    }
                 }
 
                 m_curr_tab = GUI_TILE_TAB;
@@ -261,7 +265,9 @@ void WorldEditor::render_gui() {
                 GUI_CMD(ImGui::InputText("script", (char*)item_use.data(), GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
-                    m_active_item.tex = item_tex;
+                    if (ResourceManager::getTexture(item_tex).is_ok()) {
+                        m_active_item.tex = item_tex;
+                    }
                 } else if (ImGui::Button("Update script")) {
                     m_gui_focus = true;
                     m_active_item.use_script = item_use;

@@ -41,6 +41,17 @@ int main(int argc, char* argv[]) {
     screenManager.addScreen(new MainGame, MAINMENU_SCREEN_INDEX);
     screenManager.addScreen(new WorldEditor, MAINMENU_SCREEN_INDEX);
 
+    nta::ErrorManager::set_periodic_callback([&](const nta::Error* errs) {
+        while (errs) {
+            if (errs->type != nta::DEVIL_FAILURE) {
+                std::cout<<"An error occured. Check Log.log for details"<<std::endl;
+                screenManager.switchScreen(-1);
+            }
+            errs = errs->prev;
+        }
+    });
+    nta::ErrorManager::set_push_callback([](const nta::Error* _) {});
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     screenManager.run(); 

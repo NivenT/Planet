@@ -72,7 +72,8 @@ void Agent::render_health(SpriteBatch& batch) const {
     static const float PERCENT_WIDTH = 0.9;
     static const float PERCENT_ABOVE_TOP = 0.1;
     static const float HEIGHT = PLAYER_DIMS.y/10.f;
-    static const GLuint tex = ResourceManager::getTexture("resources/images/health.png").id;
+    // unsafe but meh
+    static const GLuint tex = ResourceManager::getTexture("resources/images/health.png").get_data().id;
 
     const vec2 extents = getExtents();
     const float width = PERCENT_WIDTH*extents.x*2.f;
