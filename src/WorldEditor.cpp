@@ -224,13 +224,9 @@ void WorldEditor::render_miniworld() {
 }
 
 void WorldEditor::render_gui() {
-    static string tile_tex = "resources/images/";
-    static string item_tex = "resources/images/";
-    static string item_use = "scripts/";
-
-    tile_tex.reserve(GUI_TEXT_MAX_LENGTH);
-    item_tex.reserve(GUI_TEXT_MAX_LENGTH);
-    item_use.reserve(GUI_TEXT_MAX_LENGTH);
+    static char tile_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char item_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char item_use[GUI_TEXT_MAX_LENGTH] = "scripts/";
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
@@ -248,7 +244,7 @@ void WorldEditor::render_gui() {
                 GUI_CMD(ImGui::Checkbox("Destructable", &m_active_tile.destructable))
                 GUI_CMD(ImGui::Checkbox("solid", &m_active_tile.solid))
                 GUI_CMD(ImGui::Checkbox("active", &m_active_tile.active))
-                GUI_CMD(ImGui::InputText("texture", (char*)tile_tex.data(), GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::InputText("texture", tile_tex, GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
 
@@ -261,13 +257,14 @@ void WorldEditor::render_gui() {
                 m_curr_tab = GUI_TILE_TAB;
             } if (ImGui::AddTab("Item")){
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
-                GUI_CMD(ImGui::InputText("texture", (char*)item_tex.data(), GUI_TEXT_MAX_LENGTH))
-                GUI_CMD(ImGui::InputText("script", (char*)item_use.data(), GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::InputText("texture", item_tex, GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::InputText("script", item_use, GUI_TEXT_MAX_LENGTH))
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
                     if (ResourceManager::getTexture(item_tex).is_ok()) {
                         m_active_item.tex = item_tex;
                     }
+                    cout<<"Clicked "<<item_tex<<endl;
                 } else if (ImGui::Button("Update script")) {
                     m_gui_focus = true;
                     m_active_item.use_script = item_use;
@@ -290,7 +287,7 @@ void WorldEditor::render_gui() {
 void WorldEditor::render() {
     const vec2 window_dims = m_window->getDimensions();
     
-    glClearColor(0, 0, 0, 1);
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, window_dims.x, window_dims.y);
 
