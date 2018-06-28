@@ -17,19 +17,21 @@ using namespace nta;
 using namespace glm;
 
 WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, .1, .8)),
-                            m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
-    m_planet = Planet::new_test();
-
+                            m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
+                            m_world(Planet::new_test()) {
     m_active_item.tex = "resources/images/stick.png";
     m_active_item.use_script = "scripts/stick.chai";
+
+    m_world.init();
+    m_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 }
 
 WorldEditor::~WorldEditor() {
 }
 
-// Dependent on code in planet.vert
 vec2 WorldEditor::screen_to_game(crvec2 screen) const {
-    return screenToGame(screen, m_window->getDimensions(), m_camera, m_planet, m_square_planet);
+    return screenToGame(screen, m_window->getDimensions(), m_camera, 
+                        m_world.get_planet(), m_square_planet);
 }
 
 void WorldEditor::init() {
@@ -83,15 +85,17 @@ void WorldEditor::init() {
     m_overlay_batch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
-    m_window->resize(1000, 600);
     Logger::writeToLog("Initialized WorldEditor");
 }
 
 void WorldEditor::onFocus() {
+    //m_world.init();
+
     m_state = ScreenState::RUNNING;
 }
 
 void WorldEditor::offFocus() {
+    //m_world.destroy();
 }
 
 void WorldEditor::update() {
@@ -114,11 +118,11 @@ void WorldEditor::update() {
         }
     }
 
-    while (m_camera.getCenter().x > m_planet.getDimensions().x/2.f) {
-        m_camera.translateCenter(-m_planet.getDimensions().x, 0);
+    while (m_camera.getCenter().x > m_world.get_planet().getDimensions().x/2.f) {
+        m_camera.translateCenter(-m_world.get_planet().getDimensions().x, 0);
     }
-    while (m_camera.getCenter().x < -m_planet.getDimensions().x/2.f) {
-        m_camera.translateCenter(m_planet.getDimensions().x, 0);
+    while (m_camera.getCenter().x < -m_world.get_planet().getDimensions().x/2.f) {
+        m_camera.translateCenter(m_world.get_planet().getDimensions().x, 0);
     }
 
     if (InputManager::justPressed(SDLK_RETURN)) {
@@ -132,22 +136,22 @@ void WorldEditor::update() {
     vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     if (!m_gui_focus && (mouse.x > gui_region.x || mouse.y > gui_region.y)) {
         vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-        auto coord = m_planet.getCoord(mouse);
+        auto coord = m_world.m_planet.getCoord(mouse);
         
         // Can I make this less redundant?
         if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
             switch(m_curr_tab) {
             case GUI_TILE_TAB:
-                if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
-                    m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+                if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
+                    m_world.m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
                 }
                 break;
             }
         } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
             switch(m_curr_tab) {
             case GUI_TILE_TAB:
-                if (0 <= coord.x && coord.x < m_planet.getDimensions()[0]) {
-                    m_active_tile = m_planet.m_tiles[coord[0]][coord[1]];
+                if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
+                    m_active_tile = m_world.m_planet.m_tiles[coord[0]][coord[1]];
                 }
                 break;
             }
@@ -164,7 +168,7 @@ void WorldEditor::prepare_batches() {
     auto text = m_gui_focus ? "GUI Focus" : "Planet Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
     
-    m_planet.render(m_batch);
+    m_world.render(m_batch, m_overlay_batch, m_batch, m_font);
 
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
     switch(m_curr_tab) {
@@ -172,9 +176,14 @@ void WorldEditor::prepare_batches() {
         m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
         break;
     case GUI_ITEM_TAB: {
-        Item temp(m_active_item);
-        vec2 e = m_active_item.extents;
-        temp.render_at(m_batch, mouse, RenderKey());
+        Item* temp = new Item(m_active_item);
+
+        CreationParams params;
+        params.position = mouse;
+
+        m_world.add_object(temp, params);
+        temp->render(m_batch);
+        m_world.remove_object(temp);
     } break;
     }
     
@@ -194,9 +203,9 @@ void WorldEditor::render_batches(const nta::Camera2D camera) {
     m_planet_prog->use(); {
         glUniformMatrix3fv(m_planet_prog->getUniformLocation("camera"), 1, GL_FALSE, &matrix[0][0]);
         glUniform1f(m_planet_prog->getUniformLocation("normalized_planet_radius"),
-                    m_planet.getRadius()/scale);
+                    m_world.m_planet.getRadius()/scale);
         glUniform1f(m_planet_prog->getUniformLocation("normalized_planet_height"),
-                    m_planet.getHeight()/scale);
+                    m_world.m_planet.getHeight()/scale);
 
         if (!m_square_planet) m_batch.render();
     } m_planet_prog->unuse();
@@ -217,8 +226,8 @@ void WorldEditor::render_miniworld() {
 
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
-    const vec2 dims = m_square_planet ? m_planet.getDimensions() * vec2(0.55, 3):
-                                        m_planet.getRadius() * vec2(2.1);
+    const vec2 dims = m_square_planet ? m_world.m_planet.getDimensions() * vec2(0.55, 3):
+                                        m_world.m_planet.getRadius() * vec2(2.1);
     const vec2 cen = m_square_planet ? vec2(0) : vec2(0);
     render_batches(Camera2D(cen, dims)); 
 }
@@ -264,7 +273,6 @@ void WorldEditor::render_gui() {
                     if (ResourceManager::getTexture(item_tex).is_ok()) {
                         m_active_item.tex = item_tex;
                     }
-                    cout<<"Clicked "<<item_tex<<endl;
                 } else if (ImGui::Button("Update script")) {
                     m_gui_focus = true;
                     m_active_item.use_script = item_use;

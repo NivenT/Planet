@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
     log_defs();
     ChaiManager::init();
 
-    nta::ScreenManager screenManager(TITLE, TARGET_FPS);
+    nta::ScreenManager screenManager(TITLE, TARGET_FPS, 1000, 600);
     screenManager.addScreen(new MainMenu);
     screenManager.addScreen(new MainGame, MAINMENU_SCREEN_INDEX);
     screenManager.addScreen(new WorldEditor, MAINMENU_SCREEN_INDEX);

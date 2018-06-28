@@ -8,6 +8,7 @@
 
 #include "Spawner.h"
 #include "Item.h"
+#include "World.h"
 
 // This is gonna end up having an obscene amount of functions...
 class WorldEditor : public nta::Screen {
@@ -26,7 +27,8 @@ private:
     nta::SpriteBatch m_overlay_batch;
     nta::Camera2D m_camera;
 
-    Planet m_planet;
+    World m_world;
+    
     Tile m_active_tile;
     ItemParams m_active_item;
 

@@ -30,7 +30,6 @@ MainGame::~MainGame() {
     offFocus();
 }
 
-// Dependent on code in planet.vert
 vec2 MainGame::getMouse() const {
     return screenToGame(InputManager::getMouseCoordsStandard(m_window->getHeight()),
                         m_window->getDimensions(), m_camera, m_planet, m_square_planet);
@@ -245,8 +244,7 @@ void MainGame::prepare_batches() {
     m_debug_batch.begin();
     m_debug_sprite_batch.begin();
 
-    
-    const float radA = sqrt(dot(m_camera.getDimensions(), m_camera.getDimensions()));
+    //const float radA = sqrt(dot(m_camera.getDimensions(), m_camera.getDimensions()));
 
     m_planet.render(m_batch);
     // +1 to skip the player

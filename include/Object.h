@@ -33,11 +33,11 @@ struct CreationParams {
     float restitution;
 };
 
-class RenderKey {
+class RenderAtKey {
     friend class WorldEditor;
-    RenderKey() {}
-    RenderKey(const RenderKey&);
-    RenderKey& operator=(const RenderKey&);
+    RenderAtKey() {}
+    RenderAtKey(const RenderAtKey&);
+    RenderAtKey& operator=(const RenderAtKey&);
 };
 
 class Object {
@@ -72,7 +72,7 @@ public:
     virtual glm::vec2 getExtents() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);
     virtual void render(nta::SpriteBatch& batch) const = 0;
-    virtual void render_at(nta::SpriteBatch& batch, crvec2 center, RenderKey key);
+    virtual void render_at(nta::SpriteBatch& batch, crvec2 center, RenderAtKey key);
     virtual void render_debug(nta::DebugBatch& dbatch) const;
     virtual void update(const UpdateParams& params);
 
