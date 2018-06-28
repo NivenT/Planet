@@ -45,6 +45,7 @@ option(LINK_RESOURCES "Automatically creates links to resources/shaders" ON)
 #set(NTA_USE_DEVIL OFF CACHE BOOL "" FORCE)
 set(NTA_USE_AUDIO OFF CACHE BOOL "" FORCE)
 set(NTA_USE_IMGUI ON CACHE BOOL "" FORCE)
+set(NTA_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(jubilant-funicular)
 
 set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "Build Box2D examples" FORCE)

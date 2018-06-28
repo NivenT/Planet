@@ -146,6 +146,14 @@ void WorldEditor::update() {
                     m_world.m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
                 }
                 break;
+            case GUI_ITEM_TAB: {
+                Item* temp = new Item(m_active_item);
+
+                CreationParams params;
+                params.position = mouse;
+
+                m_world.add_object(temp, params);
+            } break;
             }
         } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
             switch(m_curr_tab) {
