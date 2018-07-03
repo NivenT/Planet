@@ -7,8 +7,8 @@ struct EnemyParams {
     std::string tex;
     std::string update_script;
     glm::vec4 color = glm::vec4(1);
-    glm::vec2 extents = SMALL_ITEM_EXTENTS;
-    glm::vec2 max_speed = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
+    glm::vec2 extents = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
+    glm::vec2 max_speed = NORMAL_ENEMY_MAX_SPEED;
     float init_health = NORMAL_ENEMY_INIT_HEALTH;
 };
 

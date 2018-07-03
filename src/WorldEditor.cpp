@@ -156,6 +156,19 @@ void WorldEditor::update_item_tab(crvec2 mouse) {
     }
 }
 
+void WorldEditor::update_enemy_tab(crvec2 mouse) {
+    if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
+        // TODO: Abstract code away to some get_tab_object() method
+        Enemy* temp = new Enemy(m_active_enemy);
+
+        CreationParams params;
+        params.position = mouse;
+        params.extents = m_active_enemy.extents;
+
+        m_world.add_object(temp, params);
+    }
+}
+
 void WorldEditor::update() {
     update_camera();
     if (InputManager::justPressed(SDLK_RETURN)) {
@@ -178,6 +191,9 @@ void WorldEditor::update() {
             break;
         case GUI_ITEM_TAB:
             update_item_tab(mouse);
+            break;
+        case GUI_ENEMY_TAB:
+            update_enemy_tab(mouse);
             break;
         }
     }
@@ -202,6 +218,17 @@ void WorldEditor::prepare_batches() {
 
         CreationParams params;
         params.position = mouse;
+
+        m_world.add_object(temp, params);
+        temp->render(m_batch);
+        m_world.remove_object(temp);
+    } break;
+    case GUI_ENEMY_TAB: {
+        Enemy* temp = new Enemy(m_active_enemy);
+
+        CreationParams params;
+        params.position = mouse;
+        params.extents = m_active_enemy.extents;
 
         m_world.add_object(temp, params);
         temp->render(m_batch);
@@ -258,10 +285,13 @@ void WorldEditor::render_gui() {
     static char tile_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char item_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char item_use[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char enemy_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char enemy_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+    
     ImGui::Begin("Test Window", &m_gui_active, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove); {
         ImGui::BeginTabBar("#Bar"); {
             ImGui::DrawTabsBackground();
@@ -288,12 +318,12 @@ void WorldEditor::render_gui() {
                 m_curr_tab = GUI_TILE_TAB;
             } if (ImGui::AddTab("Item")){
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
+                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
+                                           MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x))
+                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
+                                           MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y))
                 GUI_CMD(ImGui::InputText("texture", item_tex, GUI_TEXT_MAX_LENGTH))
                 GUI_CMD(ImGui::InputText("script", item_use, GUI_TEXT_MAX_LENGTH))
-                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
-                                           MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x));
-                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
-                                           MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y));
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
                     if (ResourceManager::getTexture(item_tex).is_ok()) {
@@ -301,12 +331,30 @@ void WorldEditor::render_gui() {
                     }
                 } else if (ImGui::Button("Update script")) {
                     m_gui_focus = true;
+                    // TODO: Check file exists
                     m_active_item.use_script = item_use;
                 }
 
                 m_curr_tab = GUI_ITEM_TAB;
             } if (ImGui::AddTab("Enemy")){
-                ImGui::Text("Working on it...");
+                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_enemy.color))
+                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_enemy.extents.x,
+                                           ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
+                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_enemy.extents.y,
+                                           ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+                GUI_CMD(ImGui::SliderFloat("health", &m_active_enemy.init_health,
+                                           ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
+                GUI_CMD(ImGui::InputText("texture", enemy_tex, GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::InputText("script", enemy_script, GUI_TEXT_MAX_LENGTH))
+                if (ImGui::Button("Update texture")) {
+                    m_gui_focus = true;
+                    if (ResourceManager::getTexture(enemy_tex).is_ok()) {
+                        m_active_enemy.tex = enemy_tex;
+                    }
+                } else if (ImGui::Button("Update script")) {
+                    m_gui_focus = true;
+                    m_active_enemy.update_script = enemy_script;
+                }
 
                 m_curr_tab = GUI_ENEMY_TAB;
             } if (ImGui::AddTab("Obstacle")){

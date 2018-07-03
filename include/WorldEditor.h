@@ -18,6 +18,7 @@ private:
     void update_camera();
     void update_tile_tab(crvec2 mouse, const glm::ivec2& coord);
     void update_item_tab(crvec2 mouse);
+    void update_enemy_tab(crvec2 mouse);
     void prepare_batches();
     void render_batches(const nta::Camera2D camera);
     void render_miniworld();
