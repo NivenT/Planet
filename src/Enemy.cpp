@@ -13,6 +13,10 @@ Enemy::Enemy(crstring texture, crstring update, float health, crvec2 speed, crve
     m_tex = ResourceManager::getTexture(texture).get_data();
 }
 
+Enemy::Enemy(const EnemyParams& p, uint16_t type) :
+    Enemy(p.tex, p.update_script, p.init_health, p.max_speed, p.color, type) {
+}
+
 Enemy::~Enemy() {
 }
 

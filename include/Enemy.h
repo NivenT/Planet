@@ -3,6 +3,15 @@
 
 #include "Agent.h"
 
+struct EnemyParams {
+    std::string tex;
+    std::string update_script;
+    glm::vec4 color = glm::vec4(1);
+    glm::vec2 extents = SMALL_ITEM_EXTENTS;
+    glm::vec2 max_speed = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
+    float init_health = NORMAL_ENEMY_INIT_HEALTH;
+};
+
 class Enemy : public Agent {
 protected:
     void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
@@ -13,6 +22,7 @@ protected:
 public:
     Enemy(crstring texture, crstring update = "", float health = NORMAL_ENEMY_INIT_HEALTH, 
           crvec2 speed = NORMAL_ENEMY_MAX_SPEED, crvec4 color = glm::vec4(1), uint16_t type = 0);
+    Enemy(const EnemyParams& params, uint16_t type = 0);
     ~Enemy();
     glm::vec2 getExtents() const;
     void add_to_world(b2World* world, const CreationParams& params);

@@ -14,6 +14,7 @@
 class WorldEditor : public nta::Screen {
 private:
     glm::vec2 screen_to_game(crvec2 screen) const;
+    bool gui_in_use() const;
     void update_camera();
     void update_tile_tab(crvec2 mouse, const glm::ivec2& coord);
     void update_item_tab(crvec2 mouse);
@@ -34,9 +35,11 @@ private:
 
     Tile m_active_tile;
     ItemParams m_active_item;
+    EnemyParams m_active_enemy;
 
     int m_curr_tab = GUI_GENERAL_TAB;
     bool m_gui_focus = true;
+    bool m_gui_active = true;
     bool m_square_planet = false;
 public:
     WorldEditor();

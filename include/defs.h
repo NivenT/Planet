@@ -81,7 +81,9 @@
 #define SPAWNER_MAX_SPEED ITEM_MAX_SPEED
 
 /// Items
-#define SMALL_ITEM_SIZE (PLAYER_DIMS.y/M_PI)
+#define MIN_ITEM_SIZE glm::vec2(PLAYER_DIMS.y/(2.f*(float)M_PI))
+#define SMALL_ITEM_SIZE (PLAYER_DIMS.y/(float)M_PI)
+#define MAX_ITEM_SIZE glm::vec2(PLAYER_DIMS.y/2.f)
 #define SMALL_ITEM_EXTENTS glm::vec2(SMALL_ITEM_SIZE/2.f)
 #define ITEM_ICON_SIZE (9.f/M_PI)
 #define ITEM_ICON_DIMS glm::vec2(ITEM_ICON_SIZE)

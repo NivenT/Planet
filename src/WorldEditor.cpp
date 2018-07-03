@@ -22,6 +22,9 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_item.tex = "resources/images/stick.png";
     m_active_item.use_script = "scripts/stick.chai";
 
+    m_active_enemy.tex = "resources/images/shoe.png";
+    m_active_enemy.update_script = "scripts/shoe.chai";
+
     m_world.init();
     m_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 }
@@ -32,6 +35,10 @@ WorldEditor::~WorldEditor() {
 vec2 WorldEditor::screen_to_game(crvec2 screen) const {
     return screenToGame(screen, m_window->getDimensions(), m_camera, 
                         m_world.get_planet(), m_square_planet);
+}
+
+bool WorldEditor::gui_in_use() const {
+    return m_gui_focus /* && m_gui_active */;
 }
 
 void WorldEditor::init() {
@@ -100,7 +107,7 @@ void WorldEditor::offFocus() {
 
 void WorldEditor::update_camera() {
     static const float dx = 0.618, dy = 0.618, ds = 1.01;
-    if (!m_gui_focus) {
+    if (!gui_in_use()) {
         if (InputManager::isPressed(SDLK_w)) {
             m_camera.translateCenter(0, dy);
         } if (InputManager::isPressed(SDLK_a)) {
@@ -159,9 +166,9 @@ void WorldEditor::update() {
 
     vec2 mouse = InputManager::getMouseCoords();
     vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
-    if (mouse.x <= gui_region.x && mouse.y <= gui_region.y) {
+    if (m_gui_active && mouse.x <= gui_region.x && mouse.y <= gui_region.y) {
         m_gui_focus = true;
-    } else if (!m_gui_focus) {
+    } else if (!gui_in_use()) {
         vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
         auto coord = m_world.m_planet.getCoord(mouse);
 
@@ -255,7 +262,7 @@ void WorldEditor::render_gui() {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
-    ImGui::Begin("Test Window", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove); {
+    ImGui::Begin("Test Window", &m_gui_active, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove); {
         ImGui::BeginTabBar("#Bar"); {
             ImGui::DrawTabsBackground();
 
@@ -283,6 +290,10 @@ void WorldEditor::render_gui() {
                 GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
                 GUI_CMD(ImGui::InputText("texture", item_tex, GUI_TEXT_MAX_LENGTH))
                 GUI_CMD(ImGui::InputText("script", item_use, GUI_TEXT_MAX_LENGTH))
+                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
+                                           MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x));
+                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
+                                           MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y));
                 if (ImGui::Button("Update texture")) {
                     m_gui_focus = true;
                     if (ResourceManager::getTexture(item_tex).is_ok()) {
