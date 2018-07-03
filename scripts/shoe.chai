@@ -1,7 +1,8 @@
 def run_shoe() {
     var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
-    self.applyForce(fx, 0);
     if (self.is_standing) {
+        self.applyForce(fx, 0);
+        
         var extents = self.getExtents();
         var beneath = self.getCenter() + vec2(extents.x/2, -extents.y-TILE_SIZE/2);
 

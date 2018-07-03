@@ -98,7 +98,7 @@ void WorldEditor::offFocus() {
     //m_world.destroy();
 }
 
-void WorldEditor::update() {
+void WorldEditor::update_camera() {
     static const float dx = 0.618, dy = 0.618, ds = 1.01;
     if (!m_gui_focus) {
         if (InputManager::isPressed(SDLK_w)) {
@@ -124,48 +124,55 @@ void WorldEditor::update() {
     while (m_camera.getCenter().x < -m_world.get_planet().getDimensions().x/2.f) {
         m_camera.translateCenter(m_world.get_planet().getDimensions().x, 0);
     }
+}
 
+void WorldEditor::update_tile_tab(crvec2 mouse, const ivec2& coord) {
+    if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
+        if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
+            m_world.m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+        }
+    } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
+        if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
+            m_active_tile = m_world.m_planet.m_tiles[coord[0]][coord[1]];
+        }
+    }
+}
+
+void WorldEditor::update_item_tab(crvec2 mouse) {
+    if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
+        Item* temp = new Item(m_active_item);
+
+        CreationParams params;
+        params.position = mouse;
+
+        m_world.add_object(temp, params);
+    }
+}
+
+void WorldEditor::update() {
+    update_camera();
     if (InputManager::justPressed(SDLK_RETURN)) {
         m_square_planet = !m_square_planet;
     } else if (InputManager::justPressed(SDLK_SPACE)) {
         m_gui_focus = !m_gui_focus;
     }
 
-
     vec2 mouse = InputManager::getMouseCoords();
     vec2 gui_region = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
-    if (!m_gui_focus && (mouse.x > gui_region.x || mouse.y > gui_region.y)) {
+    if (mouse.x <= gui_region.x && mouse.y <= gui_region.y) {
+        m_gui_focus = true;
+    } else if (!m_gui_focus) {
         vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
         auto coord = m_world.m_planet.getCoord(mouse);
-        
-        // Can I make this less redundant?
-        if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-            switch(m_curr_tab) {
-            case GUI_TILE_TAB:
-                if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
-                    m_world.m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
-                }
-                break;
-            case GUI_ITEM_TAB: {
-                Item* temp = new Item(m_active_item);
 
-                CreationParams params;
-                params.position = mouse;
-
-                m_world.add_object(temp, params);
-            } break;
-            }
-        } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
-            switch(m_curr_tab) {
-            case GUI_TILE_TAB:
-                if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
-                    m_active_tile = m_world.m_planet.m_tiles[coord[0]][coord[1]];
-                }
-                break;
-            }
+        switch(m_curr_tab) {
+        case GUI_TILE_TAB:
+            update_tile_tab(mouse, coord);
+            break;
+        case GUI_ITEM_TAB:
+            update_item_tab(mouse);
+            break;
         }
-    } else if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-        m_gui_focus = true;
     }
 }
 

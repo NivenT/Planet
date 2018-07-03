@@ -33,6 +33,7 @@ void Spawner::add_to_world(b2World* world, const CreationParams& params) {
     fixture_def.shape = &body_shape;
     fixture_def.density = params.density;
     fixture_def.friction = params.friction;
+    fixture_def.restitution = params.restitution;
     fixture_def.filter.maskBits = SPAWNER_MASK_BITS;
     m_body->CreateFixture(&fixture_def);
 
