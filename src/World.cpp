@@ -8,6 +8,16 @@ World::World(const Planet& planet) : m_planet(planet), m_player(nullptr), m_flag
 	m_planet.add_to_world(&m_world);
 }
 
+World::World(const WorldParams& params) : World(params.planet) {
+	init();
+	for (const auto& item : params.items) {
+		add_object(new Item(item), item);
+	}
+	for (const auto& enemy : params.enemies) {
+		add_object(new Enemy(enemy), enemy);
+	}
+}
+
 World::~World() {
 	destroy();
 }

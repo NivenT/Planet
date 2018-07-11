@@ -55,9 +55,11 @@ void MainMenu::init() {
     Logger::writeToLog("Initialized MainMenu");
 }
 
-void MainMenu::onFocus(void* switchData) {
+void MainMenu::onFocus(const ScreenSwitchInfo& info) {
     // Get World* from WorldEditor
-    if (switchData) m_world = switchData;
+    if (info.fromIndex == WORLDEDITOR_SCREEN_INDEX || info.fromIndex == -1) {
+        m_world = info.data;
+    }
     m_state = ScreenState::RUNNING;
 }
 

@@ -3,11 +3,14 @@
 
 #include "Agent.h"
 
-struct ItemParams {
+struct ItemParams : public CreationParams {
+    ItemParams() {
+        extents = SMALL_ITEM_EXTENTS;
+    }
+
     std::string tex;
     std::string use_script;
     glm::vec4 color = glm::vec4(1);
-    glm::vec2 extents = SMALL_ITEM_EXTENTS;
     glm::vec2 max_speed = ITEM_MAX_SPEED;
 };
 

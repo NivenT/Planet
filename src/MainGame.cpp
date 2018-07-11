@@ -22,10 +22,6 @@ MainGame::MainGame() : m_debug(false), m_square_planet(false),
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
                        m_dev_mode(false), m_light_mode(false), Screen("Main Game") {
-    /*
-    m_planet = Planet::new_test();
-    m_world = make_unique<b2World>(m_planet.getGravity());
-    */
 }
 
 MainGame::~MainGame() {
@@ -38,69 +34,16 @@ vec2 MainGame::getMouse() const {
                         m_square_planet);
 }
 
-void MainGame::onFocus(void* switchData) {
-    /*
-    m_planet.add_to_world(m_world.get());
-
-    m_player = new Player;
-    m_player->add_to_world(m_world.get(), CreationParams{});
-
-    CreationParams item_params;
-    item_params.planet = &m_planet;
-    item_params.position = m_planet.getTileCenter(6, 35);
-
-    Item* test_item = new Item("resources/images/stick.png", SMALL_ITEM_EXTENTS,
-                               "scripts/stick.chai");
-    test_item->add_to_world(m_world.get(), item_params);
-
-    item_params.position = m_planet.getTileCenter(6, 10);
-    Item* test_item2 = new Item("resources/images/rock.png", SMALL_ITEM_EXTENTS);
-    test_item2->add_to_world(m_world.get(), item_params);
-
-    item_params.position = m_planet.getTileCenter(6, 50);
-    Item* test_item3 = new Item("resources/images/shovel.png", SMALL_ITEM_EXTENTS,
-                                "scripts/shovel.chai");
-    test_item3->add_to_world(m_world.get(), item_params);
-
-    CreationParams enemy_params;
-    enemy_params.planet = &m_planet;
-    enemy_params.position = m_planet.getTileCenter(6, 130);
-    enemy_params.extents = ENEMY_UNIT_EXTENTS * vec2(3,1);
-    Enemy* test_enemy = new Enemy("resources/images/shoe.png", "scripts/shoe.chai");
-    test_enemy->add_to_world(m_world.get(), enemy_params);
-
-    enemy_params.position = m_planet.getTileCenter(6, 100);
-    Spawner* test_spawner = new Spawner("resources/images/shoe_spawner.png", *test_enemy,
-                                        m_objects);
-    test_spawner->set_creation_params(enemy_params);
-    test_spawner->add_to_world(m_world.get(), enemy_params);
-
-    m_objects.push_back(m_player);
-    m_objects.push_back(test_item);
-    m_objects.push_back(test_item2);
-    m_objects.push_back(test_item3);
-    m_objects.push_back(test_enemy);
-    m_objects.push_back(test_spawner);
-    */
-    if (!switchData) Logger::writeErrorToLog("Tried starting game with empty World",
+void MainGame::onFocus(const ScreenSwitchInfo& info) {
+    if (!info.data) Logger::writeErrorToLog("Tried starting game with empty World",
                                              nta::ErrorType::INVALID_VALUE);
     // Want a copy of the world with a different underlying b2World
-    m_world = new World(*(World*)switchData);
+    m_world = new World(*(WorldParams*)info.data);
     m_world->unset_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
     m_state = ScreenState::RUNNING;
 }
 
 void MainGame::offFocus() {
-    /*
-    for (b2Body* curr = m_world->GetBodyList(); curr; curr = curr->GetNext()) {
-        m_world->DestroyBody(curr);
-    }
-
-    for (auto object : m_objects) {
-        delete object;
-    }
-    m_objects.clear();
-    */
     delete m_world;
     m_switchData = nullptr;
 }
@@ -197,30 +140,6 @@ void MainGame::dev_update() {
     }
 }
 
-void MainGame::post_update() {
-    /*
-    for (size_t i = 0; i < m_objects.size(); i++) {
-        const uint16_t type = m_objects[i]->getObjectType();
-        if (type & AGENT_TYPE) {
-            Agent* curr = (Agent*)m_objects[i];
-            if (curr->getHealth() <= 0) {
-                if (type & PLAYER_TYPE) {
-                    m_state = ScreenState::SWITCH_ESC;
-                } else {
-                    // don't wanna delete player
-                    curr->destroyBody(m_world.get());
-                    delete curr;
-
-                    std::swap(m_objects[i], m_objects.back());
-                    m_objects.pop_back();
-                    i--;
-                }
-            }
-        }
-    }
-    */
-}
-
 void MainGame::update() {
     if (m_dev_mode) {
         dev_update();
@@ -241,15 +160,6 @@ void MainGame::update() {
         params.dt = 1./m_manager->getFPS();
 
         m_world->update(params);
-
-        /*
-        for (int i = 0; i < m_objects.size(); i++) {
-            m_objects[i]->update(params);
-        }
-        m_world->Step(params.dt, 6, 2);
-
-        post_update();
-        */
     }
     if (!m_debug) m_camera.setCenter(m_world->get_player()->getCenter());
 }
@@ -261,29 +171,6 @@ void MainGame::prepare_batches() {
     m_debug_batch.begin();
     m_debug_sprite_batch.begin();
 
-    //const float radA = sqrt(dot(m_camera.getDimensions(), m_camera.getDimensions()));
-
-    /*
-    m_planet.render(m_batch);
-    // +1 to skip the player
-    for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
-        /*
-        if (!(*it)->hasBody()) continue;
-        vec2 extents = (*it)->getExtents();
-        float radB = sqrt(dot(extents, extents));
-
-        vec2 dist = (*it)->getCenter() - m_camera.getCenter();
-        if (dot(dist, dist) < (radA + radB)*(radA + radB)) {
-            (*it)->render(m_batch);
-        }
-        *
-        (*it)->render(m_batch);
-    }
-    m_player->render(m_light_batch);
-    m_player->render_inventory(m_overlay_batch, m_font);
-    m_player->render_health(m_batch);
-    m_player->render_attack(m_batch);
-    */
     m_world->render(m_batch, m_overlay_batch, m_light_batch, m_font);
     m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                          vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
@@ -294,7 +181,6 @@ void MainGame::prepare_batches() {
         m_font->drawText(m_overlay_batch, "dev mode", vec4(40, 100, 20, MEDIUM_TEXT_HEIGHT));
     }
     if (m_debug) {
-        //m_planet.render_debug(m_debug_batch);
         m_world->render_debug(m_debug_batch);
     }
     if (m_debug || m_soft_debug) {

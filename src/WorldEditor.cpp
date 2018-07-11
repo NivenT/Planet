@@ -17,27 +17,26 @@ using namespace nta;
 using namespace glm;
 
 WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, .1, .8)),
-                            m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
-                            m_world(Planet::new_test()) {
+                             m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS) {
     m_active_item.tex = "resources/images/stick.png";
     m_active_item.use_script = "scripts/stick.chai";
 
     m_active_enemy.tex = "resources/images/shoe.png";
     m_active_enemy.update_script = "scripts/shoe.chai";
 
-    m_world.init();
+    m_world.planet = Planet::new_test();
 }
 
 WorldEditor::~WorldEditor() {
 }
 
-World* WorldEditor::get_world() {
+WorldParams* WorldEditor::get_world() {
     return &m_world;
 }
 
 vec2 WorldEditor::screen_to_game(crvec2 screen) const {
     return screenToGame(screen, m_window->getDimensions(), m_camera, 
-                        m_world.get_planet(), m_square_planet);
+                        m_world.planet, m_square_planet);
 }
 
 bool WorldEditor::gui_in_use() const {
@@ -98,16 +97,12 @@ void WorldEditor::init() {
     Logger::writeToLog("Initialized WorldEditor");
 }
 
-void WorldEditor::onFocus(void* switchData) {
-    //m_world.init();
-
+void WorldEditor::onFocus(const ScreenSwitchInfo& info) {
     m_state = ScreenState::RUNNING;
-    m_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 }
 
 void WorldEditor::offFocus() {
     m_switchData = &m_world;
-    //m_world.destroy();
 }
 
 void WorldEditor::update_camera() {
@@ -130,47 +125,39 @@ void WorldEditor::update_camera() {
         }
     }
 
-    while (m_camera.getCenter().x > m_world.get_planet().getDimensions().x/2.f) {
-        m_camera.translateCenter(-m_world.get_planet().getDimensions().x, 0);
+    while (m_camera.getCenter().x > m_world.planet.getDimensions().x/2.f) {
+        m_camera.translateCenter(-m_world.planet.getDimensions().x, 0);
     }
-    while (m_camera.getCenter().x < -m_world.get_planet().getDimensions().x/2.f) {
-        m_camera.translateCenter(m_world.get_planet().getDimensions().x, 0);
+    while (m_camera.getCenter().x < -m_world.planet.getDimensions().x/2.f) {
+        m_camera.translateCenter(m_world.planet.getDimensions().x, 0);
     }
 }
 
 void WorldEditor::update_tile_tab(crvec2 mouse, const ivec2& coord) {
     if (InputManager::isPressed(SDL_BUTTON_LEFT)) {
-        if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
-            m_world.m_planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
+        if (0 <= coord.x && coord.x < m_world.planet.getDimensions()[0]) {
+            m_world.planet.m_tiles[coord[0]][coord[1]] = m_active_tile;
         }
     } else if (InputManager::isPressed(SDL_BUTTON_RIGHT)) {
-        if (0 <= coord.x && coord.x < m_world.m_planet.getDimensions()[0]) {
-            m_active_tile = m_world.m_planet.m_tiles[coord[0]][coord[1]];
+        if (0 <= coord.x && coord.x < m_world.planet.getDimensions()[0]) {
+            m_active_tile = m_world.planet.m_tiles[coord[0]][coord[1]];
         }
     }
 }
 
 void WorldEditor::update_item_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
-        Item* temp = new Item(m_active_item);
-
-        CreationParams params;
-        params.position = mouse;
-
-        m_world.add_object(temp, params);
+        m_active_item.position = mouse;
+        m_active_item.planet = &m_world.planet;
+        m_world.items.push_back(m_active_item);
     }
 }
 
 void WorldEditor::update_enemy_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
-        // TODO: Abstract code away to some get_tab_object() method
-        Enemy* temp = new Enemy(m_active_enemy);
-
-        CreationParams params;
-        params.position = mouse;
-        params.extents = m_active_enemy.extents;
-
-        m_world.add_object(temp, params);
+        m_active_enemy.position = mouse;
+        m_active_enemy.planet = &m_world.planet;
+        m_world.enemies.push_back(m_active_enemy);
     }
 }
 
@@ -188,7 +175,7 @@ void WorldEditor::update() {
         m_gui_focus = true;
     } else if (!gui_in_use()) {
         vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
-        auto coord = m_world.m_planet.getCoord(mouse);
+        auto coord = m_world.planet.getCoord(mouse);
 
         switch(m_curr_tab) {
         case GUI_TILE_TAB:
@@ -211,38 +198,32 @@ void WorldEditor::prepare_batches() {
     auto text = m_gui_focus ? "GUI Focus" : "Planet Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
     
-    m_world.render(m_batch, m_overlay_batch, m_batch, m_font);
+    World temp_world(m_world);
+    temp_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
+    // I really don't like having a switch statement here
+    switch(m_curr_tab) {
+    case GUI_ITEM_TAB: {
+        m_active_item.position = mouse;
+        temp_world.add_object(new Item(m_active_item), m_active_item);
+    } break;
+    case GUI_ENEMY_TAB: {
+        m_active_enemy.position = mouse;
+        temp_world.add_object(new Enemy(m_active_enemy), m_active_enemy);
+    } break;
+    }
+    temp_world.render(m_batch, m_overlay_batch, m_batch, m_font);
     switch(m_curr_tab) {
     case GUI_TILE_TAB:
         m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
         break;
-    case GUI_ITEM_TAB: {
-        Item* temp = new Item(m_active_item);
-
-        CreationParams params;
-        params.position = mouse;
-
-        m_world.add_object(temp, params);
-        temp->render(m_batch);
-        m_world.remove_object(temp);
-    } break;
-    case GUI_ENEMY_TAB: {
-        Enemy* temp = new Enemy(m_active_enemy);
-
-        CreationParams params;
-        params.position = mouse;
-        params.extents = m_active_enemy.extents;
-
-        m_world.add_object(temp, params);
-        temp->render(m_batch);
-        m_world.remove_object(temp);
-    } break;
     }
-    
+
     m_overlay_batch.end();
     m_batch.end();
+
+    temp_world.destroy();
 }
 
 void WorldEditor::render_batches(const nta::Camera2D camera) {
@@ -257,9 +238,9 @@ void WorldEditor::render_batches(const nta::Camera2D camera) {
     m_planet_prog->use(); {
         glUniformMatrix3fv(m_planet_prog->getUniformLocation("camera"), 1, GL_FALSE, &matrix[0][0]);
         glUniform1f(m_planet_prog->getUniformLocation("normalized_planet_radius"),
-                    m_world.m_planet.getRadius()/scale);
+                    m_world.planet.getRadius()/scale);
         glUniform1f(m_planet_prog->getUniformLocation("normalized_planet_height"),
-                    m_world.m_planet.getHeight()/scale);
+                    m_world.planet.getHeight()/scale);
 
         if (!m_square_planet) m_batch.render();
     } m_planet_prog->unuse();
@@ -280,8 +261,8 @@ void WorldEditor::render_miniworld() {
 
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
-    const vec2 dims = m_square_planet ? m_world.m_planet.getDimensions() * vec2(0.55, 3):
-                                        m_world.m_planet.getRadius() * vec2(2.1);
+    const vec2 dims = m_square_planet ? m_world.planet.getDimensions() * vec2(0.55, 3):
+                                        m_world.planet.getRadius() * vec2(2.1);
     const vec2 cen = m_square_planet ? vec2(0) : vec2(0);
     render_batches(Camera2D(cen, dims)); 
 }

@@ -17,7 +17,6 @@ private:
     void render_batches();
     void debug_update();
     void dev_update();
-    void post_update();
     glm::vec2 getMouse() const;
 
     nta::GLSLProgram* m_simpleProg = nullptr;
@@ -48,7 +47,7 @@ private:
 public:
     MainGame();
     ~MainGame();
-    void onFocus(void* switchData);
+    void onFocus(const nta::ScreenSwitchInfo& info);
     void offFocus();
     void update();
     void render();

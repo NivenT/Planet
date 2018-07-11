@@ -6,8 +6,6 @@
 #include <nta/GLSLProgram.h>
 #include <nta/SpriteFont.h>
 
-#include "Spawner.h"
-#include "Item.h"
 #include "World.h"
 
 // This is gonna end up having an obscene amount of functions...
@@ -32,9 +30,7 @@ private:
     nta::SpriteBatch m_overlay_batch;
     nta::Camera2D m_camera;
 
-    // Need to replace this with some king of "WorldBuilder" class
-    // Right now, the World here and the World in MainGame are too connected
-    World m_world;
+    WorldParams m_world;
 
     Tile m_active_tile;
     ItemParams m_active_item;
@@ -47,8 +43,8 @@ private:
 public:
     WorldEditor();
     ~WorldEditor();
-    World* get_world();
-    void onFocus(void* switchData);
+    WorldParams* get_world();
+    void onFocus(const nta::ScreenSwitchInfo& info);
     void offFocus();
     void update();
     void render();

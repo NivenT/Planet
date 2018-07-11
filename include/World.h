@@ -1,7 +1,15 @@
 #ifndef WORLD_H_INCLUDED
 #define WORLD_H_INCLUDED
 
+#include "Spawner.h"
+#include "Item.h"
 #include "Player.h"
+
+struct WorldParams {
+    std::vector<ItemParams> items;
+    std::vector<EnemyParams> enemies;
+    Planet planet;
+};
 
 class World {
 private:
@@ -14,6 +22,7 @@ private:
     uint16_t m_flags; 
 public:
     World(const Planet& planet);
+    World(const WorldParams& params);
     ~World();
     const Planet& get_planet() const;
     const Player* get_player() const;

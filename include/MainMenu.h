@@ -35,7 +35,7 @@ private:
 public:
     MainMenu();
     ~MainMenu();
-    void onFocus(void* switchData);
+    void onFocus(const nta::ScreenSwitchInfo& info);
     void offFocus();
     void update();
     void render();
