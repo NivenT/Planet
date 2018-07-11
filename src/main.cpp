@@ -36,10 +36,12 @@ int main(int argc, char* argv[]) {
     log_defs();
     ChaiManager::init();
 
+    WorldEditor* world_editor_screen = new WorldEditor;
+
     nta::ScreenManager screenManager(TITLE, TARGET_FPS, 1000, 600);
     screenManager.addScreen(new MainMenu);
     screenManager.addScreen(new MainGame, MAINMENU_SCREEN_INDEX);
-    screenManager.addScreen(new WorldEditor, MAINMENU_SCREEN_INDEX);
+    screenManager.addScreen(world_editor_screen, MAINMENU_SCREEN_INDEX);
 
     nta::ErrorManager::set_periodic_callback([&](const nta::Error* errs) {
         while (errs) {
@@ -54,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    screenManager.run(); 
+    screenManager.run(world_editor_screen->get_world()); 
     
     screenManager.destroy();
     ChaiManager::destroy();

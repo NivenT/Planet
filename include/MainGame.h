@@ -9,7 +9,7 @@
 #include <nta/Camera2D.h>
 #include <nta/Screen.h>
 
-#include "Player.h"
+#include "World.h"
 
 class MainGame : public nta::Screen {
 private:
@@ -33,11 +33,8 @@ private:
     nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;
 
-    std::unique_ptr<b2World> m_world;
-    // m_objects[0] == m_player
-    std::vector<Object*> m_objects;
-    Player* m_player;
-    Planet m_planet;
+    //Player* m_player;
+    World* m_world = nullptr;
 
     // This is getting ridiculous
     bool m_debug;
@@ -51,7 +48,7 @@ private:
 public:
     MainGame();
     ~MainGame();
-    void onFocus();
+    void onFocus(void* switchData);
     void offFocus();
     void update();
     void render();

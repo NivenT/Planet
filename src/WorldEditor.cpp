@@ -26,10 +26,13 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_enemy.update_script = "scripts/shoe.chai";
 
     m_world.init();
-    m_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 }
 
 WorldEditor::~WorldEditor() {
+}
+
+World* WorldEditor::get_world() {
+    return &m_world;
 }
 
 vec2 WorldEditor::screen_to_game(crvec2 screen) const {
@@ -95,13 +98,15 @@ void WorldEditor::init() {
     Logger::writeToLog("Initialized WorldEditor");
 }
 
-void WorldEditor::onFocus() {
+void WorldEditor::onFocus(void* switchData) {
     //m_world.init();
 
     m_state = ScreenState::RUNNING;
+    m_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 }
 
 void WorldEditor::offFocus() {
+    m_switchData = &m_world;
     //m_world.destroy();
 }
 

@@ -3,16 +3,25 @@
 using namespace std;
 using namespace nta;
 
-World::World(const Planet& planet) : m_planet(planet), m_player(nullptr), m_flags(0) {
-	m_world = make_unique<b2World>(m_planet.getGravity());
+World::World(const Planet& planet) : m_planet(planet), m_player(nullptr), m_flags(0),
+									 m_world(m_planet.getGravity()) {
+	m_planet.add_to_world(&m_world);
 }
 
 World::~World() {
-	destory();
+	destroy();
 }
 
 const Planet& World::get_planet() const {
 	return m_planet;
+}
+
+const Player* World::get_player() const {
+	return m_player;
+}
+
+const b2World* World::get_b2World() const {
+	return &m_world;
 }
 
 void World::init() {
@@ -21,7 +30,7 @@ void World::init() {
 }
 
 void World::add_object(Object* obj, const CreationParams& params) {
-	obj->add_to_world(m_world.get(), params);
+	obj->add_to_world(&m_world, params);
 	// May want to log this at some point
 	m_objects.push_back(obj);
 }
@@ -30,7 +39,7 @@ bool World::remove_object(Object* obj) {
 	if (obj->getObjectType() & PLAYER_TYPE) return false;
 	for (int i = 1; i < m_objects.size(); i++) {
 		if (m_objects[i] == obj) {
-			obj->destroyBody(m_world.get());
+			obj->destroyBody(&m_world);
 			std::swap(m_objects[i], m_objects.back());
             m_objects.pop_back();
             return true;
@@ -79,11 +88,14 @@ void World::render_debug(DebugBatch& batch) const {
 	}
 }
 
-bool World::update(const UpdateParams& params) {
+bool World::update(UpdateParams& params) {
+	params.planet = &m_planet;
+	params.world = &m_world;
+
 	for (int i = 0; i < m_objects.size(); i++) {
 		m_objects[i]->update(params);
 	}
-	m_world->Step(params.dt, 6, 2);
+	m_world.Step(params.dt, 6, 2);
 
 	for (size_t i = 0; i < m_objects.size(); i++) {
         const uint16_t type = m_objects[i]->getObjectType();
@@ -94,7 +106,7 @@ bool World::update(const UpdateParams& params) {
                     return true;
                 } else {
                     // don't wanna delete player
-                    curr->destroyBody(m_world.get());
+                    curr->destroyBody(&m_world);
                     delete curr;
 
                     std::swap(m_objects[i], m_objects.back());
@@ -107,9 +119,9 @@ bool World::update(const UpdateParams& params) {
     return false;
 }
 
-void World::destory() {
-	for (b2Body* curr = m_world->GetBodyList(); curr; curr = curr->GetNext()) {
-		m_world->DestroyBody(curr);
+void World::destroy() {
+	for (b2Body* curr = m_world.GetBodyList(); curr; curr = curr->GetNext()) {
+		m_world.DestroyBody(curr);
 	}
 	for (auto object : m_objects) {
 		delete object;

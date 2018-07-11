@@ -10,12 +10,14 @@ private:
     std::vector<Object*> m_objects;
     // Not sure if having the player here is the best idea or not
     Player* m_player;
-    std::unique_ptr<b2World> m_world;
+    b2World m_world;
     uint16_t m_flags; 
 public:
     World(const Planet& planet);
     ~World();
     const Planet& get_planet() const;
+    const Player* get_player() const;
+    const b2World* get_b2World() const;
     void init();
     void add_object(Object* obj, const CreationParams& params);
     // return true if obj was removed
@@ -28,8 +30,8 @@ public:
                 nta::SpriteBatch& light_batch, nta::SpriteFont* font) const;
     void render_debug(nta::DebugBatch& batch) const;
     // returns true if game over (player dead)
-    bool update(const UpdateParams& params);
-    void destory();
+    bool update(UpdateParams& params);
+    void destroy();
 
     // Probably don't need to make it a friend, but it's just easier this way
     friend WorldEditor;

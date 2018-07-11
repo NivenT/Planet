@@ -55,6 +55,16 @@ void MainMenu::init() {
     Logger::writeToLog("Initialized MainMenu");
 }
 
+void MainMenu::onFocus(void* switchData) {
+    // Get World* from WorldEditor
+    if (switchData) m_world = switchData;
+    m_state = ScreenState::RUNNING;
+}
+
+void MainMenu::offFocus() {
+    m_switchData = m_world;
+}
+
 void MainMenu::update() {
     vec2 mouseCoords = m_hudCamera.mouseToGame(InputManager::getMouseCoords(), m_window->getDimensions());
     for (int i = 0; i < sizeof(m_buttons)/sizeof(Button); i++) {

@@ -29,9 +29,14 @@ private:
     nta::SpriteBatch m_hudBatch;
     nta::Camera2D m_hudCamera;
     Button m_buttons[2];
+
+    // void* because I'm too lazy to type #include "World.h"
+    void* m_world = nullptr;
 public:
     MainMenu();
     ~MainMenu();
+    void onFocus(void* switchData);
+    void offFocus();
     void update();
     void render();
     void init();
