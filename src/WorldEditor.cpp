@@ -197,7 +197,7 @@ void WorldEditor::prepare_batches() {
 
     auto text = m_gui_focus ? "GUI Focus" : "Planet Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
-    
+
     World temp_world(m_world);
     temp_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 
@@ -219,6 +219,8 @@ void WorldEditor::prepare_batches() {
         m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
         break;
     }
+    m_font->drawText(m_batch, "Player\nStart",
+                     glm::vec4(PLAYER_INIT_POS.x,PLAYER_INIT_POS.y,PLAYER_DIMS));
 
     m_overlay_batch.end();
     m_batch.end();

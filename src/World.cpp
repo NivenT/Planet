@@ -83,6 +83,7 @@ void World::render(SpriteBatch& batch, SpriteBatch& overlay_batch,
 	}
 	if (!are_flags_set(WORLD_DONT_DRAW_PLAYER_FLAG)) {
 		m_player->render(light_batch);
+		// Why is this a flag?
 		if (are_flags_set(WORLD_DRAW_PLAYER_EXTRAS_FLAG)) {
 			m_player->render_inventory(overlay_batch, font);
 			m_player->render_health(batch);
@@ -102,7 +103,7 @@ bool World::update(UpdateParams& params) {
 	params.planet = &m_planet;
 	params.world = &m_world;
 
-	for (int i = 0; i < m_objects.size(); i++) {
+	for (size_t i = 0; i < m_objects.size(); i++) {
 		m_objects[i]->update(params);
 	}
 	m_world.Step(params.dt, 6, 2);

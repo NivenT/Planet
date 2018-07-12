@@ -40,6 +40,7 @@ void MainGame::onFocus(const ScreenSwitchInfo& info) {
     // Want a copy of the world with a different underlying b2World
     m_world = new World(*(WorldParams*)info.data);
     m_world->unset_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
+    m_world->set_flags(WORLD_DRAW_PLAYER_EXTRAS_FLAG);
     m_state = ScreenState::RUNNING;
 }
 
@@ -159,7 +160,9 @@ void MainGame::update() {
         UpdateParams params;
         params.dt = 1./m_manager->getFPS();
 
-        m_world->update(params);
+        if (m_world->update(params)) {
+            m_state = ScreenState::SWITCH_ESC;
+        }
     }
     if (!m_debug) m_camera.setCenter(m_world->get_player()->getCenter());
 }
