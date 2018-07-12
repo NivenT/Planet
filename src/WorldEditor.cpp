@@ -219,7 +219,7 @@ void WorldEditor::prepare_batches() {
         m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
         break;
     }
-    m_font->drawText(m_batch, "Player\nStart",
+    m_font->drawText(m_batch, "Player\nSpawn",
                      glm::vec4(PLAYER_INIT_POS.x,PLAYER_INIT_POS.y,PLAYER_DIMS));
 
     m_overlay_batch.end();
