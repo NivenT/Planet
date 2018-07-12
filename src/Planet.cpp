@@ -120,10 +120,10 @@ void Planet::remove_tile(const ivec2& coord) {
 // TODO: Make fewer assumptions about m_sea_level
 // TODO: less duplicated code
 vector<vector<b2Vec2>> Planet::createOutline() const {
-    static const auto invalidHorz = [&](int r, int c) {
+    const auto invalidHorz = [&](int r, int c) {
         return r == m_sea_level ? !m_tiles[r][c] : m_tiles[r][c].active == m_tiles[r-1][c].active;
     };
-    static const auto invalidVert = [&](int r, int c, bool type) {
+    const auto invalidVert = [&](int r, int c, bool type) {
         const int left = c == 0 ? cols - 1 : c - 1;
         const int right = c == cols - 1 ? 0 : c + 1;
         return (!type && m_tiles[r][left].active == m_tiles[r][c].active) 
