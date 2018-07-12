@@ -19,12 +19,10 @@ The main premise of the game is that you start off on some simple planet, and st
 
 A little more on the techincal side of the vision, planets should be round with believable (although almost certainly inaccurate) physics. This is currently acheived by having all the physics work on a rectangular planet, but using shader trickery to render things as if they were round. In addition, I am hoping for a good amount of customizability. This includes having enemy AIs and item effects programmed in [ChaiScript](https://github.com/ChaiScript/ChaiScript), and including a world editor where users can build new planets, put together new enemies, etc.
 
-# Current Progress (as of April 18, 2018)
-There is currently only a single planet which is in development as a testbed for the features being added into the game. You control a little light (will change once I figure out how I'll get decent sprites) that can move around and jump. With you on the planet are a few items which you can pick up to add to your inventory, and a shoe that serves as an enemy.
+# Current Progress (as of July 12, 2018)
+The game is currently a bit unstable while a decent, functioning world editor is being worked on. At the moment, you can use it to customize the planet you will spawn on when you press play game. However, nothing you do is saved once you exit out of the program.
 
-The shoe's AI is controlled using [code](https://github.com/NivenT/Planet/blob/master/scripts/shoe.chai) written in ChaiScript, and so can be modified without having to recompile to program. Similarly, one of the items is a shovel, and it's use effect is determined by a ChaiScript [script](https://github.com/NivenT/Planet/blob/master/scripts/shovel.chai) as well.
-
-On the main menu, there is a level editor option, but that is mostly cosmetic for now.
+New items and enemies can be created and inserted via the world editor. More functionality will come to it soon
 
 ## Known Bugs
 
@@ -39,20 +37,15 @@ On the main menu, there is a level editor option, but that is mostly cosmetic fo
 ## Rough Roadmap
 This is a sketch of what I think I should try to do/add next. The items are not listed exactly in the order they will be taken care of because (I suspect) there will be a lot of going back and forth between different things as the game is being fleshed out.
 
-* Add variety/new gameplay elements
-  * Definitely before moving on to the world editor
-    * Make the stick usable as a weapon
-    * Add an enemy spawner
-    * Add obstacles (e.g. a crate)
-  * Not necessary before moving on to the world editor
-    * Add a ladder you can climb up
-    * Make the rock a throwable projectile (ideally, you can pick it back up afterwards but we'll see)
 * Build a world editor
   * Allow custom items and enemies
     * Defined using text files
   * Add (more) properties to tiles
     * e.g. A shovel should be able to dig through grass but not rock
   * I expect this to be the main development stage where a lot things get fleshed out
+* Clean up the code
+  * I suspect things to get messy as I'm trying to figure out how to get the world editor working
+* Add obstacles (e.g. a crate)
 * Allow for multiple planets in one game with travel between them
    * It's gonna be fun figuring out how to make the transition from planet to outer space back to planet look smooth
 * TBA
@@ -105,26 +98,34 @@ This project also makes use of the [Box2D](https://github.com/erincatto/Box2D) l
 # Controls
 For an up-to-date account of the controls, check out the update functions in [MainGame.cpp](https://github.com/NivenT/Planet/blob/master/src/MainGame.cpp) and [Player.cpp](https://github.com/NivenT/Planet/blob/master/src/Player.cpp). 
 
-As of Apr 18, the controls are as below
+As of July 12, the controls are as below
 
-## Normal Mode
+## Gameplay
+### Normal Mode
 * WASD - Move and jump
 * EQ - Change selected item
 * Space - Use selected item
 * P - Toggle Paused
 * F1 - Toggle Dev Mode
 
-## Dev Mode
+### Dev Mode
 * Space - Toggle Debug Mode
 * I - Toggle Soft Debug Mode (draws bounding boxes used for physics)
 * B - Toggle Drawing of axis aligned bounding boxes (Easiest to understand by pressing it and seeing what happens)
 
-## Debug Mode
+### Debug Mode
 * WASD - Moves the center of the camera
 * EQ - Rotates camera
 * Mouse Wheel (i.e. scrolling) - Zooms in and out
 * G - Resets camera
 * Enter - Toggle between square and round planet viewing modes
+
+## World Editor
+* Space - toggle between "GUI Focus" and "Editor Focus"
+ * You can only make changes to the planet when you're in Editor Focus*
+* Enter - Toggle between square and round planet modes
+* Left Click - Add tile/item/etc. to planet
+* Right Click (Tile Tab Only) - Copy the tile you clicked on
 
 # Scripts
 As alluded to above, a main focus of this game is customizable items and enemies. The implementation of this takes the form of various scripts loaded in during runtime. For more information on this and how to write your own, check out the [scripts folder](https://github.com/NivenT/Planet/tree/master/scripts)
