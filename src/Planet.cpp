@@ -117,7 +117,6 @@ void Planet::remove_tile(const ivec2& coord) {
     }
 }
 
-// TODO: Make fewer assumptions about m_sea_level
 // TODO: less duplicated code
 vector<vector<b2Vec2>> Planet::createOutline() const {
     const auto isTileActive = [&](int r, int c) {

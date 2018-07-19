@@ -269,10 +269,14 @@ void WorldEditor::render_miniworld() {
     render_batches(Camera2D(cen, dims)); 
 }
 
+// TODO: Break into separate functions?
+// TODO: Use ImGui file browser
 void WorldEditor::render_gui() {
+    // TODO: Create a struct for each tab
     static char tile_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char item_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char item_use[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char item_name[GUI_TEXT_MAX_LENGTH] = "stick";
     static char enemy_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char enemy_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
 
@@ -321,6 +325,12 @@ void WorldEditor::render_gui() {
                     m_gui_focus = true;
                     // TODO: Check file exists
                     m_active_item.use_script = item_use;
+                }
+
+                GUI_CMD(ImGui::InputText("name", item_name, GUI_TEXT_MAX_LENGTH))
+                if (ImGui::Button("Save")) {
+                    m_gui_focus = true;
+                    m_active_item.save(string("resources/data/items/") + item_name);
                 }
 
                 m_curr_tab = GUI_ITEM_TAB;

@@ -5,6 +5,7 @@
 
 #include <nta/SpriteBatch.h>
 #include <nta/DebugBatch.h>
+#include <nta/IOManager.h>
 
 #include "Planet.h"
 
@@ -22,6 +23,20 @@ struct UpdateParams {
 struct CreationParams {
     CreationParams() : planet(nullptr), position(0), extents(0), 
         density(1), friction(1), restitution(0) {
+    }
+    virtual std::string dump() {
+        std::stringstream contents;
+        contents<<"position: "<<position.x<<" "<<position.y<<std::endl
+                <<"extents: "<<extents.x<<" "<<extents.y<<std::endl
+                <<"density: "<<density<<std::endl
+                <<"friction: "<<friction<<std::endl
+                <<"restitution: "<<restitution<<std::endl;
+        return contents.str();
+    }
+    void save(crstring path) {
+        nta::IOManager::writeFileFromBuffer(path, dump());
+    }
+    virtual void load(crstring path) {
     }
 
     // The planet an object belongs to

@@ -7,6 +7,15 @@ struct ItemParams : public CreationParams {
     ItemParams() {
         extents = SMALL_ITEM_EXTENTS;
     }
+    std::string dump() {
+        std::stringstream contents;
+        contents<<"texture: "<<tex<<std::endl
+                <<"script: "<<use_script<<std::endl
+                <<"color: "<<color.r<<" "<<color.g<<" "<<color.b<<" "<<color.a<<std::endl
+                <<"max_speed: "<<max_speed.x<<" "<<max_speed.y<<std::endl
+                <<CreationParams::dump();
+        return contents.str();
+    }
 
     std::string tex;
     std::string use_script;

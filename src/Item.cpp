@@ -1,9 +1,11 @@
 #include <nta/ResourceManager.h>
 #include <nta/Animation2D.h>
+#include <nta/IOManager.h>
 
 #include "Item.h"
 #include "ChaiManager.h"
 
+using namespace std;
 using namespace nta;
 using namespace glm;
 
