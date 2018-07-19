@@ -120,21 +120,24 @@ void Planet::remove_tile(const ivec2& coord) {
 // TODO: Make fewer assumptions about m_sea_level
 // TODO: less duplicated code
 vector<vector<b2Vec2>> Planet::createOutline() const {
+    const auto isTileActive = [&](int r, int c) {
+        return m_tiles[r][c].active && m_tiles[r][c].solid;
+    };
     const auto invalidHorz = [&](int r, int c) {
-        return r == m_sea_level ? !m_tiles[r][c] : m_tiles[r][c].active == m_tiles[r-1][c].active;
+        return r == 0 ? !isTileActive(r,c) : isTileActive(r,c) == isTileActive(r-1,c);
     };
     const auto invalidVert = [&](int r, int c, bool type) {
         const int left = c == 0 ? cols - 1 : c - 1;
         const int right = c == cols - 1 ? 0 : c + 1;
-        return (!type && m_tiles[r][left].active == m_tiles[r][c].active) 
-                    || (type && m_tiles[r][right].active == m_tiles[r][c].active);
+        return (!type && isTileActive(r,left) == isTileActive(r,c)) 
+                    || (type && isTileActive(r,right) == isTileActive(r,c));
     };
 
     vector<vector<b2Vec2>> chains;
     vector<b2Vec2> curr;
 
     // horizontal chains
-    for (int r = m_sea_level; r < rows; r++) {
+    for (int r = 0; r < rows; r++) {
         const vec2 tl = getTileTopLeft(r, 0);
         curr.emplace_back(tl.x, tl.y);
 
@@ -165,10 +168,10 @@ vector<vector<b2Vec2>> Planet::createOutline() const {
     /// TODO: Confirm below code is correct (likely not, but easier to check after shovel implementation)
     // vertical chains
     for (int c = 0; c < cols; c++) {
-        const vec2 tl = getTileTopLeft(m_sea_level, c);
+        const vec2 tl = getTileTopLeft(0, c);
         curr.emplace_back(tl.x, tl.y);
 
-        for (int r = m_sea_level; r <= rows; r++) {
+        for (int r = 0; r <= rows; r++) {
             if (r == rows || invalidVert(r, c, false)) {
                 if (curr.size() > 1) chains.push_back(curr);
                 curr.clear();
@@ -180,8 +183,8 @@ vector<vector<b2Vec2>> Planet::createOutline() const {
         }
     }
     // right row
-    const vec2 tr = getTileTopLeft(m_sea_level, cols-1) + TILE_DX;
-    for (int r = m_sea_level; r <= rows; r++) {
+    const vec2 tr = getTileTopLeft(0, cols-1) + TILE_DX;
+    for (int r = 0; r <= rows; r++) {
         if (r == rows || invalidVert(r, cols-1, true)) {
             if (curr.size() > 1) chains.push_back(curr);
             curr.clear();

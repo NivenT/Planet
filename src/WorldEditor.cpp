@@ -195,7 +195,7 @@ void WorldEditor::prepare_batches() {
     m_batch.begin(); 
     m_overlay_batch.begin();
 
-    auto text = m_gui_focus ? "GUI Focus" : "Planet Focus";
+    auto text = m_gui_focus ? "GUI Focus" : "Editor Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
 
     World temp_world(m_world);
