@@ -42,6 +42,7 @@ This is a sketch of what I think I should try to do/add next. The items are not 
     * Defined using text files
   * Add (more) properties to tiles
     * e.g. A shovel should be able to dig through grass but not rock
+  * Replace ChaiScript with Lua?
   * I expect this to be the main development stage where a lot things get fleshed out
 * Clean up the code
   * I suspect things to get messy as I'm trying to figure out how to get the world editor working

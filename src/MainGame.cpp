@@ -25,7 +25,6 @@ MainGame::MainGame() : m_debug(false), m_square_planet(false),
 }
 
 MainGame::~MainGame() {
-    offFocus();
 }
 
 vec2 MainGame::getMouse() const {
