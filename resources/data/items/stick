@@ -1,0 +1,9 @@
+texture: resources/images/stick.png
+script: scripts/stick.chai
+color: 1 1 1 1
+max_speed: 0 20
+position: -8.77859 4.1245
+extents: 0.270563 0.270563
+density: 1
+friction: 1
+restitution: 0
