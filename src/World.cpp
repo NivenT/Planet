@@ -16,6 +16,10 @@ World::World(const WorldParams& params) : World(params.planet) {
 	for (const auto& enemy : params.enemies) {
 		add_object(new Enemy(enemy), enemy);
 	}
+	for (const auto& spawner : params.spawners) {
+		add_object(new Spawner(spawner), spawner);
+		((Spawner*)m_objects.back())->subscribe(this);
+	}
 }
 
 World::~World() {
@@ -140,4 +144,11 @@ void World::destroy() {
 	m_objects.clear();
 	m_player = nullptr;
 	m_flags = 0;
+}
+
+void World::onNotify(const Event& event) {
+	if (event & EVENT_SPAWN_ENEMY) {
+		EnemyParams params = *(EnemyParams*)event.data;
+		add_object(new Enemy(params), params);
+	}
 }

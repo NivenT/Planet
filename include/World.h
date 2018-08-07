@@ -8,11 +8,11 @@
 struct WorldParams {
     std::vector<ItemParams> items;
     std::vector<EnemyParams> enemies;
-    std::vector<SpawnerParams> spawner;
+    std::vector<SpawnerParams> spawners;
     Planet planet;
 };
 
-class World {
+class World : public nta::Observer {
 private:
     Planet m_planet;
     // m_objects[0] == m_player
@@ -42,6 +42,8 @@ public:
     // returns true if game over (player dead)
     bool update(UpdateParams& params);
     void destroy();
+
+    void onNotify(const nta::Event&);
 };
 
 #endif // WORLD_H_INCLUDED

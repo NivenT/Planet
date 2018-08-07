@@ -5,7 +5,7 @@
   "friction": 1, 
   "init_health": 20, 
   "max_speed": [12, 24], 
-  "position": [-8.7386, 3.61879], 
+  "position": [-8.55953, 3.73546], 
   "restitution": 0, 
   "script": "scripts/shoe.chai", 
   "texture": "resources/images/shoe.png"

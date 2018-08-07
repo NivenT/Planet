@@ -24,7 +24,7 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_enemy.tex = "resources/images/shoe.png";
     m_active_enemy.update_script = "scripts/shoe.chai";
 
-    m_active_spawner.tex = "resources/images/show_spawner.png";
+    m_active_spawner.tex = "resources/images/shoe_spawner.png";
     m_active_spawner.spawn = m_active_enemy;
 
     m_world.planet = Planet::new_test();
@@ -165,7 +165,7 @@ void WorldEditor::update_enemy_tab(crvec2 mouse) {
 }
 
 void WorldEditor::update_spawner_tab(crvec2 mouse) {
-    if (InputManager:justPressed(SDL_BUTTON_LEFT)) {
+    if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_spawner.position = mouse;
         m_active_spawner.planet = &m_world.planet;
         m_world.spawners.push_back(m_active_spawner);
@@ -410,8 +410,8 @@ void WorldEditor::render_spawner_tab() {
         m_gui_focus = true;
 
         string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
-        m_active_enemy.save(string("resources/data/enemies/") + spawner_name
-                            + extension);
+        m_active_spawner.save(string("resources/data/spawners/") + spawner_name
+                                + extension);
     }
 
     ImGui::Text("\nSpawn data");

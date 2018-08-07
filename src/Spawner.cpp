@@ -3,23 +3,17 @@
 using namespace std;
 using namespace glm;
 
-Spawner::Spawner(crstring texture, Enemy spawn, vector<Object*>& objs, float health, crvec4 color, 
-                 uint16_t type) : Enemy(texture, "", health, SPAWNER_MAX_SPEED, color, 
-                                        type | SPAWNER_TYPE), 
-                                  m_objs(objs), m_spawn(spawn), m_spawn_rate(SPAWNER_SLOW_RATE), 
-                                  m_time(0) {   
+// ugh formatting
+Spawner::Spawner(crstring texture, EnemyParams spawn, float health, crvec4 color, 
+                 uint16_t type) : 
+    Enemy(texture, "", health, SPAWNER_MAX_SPEED, color,  type | SPAWNER_TYPE), 
+    m_spawn(spawn), m_spawn_rate(SPAWNER_SLOW_RATE), m_time(0) {   
 }
 
-Spawner::Spawner(const SpawnerParams& params, vector<Object*>& objs) : 
-    Spawner(params.tex, params.spawn, objs, params.init_health, params.color) {
-    set_creation_params(params.spawn);
+Spawner::Spawner(const SpawnerParams& params) : 
+    Spawner(params.tex, params.spawn, params.init_health, params.color) {
     set_spawn_rate(params.spawn_rate);
 }
-
-void Spawner::set_creation_params(const CreationParams& params) {
-    m_params = params;
-}
-
 void Spawner::set_spawn_rate(float rate) {
     m_spawn_rate = abs(rate);
 }
@@ -57,12 +51,11 @@ void Spawner::update(const UpdateParams& params) {
     while (m_time > m_spawn_rate) {
         m_time -= m_spawn_rate;
 
-        m_params.planet = params.planet;
-        m_params.position = getCenter();
+        m_spawn.planet = params.planet;
+        m_spawn.position = getCenter();
 
-        Enemy* new_enemy = new Enemy(m_spawn);
-        new_enemy->add_to_world(params.world, m_params);
-        m_objs.push_back(new_enemy);
+        /// \todo pass m_params to notify instead of calling add_to_world yourself
+        notify(nta::Event(EVENT_SPAWN_ENEMY, (void*)&m_spawn));
     }
 
     m_time += params.dt;
