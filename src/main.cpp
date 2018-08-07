@@ -1,4 +1,3 @@
-#include <nta/GLMConsoleOutput.h>
 #include <nta/ScreenManager.h>
 #include <nta/Logger.h>
 #include <nta/MyEngine.h>
@@ -8,7 +7,7 @@
 #include "WorldEditor.h"
 #include "ChaiManager.h"
 
-#define log(s) nta::Logger::writeToLog(#s + std::string(": ") + nta::to_string(s))
+#define log(s) nta::Logger::writeToLog(#s + std::string(": ") + nta::utils::to_string(s))
 
 void log_defs() {
     nta::Logger::writeToLog("Various Parameters:");

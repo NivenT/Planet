@@ -100,7 +100,7 @@ const Tile& Planet::getTile(const ivec2& coord) const {
         return m_tiles[coord.x][coord.y%cols];
     }
     nta::Logger::writeErrorToLog("Planet.getTile: Tried getting nonexistent Tile at (" +
-                                 nta::to_string(coord.x) + ", " + nta::to_string(coord.y) + ")");
+                                 nta::utils::to_string(coord.x) + ", " + nta::utils::to_string(coord.y) + ")");
 }
 
 bool Planet::validCoord(const ivec2& coord) const {

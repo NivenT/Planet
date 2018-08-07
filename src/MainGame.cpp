@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <nta/GLMConsoleOutput.h>
 #include <nta/Logger.h>
 #include <nta/SystemManager.h>
 #include <nta/ResourceManager.h>
