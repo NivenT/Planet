@@ -12,6 +12,34 @@ Planet::~Planet() {
     m_sea_level = -1;
 }
 
+nta::utils::Json Planet::json() const {
+    nta::utils::Json ret = {
+        {"gravity", {m_gravity.x, m_gravity.y}},
+        {"dimensions", {rows, cols}},
+        {"sea_level", m_sea_level}
+    };
+
+    // This is horribly inefficient if there are more than a few tile types
+    vector<Tile> types;
+    for (int r = 0; r < rows; ++r) {
+        ret["tiles"].push_back({});
+        for (int c = 0; c < cols; ++c) {
+            const Tile& curr = m_tiles[r][c];
+
+            int idx = 0;
+            while (idx < types.size() && types[idx] != curr) ++idx;
+            if (idx == types.size()) types.push_back(curr);
+
+            ret["tiles"].back().push_back(idx);
+        }
+    }
+
+    for (const auto& tile : types) {
+        ret["tile_types"].push_back(tile.json());
+    }
+    return ret;
+}
+
 Planet Planet::new_test() {
     Planet test;
 

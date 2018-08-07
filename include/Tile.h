@@ -3,6 +3,7 @@
 
 #include <nta/ResourceManager.h>
 #include <nta/SpriteBatch.h>
+#include <nta/json.h>
 
 #include "defs.h"
 
@@ -19,6 +20,16 @@ struct Tile {
         return {nta::ResourceManager::getTexture("outline.png").get_data(), 
                 glm::vec4(1,1,1,1)};
     }
+    nta::utils::Json json() const {
+
+        return {
+            {"texture", tex.id == 0 ? "" : nta::ResourceManager::getFile(tex).get_data_or("")},
+            {"color", {color.r, color.g, color.b, color.a}},
+            {"active", active},
+            {"destructable", destructable},
+            {"solid", solid}
+        };
+    }
     void render(nta::SpriteBatch& batch, glm::vec2 top_left) const {
         glm::vec4 col = color;
         col.a *= active ? 1 : TILE_INACTIVE_ALPHA;
@@ -27,6 +38,13 @@ struct Tile {
     }
     bool operator!() const {
         return !active;
+    }
+    bool operator==(const Tile& rhs) const {
+        return tex == rhs.tex && color == rhs.color && active == rhs.active
+                && destructable == rhs.destructable && solid == rhs.solid;
+    }
+    bool operator!=(const Tile& rhs) const {
+        return !(*this == rhs);
     }
 
     nta::GLTexture tex;

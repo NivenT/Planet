@@ -7,7 +7,7 @@ struct ItemParams : public CreationParams {
     ItemParams() {
         extents = SMALL_ITEM_EXTENTS;
     }
-    nta::utils::Json json() {
+    nta::utils::Json json() const {
         return CreationParams::json().merge({
             {"texture", tex},
             {"script", use_script},

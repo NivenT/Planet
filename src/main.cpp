@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
     nta::ErrorManager::set_periodic_callback([&](const nta::Error* errs) {
         while (errs) {
-            if (errs->type != nta::DEVIL_FAILURE) {
+            if (errs->type != nta::DEVIL_FAILURE && errs->type != nta::MISSING_RESOURCE) {
                 std::cout<<"An error occured. Check Log.log for details"<<std::endl;
                 screenManager.switchScreen(-1);
             }

@@ -6,7 +6,6 @@
 #include <nta/SpriteBatch.h>
 #include <nta/DebugBatch.h>
 #include <nta/IOManager.h>
-#include <nta/json.h>
 
 #include "Planet.h"
 
@@ -25,7 +24,7 @@ struct CreationParams {
     CreationParams() : planet(nullptr), position(0), extents(0), 
         density(1), friction(1), restitution(0) {
     }
-    virtual nta::utils::Json json() {
+    virtual nta::utils::Json json() const {
         return {
             {"position", {position.x, position.y}},
             {"extents", {extents.x, extents.y}},

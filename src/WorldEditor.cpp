@@ -282,6 +282,17 @@ void WorldEditor::render_miniworld() {
 void WorldEditor::render_planet_tab() {
     ImGui::Text("The quick brown fox jumps over the lazy dog");
 
+    static char name[GUI_TEXT_MAX_LENGTH] = "planet";
+
+    GUI_CMD(ImGui::InputText("World Name", name, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Save")) {
+        m_gui_focus = true;
+
+        string extension = utils::ends_with(name, ".json") ? "" : ".json";
+        string folder = "resources/data/planets/";
+        m_world.save(folder + name + extension);
+    }
+
     m_curr_tab = GUI_PLANET_TAB;
 }
 
