@@ -21,6 +21,10 @@ private:
     void render_batches(const nta::Camera2D camera);
     void render_miniworld();
     void render_gui();
+    void render_tile_tab();
+    void render_item_tab();
+    void render_enemy_tab();
+    void render_obstacle_tab();
 
     nta::SpriteFont* m_font = nullptr;
     nta::GLSLProgram* m_prog = nullptr;

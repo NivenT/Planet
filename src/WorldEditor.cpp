@@ -269,17 +269,106 @@ void WorldEditor::render_miniworld() {
     render_batches(Camera2D(cen, dims)); 
 }
 
-// TODO: Break into separate functions?
-// TODO: Use ImGui file browser
-void WorldEditor::render_gui() {
-    // TODO: Create a struct for each tab
+void WorldEditor::render_tile_tab() {
     static char tile_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+
+    GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_tile.color))
+    GUI_CMD(ImGui::Checkbox("Destructable", &m_active_tile.destructable))
+    GUI_CMD(ImGui::Checkbox("solid", &m_active_tile.solid))
+    GUI_CMD(ImGui::Checkbox("active", &m_active_tile.active))
+    GUI_CMD(ImGui::InputText("texture", tile_tex, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Update texture")) {
+        m_gui_focus = true;
+
+        auto tex = ResourceManager::getTexture(tile_tex);
+        if (tex.is_ok()) {
+            m_active_tile.tex = tex.get_data();
+        }
+    }
+
+    m_curr_tab = GUI_TILE_TAB;
+}
+
+void WorldEditor::render_item_tab() {
     static char item_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char item_use[GUI_TEXT_MAX_LENGTH] = "scripts/";
     static char item_name[GUI_TEXT_MAX_LENGTH] = "stick";
+
+    GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
+    GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
+                               MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x))
+    GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
+                               MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y))
+    GUI_CMD(ImGui::InputText("texture", item_tex, GUI_TEXT_MAX_LENGTH))
+    GUI_CMD(ImGui::InputText("script", item_use, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Update texture")) {
+        m_gui_focus = true;
+        if (ResourceManager::getTexture(item_tex).is_ok()) {
+            m_active_item.tex = item_tex;
+        }
+    } else if (ImGui::Button("Update script")) {
+        m_gui_focus = true;
+        // TODO: Check file exists
+        m_active_item.use_script = item_use;
+    }
+
+    GUI_CMD(ImGui::InputText("name", item_name, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Save")) {
+        m_gui_focus = true;
+
+        string extension = utils::ends_with(item_name, ".json") ? "" : ".json";
+        m_active_item.save(string("resources/data/items/") + item_name
+                            + extension);
+    }
+
+    m_curr_tab = GUI_ITEM_TAB;
+}
+
+void WorldEditor::render_enemy_tab() {
     static char enemy_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
     static char enemy_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char enemy_name[GUI_TEXT_MAX_LENGTH] = "shoe";
 
+    GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_enemy.color))
+    GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_enemy.extents.x,
+                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
+    GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_enemy.extents.y,
+                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat("health", &m_active_enemy.init_health,
+                               ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
+    GUI_CMD(ImGui::InputText("texture", enemy_tex, GUI_TEXT_MAX_LENGTH))
+    GUI_CMD(ImGui::InputText("script", enemy_script, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Update texture")) {
+        m_gui_focus = true;
+        if (ResourceManager::getTexture(enemy_tex).is_ok()) {
+            m_active_enemy.tex = enemy_tex;
+        }
+    } else if (ImGui::Button("Update script")) {
+        m_gui_focus = true;
+        m_active_enemy.update_script = enemy_script;
+    }
+
+    GUI_CMD(ImGui::InputText("name", enemy_name, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Save")) {
+        m_gui_focus = true;
+
+        string extension = utils::ends_with(enemy_name, ".json") ? "" : ".json";
+        m_active_enemy.save(string("resources/data/enemies/") + enemy_name
+                            + extension);
+    }
+
+    m_curr_tab = GUI_ENEMY_TAB;
+}
+
+void WorldEditor::render_obstacle_tab() {
+    ImGui::Text("Working on it...");
+
+    m_curr_tab = GUI_OBSTACLE_TAB;
+}
+
+// TODO: Break into separate functions?
+// TODO: Use ImGui file browser
+void WorldEditor::render_gui() {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     const auto size = m_window->getDimensions() * WORLDEDITOR_GUI_DIMS;
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
@@ -292,73 +381,14 @@ void WorldEditor::render_gui() {
                 ImGui::Text("The quick brown fox jumps over the lazy dog");
 
                 m_curr_tab = GUI_GENERAL_TAB;
-            } if (ImGui::AddTab("Tile")){
-                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_tile.color))
-                GUI_CMD(ImGui::Checkbox("Destructable", &m_active_tile.destructable))
-                GUI_CMD(ImGui::Checkbox("solid", &m_active_tile.solid))
-                GUI_CMD(ImGui::Checkbox("active", &m_active_tile.active))
-                GUI_CMD(ImGui::InputText("texture", tile_tex, GUI_TEXT_MAX_LENGTH))
-                if (ImGui::Button("Update texture")) {
-                    m_gui_focus = true;
-
-                    auto tex = ResourceManager::getTexture(tile_tex);
-                    if (tex.is_ok()) {
-                        m_active_tile.tex = tex.get_data();
-                    }
-                }
-
-                m_curr_tab = GUI_TILE_TAB;
-            } if (ImGui::AddTab("Item")){
-                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
-                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
-                                           MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x))
-                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
-                                           MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y))
-                GUI_CMD(ImGui::InputText("texture", item_tex, GUI_TEXT_MAX_LENGTH))
-                GUI_CMD(ImGui::InputText("script", item_use, GUI_TEXT_MAX_LENGTH))
-                if (ImGui::Button("Update texture")) {
-                    m_gui_focus = true;
-                    if (ResourceManager::getTexture(item_tex).is_ok()) {
-                        m_active_item.tex = item_tex;
-                    }
-                } else if (ImGui::Button("Update script")) {
-                    m_gui_focus = true;
-                    // TODO: Check file exists
-                    m_active_item.use_script = item_use;
-                }
-
-                GUI_CMD(ImGui::InputText("name", item_name, GUI_TEXT_MAX_LENGTH))
-                if (ImGui::Button("Save")) {
-                    m_gui_focus = true;
-                    m_active_item.save(string("resources/data/items/") + item_name);
-                }
-
-                m_curr_tab = GUI_ITEM_TAB;
-            } if (ImGui::AddTab("Enemy")){
-                GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_enemy.color))
-                GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_enemy.extents.x,
-                                           ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
-                GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_enemy.extents.y,
-                                           ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
-                GUI_CMD(ImGui::SliderFloat("health", &m_active_enemy.init_health,
-                                           ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
-                GUI_CMD(ImGui::InputText("texture", enemy_tex, GUI_TEXT_MAX_LENGTH))
-                GUI_CMD(ImGui::InputText("script", enemy_script, GUI_TEXT_MAX_LENGTH))
-                if (ImGui::Button("Update texture")) {
-                    m_gui_focus = true;
-                    if (ResourceManager::getTexture(enemy_tex).is_ok()) {
-                        m_active_enemy.tex = enemy_tex;
-                    }
-                } else if (ImGui::Button("Update script")) {
-                    m_gui_focus = true;
-                    m_active_enemy.update_script = enemy_script;
-                }
-
-                m_curr_tab = GUI_ENEMY_TAB;
-            } if (ImGui::AddTab("Obstacle")){
-                ImGui::Text("Working on it...");
-
-                m_curr_tab = GUI_OBSTACLE_TAB;
+            } if (ImGui::AddTab("Tile")) {
+                render_tile_tab();
+            } if (ImGui::AddTab("Item")) {
+                render_item_tab();
+            } if (ImGui::AddTab("Enemy")) {
+                render_enemy_tab();
+            } if (ImGui::AddTab("Obstacle")) {
+                render_obstacle_tab();
             }
         } ImGui::EndTabBar();
     } ImGui::End();

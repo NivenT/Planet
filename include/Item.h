@@ -7,14 +7,13 @@ struct ItemParams : public CreationParams {
     ItemParams() {
         extents = SMALL_ITEM_EXTENTS;
     }
-    std::string dump() {
-        std::stringstream contents;
-        contents<<"texture: "<<tex<<std::endl
-                <<"script: "<<use_script<<std::endl
-                <<"color: "<<color.r<<" "<<color.g<<" "<<color.b<<" "<<color.a<<std::endl
-                <<"max_speed: "<<max_speed.x<<" "<<max_speed.y<<std::endl
-                <<CreationParams::dump();
-        return contents.str();
+    nta::utils::Json json() {
+        return CreationParams::json().merge({
+            {"texture", tex},
+            {"script", use_script},
+            {"color", {color.r, color.g, color.b, color.a}},
+            {"max_speed", {max_speed.x, max_speed.y}}
+        });
     }
 
     std::string tex;

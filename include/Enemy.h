@@ -7,6 +7,15 @@ struct EnemyParams : public CreationParams {
     EnemyParams() {
         extents = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
     }
+    nta::utils::Json json() {
+        return CreationParams::json().merge({
+            {"texture", tex},
+            {"script", update_script},
+            {"color", {color.r, color.g, color.b, color.a}},
+            {"max_speed", {max_speed.x, max_speed.y}},
+            {"init_health", init_health}
+        });
+    }
 
     std::string tex;
     std::string update_script;

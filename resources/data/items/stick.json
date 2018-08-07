@@ -1,0 +1,11 @@
+{
+  "color": [1, 1, 1, 1], 
+  "density": 1, 
+  "extents": [0.270563, 0.270563], 
+  "friction": 1, 
+  "max_speed": [0, 20], 
+  "position": [-8.42264, 4.16345], 
+  "restitution": 0, 
+  "script": "scripts/stick.chai", 
+  "texture": "resources/images/stick.png"
+}
