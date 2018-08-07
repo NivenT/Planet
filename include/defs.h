@@ -106,11 +106,12 @@
 /// GUI
 #define WORLDEDITOR_GUI_DIMS glm::vec2(0.35f, 1.0f)
 #define GUI_TEXT_MAX_LENGTH  30
-#define GUI_GENERAL_TAB 0
+#define GUI_PLANET_TAB 0
 #define GUI_TILE_TAB 1
 #define GUI_ITEM_TAB 2
 #define GUI_ENEMY_TAB 3
-#define GUI_OBSTACLE_TAB 4
+#define GUI_SPAWNER_TAB 4
+#define GUI_OBSTACLE_TAB 5
 
 /// Rendering
 #define DEFAULT_CAMERA_CENTER glm::vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y)

@@ -8,6 +8,7 @@
 struct WorldParams {
     std::vector<ItemParams> items;
     std::vector<EnemyParams> enemies;
+    std::vector<SpawnerParams> spawner;
     Planet planet;
 };
 
@@ -41,9 +42,6 @@ public:
     // returns true if game over (player dead)
     bool update(UpdateParams& params);
     void destroy();
-
-    // Probably don't need to make it a friend, but it's just easier this way
-    friend WorldEditor;
 };
 
 #endif // WORLD_H_INCLUDED

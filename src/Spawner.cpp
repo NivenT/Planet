@@ -10,6 +10,12 @@ Spawner::Spawner(crstring texture, Enemy spawn, vector<Object*>& objs, float hea
                                   m_time(0) {   
 }
 
+Spawner::Spawner(const SpawnerParams& params, vector<Object*>& objs) : 
+    Spawner(params.tex, params.spawn, objs, params.init_health, params.color) {
+    set_creation_params(params.spawn);
+    set_spawn_rate(params.spawn_rate);
+}
+
 void Spawner::set_creation_params(const CreationParams& params) {
     m_params = params;
 }

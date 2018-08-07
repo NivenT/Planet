@@ -24,6 +24,9 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_enemy.tex = "resources/images/shoe.png";
     m_active_enemy.update_script = "scripts/shoe.chai";
 
+    m_active_spawner.tex = "resources/images/show_spawner.png";
+    m_active_spawner.spawn = m_active_enemy;
+
     m_world.planet = Planet::new_test();
 }
 
@@ -161,6 +164,14 @@ void WorldEditor::update_enemy_tab(crvec2 mouse) {
     }
 }
 
+void WorldEditor::update_spawner_tab(crvec2 mouse) {
+    if (InputManager:justPressed(SDL_BUTTON_LEFT)) {
+        m_active_spawner.position = mouse;
+        m_active_spawner.planet = &m_world.planet;
+        m_world.spawners.push_back(m_active_spawner);
+    }
+}
+
 void WorldEditor::update() {
     update_camera();
     if (InputManager::justPressed(SDLK_RETURN)) {
@@ -178,15 +189,10 @@ void WorldEditor::update() {
         auto coord = m_world.planet.getCoord(mouse);
 
         switch(m_curr_tab) {
-        case GUI_TILE_TAB:
-            update_tile_tab(mouse, coord);
-            break;
-        case GUI_ITEM_TAB:
-            update_item_tab(mouse);
-            break;
-        case GUI_ENEMY_TAB:
-            update_enemy_tab(mouse);
-            break;
+            case GUI_TILE_TAB: update_tile_tab(mouse, coord); break;
+            case GUI_ITEM_TAB: update_item_tab(mouse); break;
+            case GUI_ENEMY_TAB: update_enemy_tab(mouse); break;
+            case GUI_SPAWNER_TAB: update_spawner_tab(mouse); break;
         }
     }
 }
@@ -204,20 +210,24 @@ void WorldEditor::prepare_batches() {
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
     // I really don't like having a switch statement here
     switch(m_curr_tab) {
-    case GUI_ITEM_TAB: {
-        m_active_item.position = mouse;
-        temp_world.add_object(new Item(m_active_item), m_active_item);
-    } break;
-    case GUI_ENEMY_TAB: {
-        m_active_enemy.position = mouse;
-        temp_world.add_object(new Enemy(m_active_enemy), m_active_enemy);
-    } break;
+        case GUI_ITEM_TAB: {
+            m_active_item.position = mouse;
+            temp_world.add_object(new Item(m_active_item), m_active_item);
+        } break;
+        case GUI_ENEMY_TAB: {
+            m_active_enemy.position = mouse;
+            temp_world.add_object(new Enemy(m_active_enemy), m_active_enemy);
+        } break;
+        case GUI_SPAWNER_TAB: {
+            m_active_spawner.position = mouse;
+            temp_world.add_object(new Spawner(m_active_spawner), m_active_spawner);
+        } break;
     }
     temp_world.render(m_batch, m_overlay_batch, m_batch, m_font);
     switch(m_curr_tab) {
-    case GUI_TILE_TAB:
-        m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
-        break;
+        case GUI_TILE_TAB:
+            m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
+            break;
     }
     m_font->drawText(m_batch, "Player\nSpawn",
                      glm::vec4(PLAYER_INIT_POS.x,PLAYER_INIT_POS.y,PLAYER_DIMS));
@@ -267,6 +277,12 @@ void WorldEditor::render_miniworld() {
                                         m_world.planet.getRadius() * vec2(2.1);
     const vec2 cen = m_square_planet ? vec2(0) : vec2(0);
     render_batches(Camera2D(cen, dims)); 
+}
+
+void WorldEditor::render_planet_tab() {
+    ImGui::Text("The quick brown fox jumps over the lazy dog");
+
+    m_curr_tab = GUI_PLANET_TAB;
 }
 
 void WorldEditor::render_tile_tab() {
@@ -360,6 +376,68 @@ void WorldEditor::render_enemy_tab() {
     m_curr_tab = GUI_ENEMY_TAB;
 }
 
+void WorldEditor::render_spawner_tab() {
+    static char spawn_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char spawn_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char spawner_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char spawner_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char spawner_name[GUI_TEXT_MAX_LENGTH] = "shoe_spawner";
+
+
+    ImGui::Text("Spawner data");
+    ImGui::Text("===================================");
+    GUI_CMD(ImGui::ColorEdit4("color##Spawner", (float*)&m_active_spawner.color))
+    GUI_CMD(ImGui::SliderFloat("extents.x##Spawner", &m_active_spawner.extents.x,
+                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
+    GUI_CMD(ImGui::SliderFloat("extents.y##Spawner", &m_active_spawner.extents.y,
+                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat("health##Spawner", &m_active_spawner.init_health,
+                               ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
+    GUI_CMD(ImGui::InputText("texture##Spawner", spawner_tex, GUI_TEXT_MAX_LENGTH))
+    GUI_CMD(ImGui::InputText("script##Spawner", spawner_script, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Update texture##Spawner")) {
+        m_gui_focus = true;
+        if (ResourceManager::getTexture(spawner_tex).is_ok()) {
+            m_active_spawner.tex = spawner_tex;
+        }
+    } else if (ImGui::Button("Update script##Spawner")) {
+        m_gui_focus = true;
+        m_active_spawner.spawn.update_script = spawner_script;
+    }
+
+    GUI_CMD(ImGui::InputText("name", spawner_name, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Save")) {
+        m_gui_focus = true;
+
+        string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
+        m_active_enemy.save(string("resources/data/enemies/") + spawner_name
+                            + extension);
+    }
+
+    ImGui::Text("\nSpawn data");
+    ImGui::Text("===================================");
+    GUI_CMD(ImGui::ColorEdit4("color##Spawn", (float*)&m_active_spawner.spawn.color))
+    GUI_CMD(ImGui::SliderFloat("extents.x##Spawn", &m_active_spawner.spawn.extents.x,
+                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
+    GUI_CMD(ImGui::SliderFloat("extents.y##Spawn", &m_active_spawner.spawn.extents.y,
+                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat("health##Spawn", &m_active_spawner.spawn.init_health,
+                               ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
+    GUI_CMD(ImGui::InputText("texture##Spawn", spawn_tex, GUI_TEXT_MAX_LENGTH))
+    GUI_CMD(ImGui::InputText("script##Spawn", spawn_script, GUI_TEXT_MAX_LENGTH))
+    if (ImGui::Button("Update texture##Spawn")) {
+        m_gui_focus = true;
+        if (ResourceManager::getTexture(spawn_tex).is_ok()) {
+            m_active_spawner.spawn.tex = spawn_tex;
+        }
+    } else if (ImGui::Button("Update script##Spawn")) {
+        m_gui_focus = true;
+        m_active_spawner.spawn.update_script = spawn_script;
+    }
+
+    m_curr_tab = GUI_SPAWNER_TAB;
+}
+
 void WorldEditor::render_obstacle_tab() {
     ImGui::Text("Working on it...");
 
@@ -378,15 +456,15 @@ void WorldEditor::render_gui() {
             ImGui::DrawTabsBackground();
 
             if (ImGui::AddTab("General")) {
-                ImGui::Text("The quick brown fox jumps over the lazy dog");
-
-                m_curr_tab = GUI_GENERAL_TAB;
+                render_planet_tab();
             } if (ImGui::AddTab("Tile")) {
                 render_tile_tab();
             } if (ImGui::AddTab("Item")) {
                 render_item_tab();
             } if (ImGui::AddTab("Enemy")) {
                 render_enemy_tab();
+            } if (ImGui::AddTab("Spawner")) {
+                render_spawner_tab();
             } if (ImGui::AddTab("Obstacle")) {
                 render_obstacle_tab();
             }

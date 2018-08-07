@@ -13,17 +13,23 @@ class WorldEditor : public nta::Screen {
 private:
     glm::vec2 screen_to_game(crvec2 screen) const;
     bool gui_in_use() const;
+
     void update_camera();
     void update_tile_tab(crvec2 mouse, const glm::ivec2& coord);
     void update_item_tab(crvec2 mouse);
     void update_enemy_tab(crvec2 mouse);
+    void update_spawner_tab(crvec2 mouse);
+
     void prepare_batches();
     void render_batches(const nta::Camera2D camera);
     void render_miniworld();
     void render_gui();
+    
+    void render_planet_tab();
     void render_tile_tab();
     void render_item_tab();
     void render_enemy_tab();
+    void render_spawner_tab();
     void render_obstacle_tab();
 
     nta::SpriteFont* m_font = nullptr;
@@ -39,8 +45,9 @@ private:
     Tile m_active_tile;
     ItemParams m_active_item;
     EnemyParams m_active_enemy;
+    SpawnerParams m_active_spawner;
 
-    int m_curr_tab = GUI_GENERAL_TAB;
+    int m_curr_tab = GUI_PLANET_TAB;
     bool m_gui_focus = true;
     bool m_gui_active = true;
     bool m_square_planet = false;
