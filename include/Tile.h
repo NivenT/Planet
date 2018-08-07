@@ -21,7 +21,6 @@ struct Tile {
                 glm::vec4(1,1,1,1)};
     }
     nta::utils::Json json() const {
-
         return {
             {"texture", tex.id == 0 ? "" : nta::ResourceManager::getFile(tex).get_data_or("")},
             {"color", {color.r, color.g, color.b, color.a}},
