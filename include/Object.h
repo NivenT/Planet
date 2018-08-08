@@ -36,7 +36,14 @@ struct CreationParams {
     void save(crstring path) {
         nta::IOManager::writeFileFromBuffer(path, json().dump(2));
     }
-    virtual void load(crstring path) {
+    static CreationParams load(const nta::utils::Json& json) {
+        CreationParams ret;
+        ret.position = glm::vec2(json["position"][0], json["position"][1]);
+        ret.extents = glm::vec2(json["extents"][0], json["extents"][1]);
+        ret.density = json["density"];
+        ret.friction = json["friction"];
+        ret.restitution = json["restitution"];
+        return ret;
     }
 
     // The planet an object belongs to

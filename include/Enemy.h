@@ -7,6 +7,7 @@ struct EnemyParams : public CreationParams {
     EnemyParams() {
         extents = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
     }
+    EnemyParams(const CreationParams& super) : CreationParams(super) {}
     nta::utils::Json json() const {
         return CreationParams::json().merge({
             {"texture", tex},
@@ -15,6 +16,16 @@ struct EnemyParams : public CreationParams {
             {"max_speed", {max_speed.x, max_speed.y}},
             {"init_health", init_health}
         });
+    }
+    static EnemyParams load(const nta::utils::Json& json) {
+        EnemyParams ret(CreationParams::load(json));
+        ret.tex = (std::string)json["texture"];
+        ret.update_script = (std::string)json["script"];
+        ret.color = glm::vec4(json["color"][0], json["color"][1],
+                              json["color"][2], json["color"][3]);
+        ret.max_speed = glm::vec2(json["max_speed"][0], json["max_speed"][1]);
+        ret.init_health = json["init_health"];
+        return ret;
     }
 
     std::string tex;

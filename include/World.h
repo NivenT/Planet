@@ -6,6 +6,12 @@
 #include "Player.h"
 
 struct WorldParams {
+    void clear() {
+        items.clear();
+        enemies.clear();
+        spawners.clear();
+        planet.clear();
+    }
     nta::utils::Json json() const {
         nta::utils::Json ret = {
             {"planet", planet.json()}
@@ -23,6 +29,20 @@ struct WorldParams {
     }
     void save(crstring path) {
         nta::IOManager::writeFileFromBuffer(path, json().dump(2));
+    }
+    static WorldParams load(const nta::utils::Json& json) {
+        WorldParams ret;
+        ret.planet = Planet::load(json["planet"]);
+        for (const auto& item : json["items"]) {
+            ret.items.push_back(ItemParams::load(item));
+        }
+        for (const auto& enemy : json["enemies"]) {
+            ret.enemies.push_back(EnemyParams::load(enemy));
+        }
+        for (const auto& spawner : json["spawners"]) {
+            ret.spawners.push_back(SpawnerParams::load(spawner));
+        }
+        return ret;
     }
 
     std::vector<ItemParams> items;

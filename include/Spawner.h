@@ -9,11 +9,18 @@ struct SpawnerParams : public EnemyParams {
     SpawnerParams() {
         init_health = NORMAL_SPAWNER_INIT_HEALTH;
     }
+    SpawnerParams(const EnemyParams& super) : EnemyParams(super) {}
     nta::utils::Json json() const {
         return EnemyParams::json().merge({
             {"spawn", spawn.json()},
             {"spawn_rate", spawn_rate}
         });
+    }
+    static SpawnerParams load(const nta::utils::Json& json) {
+        SpawnerParams ret(EnemyParams::load(json));
+        ret.spawn = EnemyParams::load(json["spawn"]);
+        ret.spawn_rate = json["spawn_rate"];
+        return ret;
     }
 
     EnemyParams spawn;

@@ -43,6 +43,7 @@ private:
 public:
     Planet() {}
     static Planet new_test();
+    static Planet load(const nta::utils::Json& json);
     ~Planet();
     nta::utils::Json json() const;
     // returns width x height in world coordinates
@@ -60,6 +61,7 @@ public:
     void add_to_world(b2World* world);
     void render(nta::SpriteBatch& batch) const;
     void render_debug(nta::DebugBatch& dbatch) const;
+    void clear();
 
     friend WorldEditor;
 };

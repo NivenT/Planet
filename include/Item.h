@@ -7,6 +7,7 @@ struct ItemParams : public CreationParams {
     ItemParams() {
         extents = SMALL_ITEM_EXTENTS;
     }
+    ItemParams(const CreationParams& super) : CreationParams(super) {}
     nta::utils::Json json() const {
         return CreationParams::json().merge({
             {"texture", tex},
@@ -14,6 +15,15 @@ struct ItemParams : public CreationParams {
             {"color", {color.r, color.g, color.b, color.a}},
             {"max_speed", {max_speed.x, max_speed.y}}
         });
+    }
+    static ItemParams load(const nta::utils::Json& json) {
+        ItemParams ret(CreationParams::load(json));
+        ret.tex = (std::string)json["texture"];
+        ret.use_script = (std::string)json["script"];
+        ret.color = glm::vec4(json["color"][0], json["color"][1],
+                              json["color"][2], json["color"][3]);
+        ret.max_speed = glm::vec2(json["max_speed"][0], json["max_speed"][1]);
+        return ret;
     }
 
     std::string tex;

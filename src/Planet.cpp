@@ -40,6 +40,28 @@ nta::utils::Json Planet::json() const {
     return ret;
 }
 
+Planet Planet::load(const nta::utils::Json& json) {
+    Planet ret;
+
+    ret.m_gravity = vec2(json["gravity"][0], json["gravity"][1]);
+    ret.m_dimensions = vec2(json["dimensions"][0], json["dimensions"][1]);
+    ret.m_sea_level = json["sea_level"];
+
+    vector<Tile> types;
+    for (const auto& tile : json["tile_types"]) {
+        types.push_back(Tile::load(tile));
+    }
+
+    for (int r = 0; r < ret.rows; ++r) {
+        ret.m_tiles.push_back({});
+        for (int c = 0; c < ret.cols; ++c) {
+            ret.m_tiles.back().push_back(types[json["tiles"][r][c]]);
+        }
+    }
+
+    return ret;
+}
+
 Planet Planet::new_test() {
     Planet test;
 
@@ -88,6 +110,12 @@ Planet Planet::new_test() {
 
     test.m_gravity = vec2(0, -9.81);
     return test;
+}
+
+void Planet::clear() {
+    m_tiles.clear();
+    m_sea_level = 0;
+    rows = cols = 0;
 }
 
 /// TODO: replace with a #define OFFSET or make some of these functions inline
