@@ -81,18 +81,14 @@ bool World::are_flags_set(uint16_t flags) const {
 void World::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
 				   SpriteBatch& light_batch, SpriteFont* font) const {
 	m_planet.render(batch);
-	// +1 to skip player
-	for (auto it = m_objects.begin() + 1; it != m_objects.end(); ++it) {
+	int offset = are_flags_set(WORLD_DONT_DRAW_PLAYER_FLAG) ? 1 : 0;
+	for (auto it = m_objects.begin() + offset; it != m_objects.end(); ++it) {
 		(*it)->render(batch);
 	}
-	if (!are_flags_set(WORLD_DONT_DRAW_PLAYER_FLAG)) {
-		m_player->render(light_batch);
-		// Why is this a flag?
-		if (are_flags_set(WORLD_DRAW_PLAYER_EXTRAS_FLAG)) {
-			m_player->render_inventory(overlay_batch, font);
-			m_player->render_health(batch);
-			m_player->render_attack(batch);
-		}
+	// Why is this a flag?
+	if (offset == 0 && are_flags_set(WORLD_DRAW_PLAYER_EXTRAS_FLAG)) {
+		m_player->render_inventory(overlay_batch, font);
+		m_player->render_attack(batch);
 	}
 }
 

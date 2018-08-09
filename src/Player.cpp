@@ -1,5 +1,6 @@
 #include <nta/InputManager.h>
 #include <nta/CallbackManager.h>
+#include <nta/ResourceManager.h>
 
 #include "Player.h"
 #include "Enemy.h"
@@ -12,6 +13,7 @@ Player::Player(uint16_t type) :
     Agent(PLAYER_MAX_SPEED, PLAYER_COLOR, PLAYER_INIT_HEALTH, type | PLAYER_TYPE),
     m_inventory_event_id(0) {
     set_flags(AGENT_STATE_SHOW_HEALTH);
+    m_anim = Animation2D("resources/images/HeavyBandit_Spritesheet.png", ivec2(7,8));
 }
 
 Player::~Player() {
@@ -54,8 +56,10 @@ void Player::add_to_world(b2World* world, const CreationParams& params) {
 }
 
 void Player::render(SpriteBatch& batch) const {
-    Light light(getCenter(), m_color, PLAYER_HALF_DIMS.x*1.618, m_health/PLAYER_INIT_HEALTH);
-    light.render(batch);
+    const vec4 uv = m_direction ? m_anim.get_uv() : m_anim.get_flipped_uv();
+    batch.addGlyph(vec4(getTopLeft(), 2.f*getExtents()), uv, m_anim.get_tex_id(),
+                    m_color, getOrientation());
+    render_health(batch);
 }
 
 // TODO: Make zip iterator class
@@ -132,7 +136,7 @@ void Player::handle_input(const UpdateParams& params) {
     } else if (InputManager::isPressed(SDLK_a)) {
         applyForce(-PLAYER_FORCE, 0);
     }
-    if (m_is_standing) {
+    if (OBJECT_ON_GROUND(m_motion_state)) {
         if (InputManager::isPressed(SDLK_w)) {
             applyForce(0, PLAYER_JUMP_FORCE);
         }
@@ -155,12 +159,22 @@ void Player::update(const UpdateParams& params) {
     }
 
     // Try to stay upright
-    if (m_is_standing) {
+    if (m_motion_state == STANDING) {
         float ang = getOrientation();
         if (0 < ang && ang < M_PI/2.f) {
             applyForce(PLAYER_TILT_FORCE, 0);
         } else if (-M_PI/2.f < ang && ang < 0) {
             applyForce(-PLAYER_TILT_FORCE, 0);
+        }
+    }
+
+    m_anim.step(params.dt * 8.f*getVelocity().x/getMaxSpeed().x);
+    if (m_motion_state != m_prev_motion_state) {
+        switch(m_motion_state) {
+            case STANDING: m_anim.switch_animation(0,1); break;
+            case RUNNING: m_anim.switch_animation(8, 8); break;
+            case JUMPING: m_anim.switch_animation(34,1); break;
+            case FALLING: m_anim.switch_animation(34,1); break;
         }
     }
 }

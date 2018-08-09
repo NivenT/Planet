@@ -37,15 +37,18 @@ void ChaiManager::init() {
     Logger::writeToLog("Initializing ChaiManager...");
     Logger::indent();
 
+    add_global_const(chaiscript::const_var(STANDING), "STANDING");
+    add_global_const(chaiscript::const_var(RUNNING), "RUNNING");
+    add_global_const(chaiscript::const_var(JUMPING), "JUMPING");
+    add_global_const(chaiscript::const_var(FALLING), "FALLING");
+    add(chaiscript::user_type<ObjectMotionState>(), "ObjectMotionState");
+
     add(chaiscript::fun(&Enemy::m_max_speed), "m_max_speed");
     add(chaiscript::fun(&Enemy::m_max_speed), "max_speed");
-    // this isn't strictly necessary but makes error messages nicer
     add(chaiscript::user_type<Enemy>(), "Enemy");
 
     add(chaiscript::fun(&Agent::getHealth), "getHealth");
     add(chaiscript::fun(&Agent::applyDamage), "applyDamage");
-    add(chaiscript::fun(&Agent::m_is_standing), "m_is_standing");
-    add(chaiscript::fun(&Agent::m_is_standing), "is_standing");
     add(chaiscript::fun(&Agent::are_flags_set), "are_flags_set");
     add(chaiscript::user_type<Agent>(), "Agent");
 
@@ -58,7 +61,11 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Object::getMass), "getMass");
     add(chaiscript::fun(&Object::setVelocity), "setVelocity");
     add(chaiscript::fun(&Object::applyForce), "applyForce");
+    add(chaiscript::fun(&Object::is_standing), "is_standing");
     add(chaiscript::fun(&Object::m_body), "m_body");
+    add(chaiscript::fun(&Object::m_body), "body");
+    add(chaiscript::fun(&Object::m_motion_state), "m_motion_state");
+    add(chaiscript::fun(&Object::m_motion_state), "motion_state");
     //add(chaiscript::user_type<Object>(), "Object"); 
 
     m_chai.add(chaiscript::base_class<Object, Agent>());

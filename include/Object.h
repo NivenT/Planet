@@ -9,6 +9,8 @@
 
 #include "Planet.h"
 
+#define OBJECT_ON_GROUND(s) ((s == STANDING) || (s == RUNNING))
+
 class ChaiManager;
 
 struct UpdateParams {
@@ -62,6 +64,10 @@ class RenderAtKey {
     RenderAtKey& operator=(const RenderAtKey&);
 };
 
+enum ObjectMotionState {
+    STANDING, RUNNING, JUMPING, FALLING
+};
+
 class Object {
 private:
     void handle_collisions(const UpdateParams& params);
@@ -75,7 +81,7 @@ protected:
 
     glm::vec4 m_color;
     b2Body* m_body;
-    bool m_is_standing;
+    ObjectMotionState m_motion_state, m_prev_motion_state = FALLING;
     // true when facing right
     bool m_direction;
 public:
@@ -85,9 +91,11 @@ public:
     uint16_t getObjectType() const;
     glm::vec2 getCenter() const;
     glm::vec2 getVelocity() const;
+    glm::vec2 getMaxSpeed() const;
     float getOrientation() const;
     float getMass() const;
     bool hasBody() const;
+    bool is_standing() const;
     void destroyBody(b2World* world);
     // (center, half_dims)
     virtual glm::vec2 getTopLeft() const;

@@ -24,6 +24,9 @@
 #define SPAWNER_TYPE   0b0000'0000'0100'0000
 
 #define OBJECT_FACING_THRESHOLD 0.4f
+#define OBJECT_RUNNING_THRESHOLD 3.f
+#define OBJECT_FALLING_THRESHOLD -0.1f
+#define OBJECT_JUMPING_THRESHOLD 0.1f
 
 /// Tiles
 #define TILE_SIZE 1.f
@@ -47,7 +50,7 @@
 #define AGENT_FAST_ACCELERATION 15.f
 
 /// Player
-#define PLAYER_COLOR glm::vec4(0.24, 0.00, 0.40, 1.00)
+#define PLAYER_COLOR glm::vec4(1)
 #define PLAYER_INIT_HEALTH 100.f
 #define PLAYER_DIMS glm::vec2(0.8, 1.7)
 #define PLAYER_AREA (PLAYER_DIMS.x*PLAYER_DIMS.y)

@@ -24,6 +24,7 @@ private:
     void handle_input(const UpdateParams& params);
 
     Cycle<Item*> m_inventory;
+    nta::Animation2D m_anim;
     AttackAnim m_attack_anim;
     uint64_t m_inventory_event_id;
 public:

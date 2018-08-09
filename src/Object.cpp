@@ -45,12 +45,20 @@ vec2 Object::getVelocity() const {
     return vec2(m_body->GetLinearVelocity().x, m_body->GetLinearVelocity().y);
 }
 
+vec2 Object::getMaxSpeed() const {
+    return m_max_speed;
+}
+
 float Object::getMass() const {
     return m_body->GetMass();
 }
 
 bool Object::hasBody() const {
     return m_body != nullptr;
+}
+
+bool Object::is_standing() const {
+    return OBJECT_ON_GROUND(m_motion_state);
 }
 
 void Object::setVelocity(crvec2 vel) {
@@ -60,11 +68,6 @@ void Object::setVelocity(crvec2 vel) {
 void Object::applyForce(float x, float y) {
     m_body->ApplyForceToCenter(b2Vec2(x, y), true);
 }
-/*
-void Object::applyForce(crvec2 force) {
-    applyForce(force.x, force.y);
-}
-*/
 
 // Call at end of child's add_to_world
 void Object::add_to_world(b2World* world, const CreationParams& params) {
@@ -93,7 +96,7 @@ void Object::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, 
         if (abs(c) >= 0.707) {
             for (int i = 0; i < b2_maxManifoldPoints; i++) {
                 if (manifold.points[i].y < getCenter().y - getExtents().y + EPS) {
-                    m_is_standing = true;
+                    m_motion_state = STANDING;
                 }
             }
         }
@@ -126,7 +129,7 @@ void Object::update(const UpdateParams& params) {
                              m_body->GetAngle());
     }
 
-    m_is_standing = false;
+    tie(m_motion_state, m_prev_motion_state) = make_tuple(FALLING, m_motion_state);
     handle_collisions(params);
 
     vec2 vel = getVelocity();
@@ -139,6 +142,12 @@ void Object::update(const UpdateParams& params) {
     setVelocity(vel);
 
     if (abs(vel.x) >= OBJECT_FACING_THRESHOLD) m_direction = vel.x > 0;
+
+    if (m_motion_state == STANDING && abs(vel.x) >= OBJECT_RUNNING_THRESHOLD) {
+        m_motion_state = RUNNING;
+    } else if (m_motion_state == FALLING && vel.y >= OBJECT_JUMPING_THRESHOLD) {
+        m_motion_state = JUMPING;
+    }
 }
 
 void Object::destroyBody(b2World* world) {

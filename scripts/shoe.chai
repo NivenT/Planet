@@ -1,6 +1,6 @@
 def run_shoe() {
     var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
-    if (self.is_standing) {
+    if (self.is_standing()) {
         self.applyForce(fx, 0);
         
         var extents = self.getExtents();
