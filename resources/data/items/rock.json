@@ -1,0 +1,11 @@
+{
+  "color": [1, 1, 1, 1], 
+  "density": 1, 
+  "extents": [0.284, 0.287], 
+  "friction": 1, 
+  "max_speed": [0, 20], 
+  "position": [-8.36241, 4.12026], 
+  "restitution": 0, 
+  "script": "", 
+  "texture": "resources/images/rock.png"
+}
