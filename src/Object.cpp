@@ -147,7 +147,13 @@ void Object::update(const UpdateParams& params) {
         m_motion_state = RUNNING;
     } else if (m_motion_state == FALLING && vel.y >= OBJECT_JUMPING_THRESHOLD) {
         m_motion_state = JUMPING;
+    } else if (m_motion_state == STANDING && OBJECT_IS_IDLE(m_prev_motion_state)) {
+        if (++m_standing_frames >= OBJECT_IDLE_THRESHOLD) {
+            m_motion_state = IDLE;
+        }
     }
+
+    if (!OBJECT_IS_IDLE(m_motion_state)) m_standing_frames = 0;
 }
 
 void Object::destroyBody(b2World* world) {

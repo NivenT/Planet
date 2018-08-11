@@ -10,6 +10,7 @@
 #include "Planet.h"
 
 #define OBJECT_ON_GROUND(s) ((s == STANDING) || (s == RUNNING))
+#define OBJECT_IS_IDLE(s) ((s == STANDING) || (s == IDLE))
 
 class ChaiManager;
 
@@ -65,7 +66,7 @@ class RenderAtKey {
 };
 
 enum ObjectMotionState {
-    STANDING, RUNNING, JUMPING, FALLING
+    STANDING, RUNNING, JUMPING, FALLING, IDLE
 };
 
 class Object {
@@ -82,6 +83,7 @@ protected:
     glm::vec4 m_color;
     b2Body* m_body;
     ObjectMotionState m_motion_state, m_prev_motion_state = FALLING;
+    std::size_t m_standing_frames = 0;
     // true when facing right
     bool m_direction;
 public:

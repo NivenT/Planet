@@ -175,6 +175,7 @@ void Player::update(const UpdateParams& params) {
             case RUNNING: m_anim.switch_animation(8, 8); break;
             case JUMPING: m_anim.switch_animation(34,1); break;
             case FALLING: m_anim.switch_animation(34,1); break;
+            case IDLE: m_anim.switch_animation(4, 1); break;
         }
     }
 }

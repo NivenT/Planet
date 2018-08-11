@@ -89,25 +89,6 @@ Planet Planet::new_test() {
         }
     }
 
-    test.m_tiles[test.m_sea_level][32].active = false;
-    test.m_tiles[test.m_sea_level][33].active = false;
-    test.m_tiles[test.m_sea_level][31].active = false;
-    test.m_tiles[test.m_sea_level][30].active = false;
-    test.m_tiles[test.m_sea_level][34].active = false;
-    test.m_tiles[test.m_sea_level+1][30].active = false;
-    test.m_tiles[test.m_sea_level+1][34].active = false;
-    test.m_tiles[test.m_sea_level+1][32].active = false;
-    test.m_tiles[test.m_sea_level+1][31].active = false;
-    test.m_tiles[test.m_sea_level+1][33].active = false;
-    test.m_tiles[test.m_sea_level+2][32].active = false;
-    test.m_tiles[test.m_sea_level+2][31].active = false;
-    test.m_tiles[test.m_sea_level+2][33].active = false;
-    test.m_tiles[test.m_sea_level+3][32].active = false;
-
-    test.m_tiles[test.m_sea_level+3][35].active = false;
-    test.m_tiles[test.m_sea_level+3][36].active = false;
-    test.m_tiles[test.m_sea_level+2][36].active = false;
-
     test.m_gravity = vec2(0, -9.81);
     return test;
 }
