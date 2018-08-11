@@ -27,7 +27,7 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_spawner.tex = "resources/images/shoe_spawner.png";
     m_active_spawner.spawn = m_active_enemy;
 
-    m_world.planet = Planet::new_test();
+    m_world = WorldParams::load(utils::Json::from_file("resources/data/planets/test_planet.json"));
 }
 
 WorldEditor::~WorldEditor() {

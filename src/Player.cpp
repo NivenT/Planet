@@ -41,6 +41,7 @@ void Player::add_to_world(b2World* world, const CreationParams& params) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(PLAYER_INIT_POS.x, PLAYER_INIT_POS.y);
+    body_def.fixedRotation = true;
     m_body = world->CreateBody(&body_def);
 
     b2PolygonShape body_shape;
@@ -155,16 +156,6 @@ void Player::update(const UpdateParams& params) {
         m_attack_anim.anim.step(params.dt*m_attack_anim.speed);
         if (m_attack_anim.anim.get_time() > m_attack_anim.anim.get_length()*m_attack_anim.num_cycles) {
             unset_flags(AGENT_STATE_ATTACKING);
-        }
-    }
-
-    // Try to stay upright
-    if (m_motion_state == STANDING) {
-        float ang = getOrientation();
-        if (0 < ang && ang < M_PI/2.f) {
-            applyForce(PLAYER_TILT_FORCE, 0);
-        } else if (-M_PI/2.f < ang && ang < 0) {
-            applyForce(-PLAYER_TILT_FORCE, 0);
         }
     }
 
