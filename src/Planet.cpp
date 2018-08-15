@@ -13,29 +13,41 @@ Planet::~Planet() {
 }
 
 nta::utils::Json Planet::json() const {
+    vector<Tile> types;
+    // This is horribly inefficient if there are more than a few tile types
+    const auto get_tile_type = [&](const Tile& tile) {
+        int idx = 0;
+        while (idx < types.size() && types[idx] != tile) ++idx;
+        if (idx == types.size()) types.push_back(tile);
+        return idx;
+    };
+
     nta::utils::Json ret = {
         {"gravity", {m_gravity.x, m_gravity.y}},
         {"dimensions", {rows, cols}},
         {"sea_level", m_sea_level}
     };
 
-    // This is horribly inefficient if there are more than a few tile types
-    vector<Tile> types;
+    const int num_tiles = rows*cols;
+    int streak = 1;
+    int last = get_tile_type(m_tiles[0][0]);
     for (int r = 0; r < rows; ++r) {
-        ret["tiles"].push_back({});
         for (int c = 0; c < cols; ++c) {
-            const Tile& curr = m_tiles[r][c];
+            if (r*r + c*c == 0) continue;
+            if (m_tiles[r][c] == types[last]) {
+                streak++;
+            } else {
+                ret["tile layout"].push_back({streak, last});
 
-            int idx = 0;
-            while (idx < types.size() && types[idx] != curr) ++idx;
-            if (idx == types.size()) types.push_back(curr);
-
-            ret["tiles"].back().push_back(idx);
+                last = get_tile_type(m_tiles[r][c]);
+                streak = 1;
+            }
         }
     }
+    ret["tile layout"].push_back({streak, last});
 
     for (const auto& tile : types) {
-        ret["tile_types"].push_back(tile.json());
+        ret["tile types"].push_back(tile.json());
     }
     return ret;
 }
@@ -48,17 +60,23 @@ Planet Planet::load(const nta::utils::Json& json) {
     ret.m_sea_level = json["sea_level"];
 
     vector<Tile> types;
-    for (const auto& tile : json["tile_types"]) {
+    for (const auto& tile : json["tile types"]) {
         types.push_back(Tile::load(tile));
     }
 
-    for (int r = 0; r < ret.rows; ++r) {
-        ret.m_tiles.push_back({});
-        for (int c = 0; c < ret.cols; ++c) {
-            ret.m_tiles.back().push_back(types[json["tiles"][r][c]]);
-        }
+    ret.m_tiles.resize(ret.rows);
+    for (int r = 0; r < ret.rows; r++) {
+        ret.m_tiles[r].resize(ret.cols);
     }
 
+    int curr = 0;
+    for (const auto& p : json["tile layout"]) {
+        for (int i = 0; i < p[0].as_int(); i++, curr++) {
+            int r = curr/ret.cols;
+            int c = curr%ret.cols;
+            ret.m_tiles[r][c] = types[p[1]];
+        }
+    }
     return ret;
 }
 
