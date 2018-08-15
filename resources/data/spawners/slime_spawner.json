@@ -32,6 +32,6 @@
   "restitution": 0, 
   "script": "", 
   "spawn": "resources/data/enemies/slime.json", 
-  "spawn_rate": 5.611, 
+  "spawn_rate": 15.611, 
   "texture": "resources/images/nebula_spritesheet.png"
 }

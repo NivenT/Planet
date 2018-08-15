@@ -18,7 +18,7 @@ struct SpawnerParams : public EnemyParams {
     }
     static SpawnerParams load(const nta::utils::Json& json) {
         SpawnerParams ret(EnemyParams::load(json));
-        ret.spawn = "resources/data/enemies/shoe.json";//EnemyParams::load(json["spawn"]);
+        ret.spawn = (std::string)json["spawn"];
         ret.spawn_rate = json["spawn_rate"];
         return ret;
     }

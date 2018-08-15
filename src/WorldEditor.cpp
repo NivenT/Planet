@@ -358,6 +358,11 @@ void WorldEditor::render_planet_tab() {
         m_world.clear();
         m_world = WorldParams::load(utils::Json::from_file(folder + name + extension));     
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Reset")) {
+        m_world.clear();
+        m_world.planet = Planet::new_test();
+    }
 
     m_curr_tab = GUI_PLANET_TAB;
 }
@@ -536,7 +541,6 @@ void WorldEditor::render_obstacle_tab() {
     m_curr_tab = GUI_OBSTACLE_TAB;
 }
 
-// TODO: Break into separate functions?
 // TODO: Use ImGui file browser
 void WorldEditor::render_gui() {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
