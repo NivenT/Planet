@@ -27,8 +27,6 @@ private:
     // Never expected to ever use more than 2 batches
     nta::SpriteBatch m_batch;
     nta::SpriteBatch m_overlay_batch;
-    nta::SpriteBatch m_light_batch;
-    nta::SpriteBatch m_debug_sprite_batch;
     nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;
 
@@ -42,8 +40,6 @@ private:
     bool m_square_planet;
     bool m_paused;
     bool m_dev_mode;
-    // When you turn a bug into a feature
-    bool m_light_mode;
 public:
     MainGame();
     ~MainGame();

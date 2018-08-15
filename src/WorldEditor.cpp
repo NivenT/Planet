@@ -226,7 +226,7 @@ void WorldEditor::prepare_batches() {
             temp_world.add_object(new Spawner(m_active_spawner), m_active_spawner);
         } break;
     }
-    temp_world.render(m_batch, m_overlay_batch, m_batch, m_font);
+    temp_world.render(m_batch, m_overlay_batch, m_font);
     switch(m_curr_tab) {
         case GUI_TILE_TAB:
             m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);

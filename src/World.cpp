@@ -78,8 +78,8 @@ bool World::are_flags_set(uint16_t flags) const {
 	return m_flags & flags;
 }
 
-void World::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
-				   SpriteBatch& light_batch, SpriteFont* font) const {
+void World::render(SpriteBatch& batch, SpriteBatch& overlay_batch,
+			 	   SpriteFont* font) const {
 	m_planet.render(batch);
 	int offset = are_flags_set(WORLD_DONT_DRAW_PLAYER_FLAG) ? 1 : 0;
 	for (auto it = m_objects.begin() + offset; it != m_objects.end(); ++it) {

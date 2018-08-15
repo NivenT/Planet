@@ -20,7 +20,7 @@ using namespace glm;
 MainGame::MainGame() : m_debug(false), m_square_planet(false), 
                        m_paused(false), m_draw_aabbs(true), m_soft_debug(true),
                        m_camera(DEFAULT_CAMERA_CENTER, DEFAULT_CAMERA_DIMENSIONS),
-                       m_dev_mode(false), m_light_mode(false), Screen("Main Game") {
+                       m_dev_mode(false), Screen("Main Game") {
 }
 
 MainGame::~MainGame() {
@@ -90,10 +90,8 @@ void MainGame::init() {
     m_planetProg->unuse();
 
     m_batch.init();
-    m_light_batch.init();
     m_overlay_batch.init();
     m_debug_batch.init();
-    m_debug_sprite_batch.init();
 
     ChaiManager::add(chaiscript::fun([&](){return getMouse();}), "getMouse");
 
@@ -150,8 +148,6 @@ void MainGame::update() {
         m_paused = !m_paused;
     } if (InputManager::justPressed(SDLK_F1)) {
         m_dev_mode = !m_dev_mode;
-    } if (InputManager::justPressed(SDLK_F2)) {
-        m_light_mode = !m_light_mode;
     }
 
     if (!m_paused && m_manager->getFPS() > 0.1) {
@@ -167,12 +163,10 @@ void MainGame::update() {
 
 void MainGame::prepare_batches() {
     m_batch.begin();
-    m_light_batch.begin();
     m_overlay_batch.begin();
     m_debug_batch.begin();
-    m_debug_sprite_batch.begin();
 
-    m_world->render(m_batch, m_overlay_batch, m_light_batch, m_font);
+    m_world->render(m_batch, m_overlay_batch, m_font);
     m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
                          vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
     if (m_paused) {
@@ -189,10 +183,8 @@ void MainGame::prepare_batches() {
     }
 
     m_batch.end();
-    m_light_batch.end();
     m_overlay_batch.end();
     m_debug_batch.end();
-    m_debug_sprite_batch.end();
 }
 
 // TODO: Somehow get depth working well
@@ -203,7 +195,6 @@ void MainGame::render_batches() {
     m_planetProg->use(); {
         glUniformMatrix3fv(m_planetProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
-        glUniform1f(m_planetProg->getUniformLocation("is_light"), m_light_mode);
         glUniform1f(m_planetProg->getUniformLocation("normalized_planet_radius"), 
                     m_world->get_planet().getRadius()/scale);
         glUniform1f(m_planetProg->getUniformLocation("normalized_planet_height"), 
@@ -212,32 +203,17 @@ void MainGame::render_batches() {
         if (!m_square_planet) {
             m_batch.render();
             m_debug_batch.render();
-        
-            // TODO: Make lighting less hacky
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            glUniform1f(m_planetProg->getUniformLocation("is_light"), 1.0);
-            m_light_batch.render();
-            glUniform1f(m_planetProg->getUniformLocation("is_light"), 0.0);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
     } m_planetProg->unuse();
 
     m_simpleProg->use(); {
         glUniformMatrix3fv(m_simpleProg->getUniformLocation("camera"), 1, GL_FALSE,
                            &camera_matrix[0][0]);
-        glUniform1f(m_simpleProg->getUniformLocation("is_light"), m_light_mode);
         
         if (m_square_planet) {
             m_batch.render();
             m_debug_batch.render();
-        
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 1.0);
-            m_light_batch.render();
-            glUniform1f(m_simpleProg->getUniformLocation("is_light"), 0.0);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         }
-        m_debug_sprite_batch.render();
     } m_simpleProg->unuse();
 
     m_overlayProg->use(); {

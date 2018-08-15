@@ -76,7 +76,7 @@ public:
     void clear_flags();
     bool are_flags_set(uint16_t flags) const;
     void render(nta::SpriteBatch& batch, nta::SpriteBatch& overlay_batch,
-                nta::SpriteBatch& light_batch, nta::SpriteFont* font) const;
+                nta::SpriteFont* font) const;
     void render_debug(nta::DebugBatch& batch) const;
     // returns true if game over (player dead)
     bool update(UpdateParams& params);
