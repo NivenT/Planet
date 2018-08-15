@@ -26,9 +26,9 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
 
     m_active_spawner.tex = "resources/images/shoe_spawner.png";
     m_active_spawner.spawn = m_active_enemy;
+    m_active_spawner.extents.x = 1.5f;
 
     m_world.planet = Planet::new_test();
-    //m_world = WorldParams::load(utils::Json::from_file("resources/data/planets/test_planet.json"));
 }
 
 WorldEditor::~WorldEditor() {
@@ -309,7 +309,9 @@ void WorldEditor::render_planet_tab() {
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
         m_world.save(folder + name + extension);
-    } else if (ImGui::Button("Load")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
         m_gui_focus = true;
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
@@ -347,10 +349,8 @@ void WorldEditor::render_item_tab() {
     static char name[GUI_TEXT_MAX_LENGTH] = "stick";
 
     GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_item.color))
-    GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_item.extents.x,
-                               MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x))
-    GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_item.extents.y,
-                               MIN_ITEM_SIZE.y, MAX_ITEM_SIZE.y))
+    GUI_CMD(ImGui::SliderFloat2("extents", (float*)&m_active_item.extents,
+                                MIN_ITEM_SIZE.x, MAX_ITEM_SIZE.x))
     GUI_CMD(ImGui::InputText("texture", tex, GUI_TEXT_MAX_LENGTH))
     GUI_CMD(ImGui::InputText("script", use, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Update texture")) {
@@ -358,7 +358,9 @@ void WorldEditor::render_item_tab() {
         if (ResourceManager::getTexture(tex).is_ok()) {
             m_active_item.tex = tex;
         }
-    } else if (ImGui::Button("Update script")) {
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Update script")) {
         m_gui_focus = true;
         // TODO: Check file exists
         m_active_item.use_script = use;
@@ -370,7 +372,9 @@ void WorldEditor::render_item_tab() {
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
         m_active_item.save(folder + name + extension);
-    } else if (ImGui::Button("Load")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
         m_gui_focus = true;
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
@@ -387,10 +391,8 @@ void WorldEditor::render_enemy_tab() {
     static char name[GUI_TEXT_MAX_LENGTH] = "shoe";
 
     GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_enemy.color))
-    GUI_CMD(ImGui::SliderFloat("extents.x", &m_active_enemy.extents.x,
-                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
-    GUI_CMD(ImGui::SliderFloat("extents.y", &m_active_enemy.extents.y,
-                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat2("extents", (float*)&m_active_enemy.extents,
+                                ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
     GUI_CMD(ImGui::SliderFloat("health", &m_active_enemy.init_health,
                                ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
     GUI_CMD(ImGui::InputText("texture", tex, GUI_TEXT_MAX_LENGTH))
@@ -400,7 +402,9 @@ void WorldEditor::render_enemy_tab() {
         if (ResourceManager::getTexture(tex).is_ok()) {
             m_active_enemy.tex = tex;
         }
-    } else if (ImGui::Button("Update script")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Update script")) {
         m_gui_focus = true;
         m_active_enemy.update_script = script;
     }
@@ -411,7 +415,8 @@ void WorldEditor::render_enemy_tab() {
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
         m_active_enemy.save(folder + name + extension);
-    } else if (ImGui::Button("Load")) {
+    } ImGui::SameLine();
+    if (ImGui::Button("Load")) {
         m_gui_focus = true;
 
         string extension = utils::ends_with(name, ".json") ? "" : ".json";
@@ -433,10 +438,8 @@ void WorldEditor::render_spawner_tab() {
     ImGui::Text("Spawner data");
     ImGui::Text("===================================");
     GUI_CMD(ImGui::ColorEdit4("color##Spawner", (float*)&m_active_spawner.color))
-    GUI_CMD(ImGui::SliderFloat("extents.x##Spawner", &m_active_spawner.extents.x,
-                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
-    GUI_CMD(ImGui::SliderFloat("extents.y##Spawner", &m_active_spawner.extents.y,
-                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat2("extents##Spawner", (float*)&m_active_spawner.extents,
+                                ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
     GUI_CMD(ImGui::SliderFloat("health##Spawner", &m_active_spawner.init_health,
                                ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
     GUI_CMD(ImGui::InputText("texture##Spawner", spawner_tex, GUI_TEXT_MAX_LENGTH))
@@ -446,7 +449,9 @@ void WorldEditor::render_spawner_tab() {
         if (ResourceManager::getTexture(spawner_tex).is_ok()) {
             m_active_spawner.tex = spawner_tex;
         }
-    } else if (ImGui::Button("Update script##Spawner")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Update script##Spawner")) {
         m_gui_focus = true;
         m_active_spawner.spawn.update_script = spawner_script;
     }
@@ -457,7 +462,9 @@ void WorldEditor::render_spawner_tab() {
 
         string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
         m_active_spawner.save(folder + spawner_name + extension);
-    } else if (ImGui::Button("Load")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
         m_gui_focus = true;
 
         string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
@@ -467,10 +474,8 @@ void WorldEditor::render_spawner_tab() {
     ImGui::Text("\nSpawn data");
     ImGui::Text("===================================");
     GUI_CMD(ImGui::ColorEdit4("color##Spawn", (float*)&m_active_spawner.spawn.color))
-    GUI_CMD(ImGui::SliderFloat("extents.x##Spawn", &m_active_spawner.spawn.extents.x,
-                               ENEMY_MIN_EXTENTS.x, ENEMY_MAX_EXTENTS.x))
-    GUI_CMD(ImGui::SliderFloat("extents.y##Spawn", &m_active_spawner.spawn.extents.y,
-                               ENEMY_MIN_EXTENTS.y, ENEMY_MAX_EXTENTS.y))
+    GUI_CMD(ImGui::SliderFloat2("extents##Spawn", (float*)&m_active_spawner.spawn.extents,
+                                ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
     GUI_CMD(ImGui::SliderFloat("health##Spawn", &m_active_spawner.spawn.init_health,
                                ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
     GUI_CMD(ImGui::InputText("texture##Spawn", spawn_tex, GUI_TEXT_MAX_LENGTH))
@@ -480,7 +485,9 @@ void WorldEditor::render_spawner_tab() {
         if (ResourceManager::getTexture(spawn_tex).is_ok()) {
             m_active_spawner.spawn.tex = spawn_tex;
         }
-    } else if (ImGui::Button("Update script##Spawn")) {
+    } 
+    ImGui::SameLine();
+    if (ImGui::Button("Update script##Spawn")) {
         m_gui_focus = true;
         m_active_spawner.spawn.update_script = spawn_script;
     }
