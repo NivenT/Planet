@@ -15,7 +15,8 @@ Enemy::Enemy(crstring texture, crstring update, float health, crvec2 speed, crve
 
 Enemy::Enemy(const EnemyParams& p, uint16_t type) :
     Enemy(p.tex, p.update_script, p.init_health, p.max_speed, p.color, type) {
-    memcpy(m_anim_params, p.anims, OBJECT_NUM_MOTION_STATES);
+    memcpy(m_anim_params, p.anims, OBJECT_NUM_MOTION_STATES*sizeof(MotionAnimation));
+    m_anim = Animation2D(p.tex, p.anim_dims);
 }
 
 Enemy::~Enemy() {

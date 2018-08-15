@@ -108,6 +108,8 @@ void ChaiManager::init() {
     add(chaiscript::user_type<UpdateParams>(), "UpdateParams");
 
     add(chaiscript::fun(&Tile::active), "active");
+    add(chaiscript::fun(&Tile::solid), "solid");
+    add(chaiscript::fun(&Tile::destructable), "destructable");
     add(chaiscript::user_type<Tile>(), "Tile");
 
     add(chaiscript::fun(&InputManager::isPressed), "isPressed");

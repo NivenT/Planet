@@ -13,13 +13,22 @@ struct EnemyParams : public CreationParams {
     }
     EnemyParams(const CreationParams& super) : CreationParams(super) {}
     nta::utils::Json json() const {
-        return CreationParams::json().merge({
+        nta::utils::Json ret = CreationParams::json().merge({
             {"texture", tex},
             {"script", update_script},
             {"color", {color.r, color.g, color.b, color.a}},
             {"max_speed", {max_speed.x, max_speed.y}},
-            {"init_health", init_health}
+            {"init_health", init_health},
+            {"anim_dims", {anim_dims.x, anim_dims.y}}
         });
+        for (int i = 0; i < OBJECT_NUM_MOTION_STATES; i++) {
+            ret["anims"].push_back({
+                {"start", anims[i].start},
+                {"length", anims[i].length},
+                {"speed", anims[i].speed}
+            });
+        }
+        return ret;
     }
     static EnemyParams load(const nta::utils::Json& json) {
         EnemyParams ret(CreationParams::load(json));
@@ -30,6 +39,12 @@ struct EnemyParams : public CreationParams {
                               json["color"][2], json["color"][3]);
         ret.max_speed = glm::vec2(json["max_speed"][0], json["max_speed"][1]);
         ret.init_health = json["init_health"];
+        ret.anim_dims = glm::ivec2(json["anim_dims"][0], json["anim_dims"][1]);
+        for (int i = 0; i < OBJECT_NUM_MOTION_STATES; i++) {
+            ret.anims[i].start = json["anims"][i]["start"];
+            ret.anims[i].length = json["anims"][i]["length"];
+            ret.anims[i].speed = json["anims"][i]["speed"];
+        }
         return ret;
     }
 

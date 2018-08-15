@@ -1,11 +1,33 @@
 {
+  "anim_dims": [1, 1], 
+  "anims": [{
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }], 
   "color": [1, 1, 1, 1], 
   "density": 1, 
   "extents": [1.2, 0.4], 
   "friction": 1, 
   "init_health": 20, 
   "max_speed": [12, 24], 
-  "position": [-8.72915, 3.64383], 
+  "position": [-10.4256, -0.458917], 
   "restitution": 0, 
   "script": "scripts/shoe.chai", 
   "texture": "resources/images/shoe.png"

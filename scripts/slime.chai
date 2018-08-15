@@ -1,0 +1,17 @@
+def run_slime() {
+    var fx = AGENT_SLOW_ACCELERATION * self.getMass();
+    if (self.is_standing()) {
+        self.applyForce(-fx, 0);
+        
+        var extents = self.getExtents();
+        var besides = self.getCenter() - vec2(extents.x+TILE_SIZE*1.5, 0);
+
+        var coord = params.planet.getCoord(besides);
+        var tile = params.planet.getTile(coord);
+        if (tile.active && tile.solid) {
+            self.applyForce(0, fx*35);
+        }
+    }
+}
+
+run_slime
