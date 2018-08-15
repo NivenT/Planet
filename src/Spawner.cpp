@@ -2,6 +2,7 @@
 
 using namespace std;
 using namespace glm;
+using namespace nta::utils;
 
 // ugh formatting
 Spawner::Spawner(crstring texture, EnemyParams spawn, float health, crvec4 color, 
@@ -11,7 +12,8 @@ Spawner::Spawner(crstring texture, EnemyParams spawn, float health, crvec4 color
 }
 
 Spawner::Spawner(const SpawnerParams& params) : 
-    Spawner(params.tex, params.spawn, params.init_health, params.color) {
+    Spawner(params.tex, EnemyParams::load(Json::from_file(params.spawn)), 
+            params.init_health, params.color) {
     set_spawn_rate(params.spawn_rate);
 }
 void Spawner::set_spawn_rate(float rate) {

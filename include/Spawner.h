@@ -12,18 +12,20 @@ struct SpawnerParams : public EnemyParams {
     SpawnerParams(const EnemyParams& super) : EnemyParams(super) {}
     nta::utils::Json json() const {
         return EnemyParams::json().merge({
-            {"spawn", spawn.json()},
+            {"spawn", spawn},
             {"spawn_rate", spawn_rate}
         });
     }
     static SpawnerParams load(const nta::utils::Json& json) {
         SpawnerParams ret(EnemyParams::load(json));
-        ret.spawn = EnemyParams::load(json["spawn"]);
+        ret.spawn = "resources/data/enemies/shoe.json";//EnemyParams::load(json["spawn"]);
         ret.spawn_rate = json["spawn_rate"];
         return ret;
     }
 
-    EnemyParams spawn;
+    //EnemyParams spawn;
+    // e.g. Resources/data/enemies/shoe.json
+    std::string spawn;
     float spawn_rate = SPAWNER_SLOW_RATE;
 };
 

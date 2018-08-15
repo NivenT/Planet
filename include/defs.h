@@ -109,7 +109,7 @@
 
 /// GUI
 #define WORLDEDITOR_GUI_DIMS glm::vec2(0.375f, 1.0f)
-#define GUI_TEXT_MAX_LENGTH  30
+#define GUI_TEXT_MAX_LENGTH  50
 #define GUI_PLANET_TAB 0
 #define GUI_TILE_TAB 1
 #define GUI_ITEM_TAB 2

@@ -28,6 +28,7 @@
     "friction": 1, 
     "init_health": 20, 
     "max_speed": [12, 24], 
+    "natural_direction": false, 
     "position": [5.78662, 1.50035], 
     "restitution": 0, 
     "script": "scripts/shoe.chai", 

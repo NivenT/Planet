@@ -197,41 +197,7 @@
     "position": [19.4444, 0.49751], 
     "restitution": 0, 
     "script": "", 
-    "spawn": {
-      "anim_dims": [1, 1], 
-      "anims": [{
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }], 
-      "color": [1, 1, 1, 1], 
-      "density": 1, 
-      "extents": [1.2, 0.4], 
-      "friction": 1, 
-      "init_health": 20, 
-      "max_speed": [12, 24], 
-      "natural_direction": true, 
-      "position": [0, 0], 
-      "restitution": 0, 
-      "script": "scripts/shoe.chai", 
-      "texture": "resources/images/shoe.png"
-    }, 
+    "spawn": "resources/data/enemies/shoe.json", 
     "spawn_rate": 10, 
     "texture": "resources/images/shoe_spawner.png"
   }, {
@@ -267,41 +233,7 @@
     "position": [-53.1141, -7.6465], 
     "restitution": 0, 
     "script": "", 
-    "spawn": {
-      "anim_dims": [1, 1], 
-      "anims": [{
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }, {
-        "length": 1, 
-        "speed": 1, 
-        "start": 0
-      }], 
-      "color": [1, 0, 0, 1], 
-      "density": 1, 
-      "extents": [1.2, 0.4], 
-      "friction": 1, 
-      "init_health": 20, 
-      "max_speed": [12, 24], 
-      "natural_direction": true, 
-      "position": [0, 0], 
-      "restitution": 0, 
-      "script": "scripts/shoe.chai", 
-      "texture": "resources/images/shoe.png"
-    }, 
+    "spawn": "resources/data/enemies/shoe.json", 
     "spawn_rate": 10, 
     "texture": "resources/images/shoe_spawner.png"
   }]
