@@ -22,6 +22,7 @@ protected:
     AgentFlags m_state_flags;
     nta::Animation2D m_anim;
     MotionAnimation m_anim_params[OBJECT_NUM_MOTION_STATES];
+    bool m_natural_direction = true;
 public:
     Agent(crvec2 speed, crvec4 color, float health, uint16_t type);
     virtual ~Agent();

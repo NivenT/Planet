@@ -61,7 +61,8 @@ void Agent::popup(int flags, uint64_t& eid, int when) {
 }
 
 void Agent::render(SpriteBatch& batch) const {
-    const vec4 uv = m_direction ? m_anim.get_uv() : m_anim.get_flipped_uv();
+    const vec4 uv = m_direction == m_natural_direction ? m_anim.get_uv() : 
+                                                         m_anim.get_flipped_uv();
     batch.addGlyph(vec4(getTopLeft(), 2.f*getExtents()), uv, m_anim.get_tex_id(),
                     m_color, getOrientation());
     render_health(batch);

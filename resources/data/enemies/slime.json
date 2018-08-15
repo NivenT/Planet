@@ -27,7 +27,8 @@
   "friction": 1, 
   "init_health": 20, 
   "max_speed": [12, 24], 
-  "position": [-11.5469, -2.4479], 
+  "natural_direction": false, 
+  "position": [-11.9006, -3.01191], 
   "restitution": 0, 
   "script": "scripts/slime.chai", 
   "texture": "resources/images/SlimeA.png"

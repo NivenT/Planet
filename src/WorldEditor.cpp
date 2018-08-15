@@ -449,6 +449,7 @@ void WorldEditor::render_enemy_tab() {
     }
 
     render_anim_editor(m_active_enemy.tex, m_active_enemy.anim_dims, &m_active_enemy.anims[0]);
+    GUI_CMD(ImGui::Checkbox("facing right?", &m_active_enemy.natural_direction))
 
     GUI_CMD(ImGui::InputText("name", name, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Save")) {

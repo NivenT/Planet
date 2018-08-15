@@ -19,7 +19,8 @@ struct EnemyParams : public CreationParams {
             {"color", {color.r, color.g, color.b, color.a}},
             {"max_speed", {max_speed.x, max_speed.y}},
             {"init_health", init_health},
-            {"anim_dims", {anim_dims.x, anim_dims.y}}
+            {"anim_dims", {anim_dims.x, anim_dims.y}},
+            {"natural_direction", natural_direction}
         });
         for (int i = 0; i < OBJECT_NUM_MOTION_STATES; i++) {
             ret["anims"].push_back({
@@ -45,6 +46,7 @@ struct EnemyParams : public CreationParams {
             ret.anims[i].length = json["anims"][i]["length"];
             ret.anims[i].speed = json["anims"][i]["speed"];
         }
+        ret.natural_direction = json["natural_direction"];
         return ret;
     }
 
@@ -55,6 +57,7 @@ struct EnemyParams : public CreationParams {
     float init_health = NORMAL_ENEMY_INIT_HEALTH;
     MotionAnimation anims[OBJECT_NUM_MOTION_STATES];
     glm::ivec2 anim_dims = glm::ivec2(1,1);
+    bool natural_direction = true;
 };
 
 class Enemy : public Agent {
