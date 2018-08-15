@@ -93,3 +93,13 @@ vec2 screenToGame(vec2 screen, crvec2 win_dims, const Camera2D& camera,
     }
     return camera.screenToGame(screen);
 }
+
+const char* get_motion_state_name(ObjectMotionState state) {
+    switch(state) {
+        case STANDING: return "STANDING";
+        case RUNNING: return "RUNNING";
+        case JUMPING: return "JUMPING";
+        case FALLING: return "FALLING";
+        case IDLE: return "IDLE";
+    }
+}

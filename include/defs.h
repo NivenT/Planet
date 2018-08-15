@@ -117,6 +117,10 @@
 #define GUI_SPAWNER_TAB 4
 #define GUI_OBSTACLE_TAB 5
 
+/// Animations
+#define ANIMATION_MIN_SPEED 0.1f
+#define ANIMATION_MAX_SPEED 20.f
+
 /// Events
 #define EVENT_SPAWN_ENEMY 0b0000'0000'0000'0001
 

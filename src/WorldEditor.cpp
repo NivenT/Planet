@@ -291,6 +291,45 @@ void WorldEditor::render_miniworld() {
     render_batches(Camera2D(cen, dims), false); 
 }
 
+void WorldEditor::render_anim_editor(crstring tex, ivec2& anim_dims, MotionAnimation* anims) {
+    static int curr = STANDING;
+    static float state_width = 50.f;
+    static float arrow_width = 50.f;
+    static float time = 0.0f;
+
+    ImGui::InputInt2("sprite sheet\ndimensions", (int*)&anim_dims);
+    if (ImGui::ArrowButton("##left", ImGuiDir_Left)) {
+        time = 0.0f;
+        curr = curr == 0 ? OBJECT_NUM_MOTION_STATES-1 : curr-1;
+    }
+    arrow_width = ImGui::GetItemRectSize().x;
+    ImGui::SameLine(ImGui::GetWindowContentRegionWidth()/2.f - state_width/2.f);
+    ImGui::Text(get_motion_state_name((ObjectMotionState)curr));
+    state_width = ImGui::GetItemRectSize().x;
+    ImGui::SameLine(ImGui::GetWindowContentRegionWidth() - arrow_width);
+    if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
+        time = 0.0f;
+        curr = (curr+1)%OBJECT_NUM_MOTION_STATES;
+    }
+
+    MotionAnimation& p = anims[curr];
+    Animation2D temp(tex, anim_dims, p.start, p.length);
+    temp.step(time);
+
+    const vec2 tex_dims = temp.get_frame_dims();
+    const float width = ImGui::GetWindowContentRegionWidth()/(2.f*1.618f);
+    const vec4 uv = temp.get_uv();
+    const int num_frames = anim_dims.x*anim_dims.y;
+
+    ImGui::Image((void*)temp.get_tex_id(), ImVec2(width, width*tex_dims.y/tex_dims.x), 
+                 ImVec2(uv.x, uv.y), ImVec2(uv.x+uv[2],uv.y+uv[3]));
+    ImGui::SliderInt("animation\nstart index", &p.start, 0, num_frames-1);
+    ImGui::SliderInt("animation\nlength", &p.length, 1, num_frames-p.start);
+    ImGui::SliderFloat("animation\nspeed", &p.speed, ANIMATION_MIN_SPEED,
+                       ANIMATION_MAX_SPEED);
+    time += p.speed/TARGET_FPS;
+}
+
 void WorldEditor::render_planet_tab() {
     static const string folder = "resources/data/planets/";
     static char name[GUI_TEXT_MAX_LENGTH] = "planet";
@@ -408,6 +447,8 @@ void WorldEditor::render_enemy_tab() {
         m_gui_focus = true;
         m_active_enemy.update_script = script;
     }
+
+    render_anim_editor(m_active_enemy.tex, m_active_enemy.anim_dims, &m_active_enemy.anims[0]);
 
     GUI_CMD(ImGui::InputText("name", name, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Save")) {
