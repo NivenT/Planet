@@ -5,15 +5,14 @@ sudo: true
 matrix:
   include:
     - os: linux
-      env: COMPILER=g++-4.9 CCOMPILER=gcc-4.9
-    - os: linux
       env: COMPILER=g++-5 CCOMPILER=gcc-5
     - os: linux
       env: COMPILER=clang++-3.6 CCOMPILER=clang-3.6
     - os: linux
       env: COMPILER=clang++-3.8 CCOMPILER=clang-3.8
-    - os: osx
   allow_failures:
+    - env: COMPILER=g++-4.9 CCOMPILER=gcc-4.9
+    - os: osx
     - env: COMPILER=clang++-3.6 CCOMPILER=clang-3.6
 
 addons:
