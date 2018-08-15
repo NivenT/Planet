@@ -27,7 +27,8 @@ WorldEditor::WorldEditor() : Screen("World Editor"), m_active_tile(vec4(.4, .7, 
     m_active_spawner.tex = "resources/images/shoe_spawner.png";
     m_active_spawner.spawn = m_active_enemy;
 
-    m_world = WorldParams::load(utils::Json::from_file("resources/data/planets/test_planet.json"));
+    m_world.planet = Planet::new_test();
+    //m_world = WorldParams::load(utils::Json::from_file("resources/data/planets/test_planet.json"));
 }
 
 WorldEditor::~WorldEditor() {
@@ -95,6 +96,7 @@ void WorldEditor::init() {
 
     m_batch.init();
     m_overlay_batch.init();
+    m_dbatch.init();
     m_font = nta::ResourceManager::getSpriteFont("resources/fonts/chintzy.ttf", 64);
 
     Logger::writeToLog("Initialized WorldEditor");
@@ -200,6 +202,7 @@ void WorldEditor::update() {
 void WorldEditor::prepare_batches() {
     m_batch.begin(); 
     m_overlay_batch.begin();
+    m_dbatch.begin();
 
     auto text = m_gui_focus ? "GUI Focus" : "Editor Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
@@ -232,19 +235,25 @@ void WorldEditor::prepare_batches() {
     m_font->drawText(m_batch, "Player\nSpawn",
                      glm::vec4(PLAYER_INIT_POS.x,PLAYER_INIT_POS.y,PLAYER_DIMS));
 
+    m_world.planet.render_debug(m_dbatch);
+
+    m_dbatch.end();
     m_overlay_batch.end();
     m_batch.end();
 
     temp_world.destroy();
 }
 
-void WorldEditor::render_batches(const nta::Camera2D camera) {
+void WorldEditor::render_batches(const nta::Camera2D camera, bool debug) {
     const auto matrix = camera.getCameraMatrix();
     const float scale = camera.getDimensions().x;
 
     m_prog->use(); {
         glUniformMatrix3fv(m_prog->getUniformLocation("camera"), 1, GL_FALSE, &matrix[0][0]);
-        if (m_square_planet) m_batch.render();
+        if (m_square_planet) {
+            m_batch.render();
+            if (debug) m_dbatch.render();
+        }
     } m_prog->unuse();
 
     m_planet_prog->use(); {
@@ -254,7 +263,10 @@ void WorldEditor::render_batches(const nta::Camera2D camera) {
         glUniform1f(m_planet_prog->getUniformLocation("normalized_planet_height"),
                     m_world.planet.getHeight()/scale);
 
-        if (!m_square_planet) m_batch.render();
+        if (!m_square_planet) {
+            m_batch.render();
+            if (debug) m_dbatch.render();
+        }
     } m_planet_prog->unuse();
 
     m_overlay_prog->use(); {
@@ -276,15 +288,21 @@ void WorldEditor::render_miniworld() {
     const vec2 dims = m_square_planet ? m_world.planet.getDimensions() * vec2(0.55, 3):
                                         m_world.planet.getRadius() * vec2(2.1);
     const vec2 cen = m_square_planet ? vec2(0) : vec2(0);
-    render_batches(Camera2D(cen, dims)); 
+    render_batches(Camera2D(cen, dims), false); 
 }
 
 void WorldEditor::render_planet_tab() {
-    ImGui::Text("The quick brown fox jumps over the lazy dog");
-
     static const string folder = "resources/data/planets/";
     static char name[GUI_TEXT_MAX_LENGTH] = "planet";
 
+    GUI_CMD(ImGui::SliderInt("sea level", &m_world.planet.m_sea_level, 0, 
+                             m_world.planet.rows-1, "%.0f tiles from the top"))
+    if (ImGui::SliderInt("radius", &m_world.planet.rows, 10, 100, "%.0f tiles")) {
+        m_gui_focus = true;
+        m_world.planet.set_num_rows(m_world.planet.rows);
+    }
+    GUI_CMD(ImGui::SliderFloat2("gravity", (float*)&m_world.planet.m_gravity,
+                                PLANET_MIN_GRAVITY, PLANET_MAX_GRAVITY))
     GUI_CMD(ImGui::InputText("World Name", name, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Save")) {
         m_gui_focus = true;
@@ -486,8 +504,7 @@ void WorldEditor::render_gui() {
     ImGui::Begin("Test Window", &m_gui_active, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove); {
         ImGui::BeginTabBar("#Bar"); {
             ImGui::DrawTabsBackground();
-
-            if (ImGui::AddTab("General")) {
+            if (ImGui::AddTab("World")) {
                 render_planet_tab();
             } if (ImGui::AddTab("Tile")) {
                 render_tile_tab();
@@ -512,7 +529,7 @@ void WorldEditor::render() {
     glViewport(0, 0, window_dims.x, window_dims.y);
 
     prepare_batches();
-    render_batches(m_camera);
+    render_batches(m_camera, true);
     render_miniworld();
     render_gui();
 

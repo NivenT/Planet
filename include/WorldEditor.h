@@ -5,6 +5,7 @@
 #include <nta/Camera2D.h>
 #include <nta/GLSLProgram.h>
 #include <nta/SpriteFont.h>
+#include <nta/DebugBatch.h>
 
 #include "World.h"
 
@@ -21,7 +22,7 @@ private:
     void update_spawner_tab(crvec2 mouse);
 
     void prepare_batches();
-    void render_batches(const nta::Camera2D camera);
+    void render_batches(const nta::Camera2D camera, bool debug);
     void render_miniworld();
     void render_gui();
     
@@ -38,6 +39,7 @@ private:
     nta::GLSLProgram* m_planet_prog = nullptr;
     nta::SpriteBatch m_batch;
     nta::SpriteBatch m_overlay_batch;
+    nta::DebugBatch m_dbatch;
     nta::Camera2D m_camera;
 
     WorldParams m_world;

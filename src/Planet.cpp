@@ -99,6 +99,16 @@ void Planet::clear() {
     rows = cols = 0;
 }
 
+void Planet::set_num_rows(int num_rows) {
+    rows = num_rows;
+    cols = ceil(2.f*M_PI*rows);
+
+    m_tiles.resize(rows);
+    for (int r = 0; r < rows; r++) {
+        m_tiles[r].resize(cols);
+    }
+}
+
 /// TODO: replace with a #define OFFSET or make some of these functions inline
 vec2 Planet::getOffset() const {
     return vec2(-m_dimensions[1]*TILE_SIZE/2., m_sea_level*TILE_SIZE);   

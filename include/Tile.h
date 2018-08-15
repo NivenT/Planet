@@ -3,12 +3,17 @@
 
 #include <nta/ResourceManager.h>
 #include <nta/SpriteBatch.h>
+#include <nta/Random.h>
 #include <nta/json.h>
 
 #include "defs.h"
 
 struct Tile {
-    Tile() {}
+    Tile() {
+        color = glm::vec4(nta::Random::randFloat(), nta::Random::randFloat(), 
+                          nta::Random::randFloat(), 1);
+        tex.id = 0;
+    }
     Tile(nta::GLTexture tex, crvec4 color) : tex(tex), color(color) {
     }
     Tile(crvec4 color) : color(color) {

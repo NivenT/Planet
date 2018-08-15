@@ -25,11 +25,11 @@ class Planet {
 private:
     std::vector<std::vector<b2Vec2>> createOutline() const;
     bool validCoord(const glm::ivec2& coord) const;
+    void set_num_rows(int num_rows);
 
     std::vector<std::vector<Tile>> m_tiles;
     glm::vec2 m_gravity;
     // rows x columns (i.e. not width by height)
-    // This feels like it could cause issues later...
     union {
         glm::ivec2 m_dimensions;
         struct {
