@@ -1,3 +1,7 @@
 # Images Folder
 
-The `HeaveBandit_Spritesheet.png` file is by Sven Thole, and I got it from [here](https://stensven.itch.io/light-heavy-bandit).
+All the images that were not made by me (listed below) were found on [itch.io](https://itch.io/game-assets).
+* The `HeaveBandit_Spritesheet.png` file is by Sven Thole
+  * [Find it here](https://stensven.itch.io/light-heavy-bandit)
+* The `SlimeA.png` file is by Henry Software
+  * [Find it here](https://henrysoftware.itch.io/free-pixel-mob)
