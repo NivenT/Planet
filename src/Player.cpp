@@ -159,7 +159,8 @@ void Player::update(const UpdateParams& params) {
         }
     }
 
-    m_anim.step(params.dt * 8.f*getVelocity().x/getMaxSpeed().x);
+    m_anim.step(params.dt);
+    m_anim.set_speed(8.f*getVelocity().x/getMaxSpeed().x);
     if (m_motion_state != m_prev_motion_state) {
         switch(m_motion_state) {
             case STANDING: m_anim.switch_animation(0,1); break;
