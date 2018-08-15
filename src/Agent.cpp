@@ -94,9 +94,11 @@ void Agent::render_health(SpriteBatch& batch) const {
 void Agent::update(const UpdateParams& params) {
     Object::update(params);
 
+    /*
     if (m_motion_state == RUNNING) {
         m_anim.set_speed(m_anim_params[RUNNING].speed*getVelocity().x/getMaxSpeed().x);
     }
+    */
     m_anim.step(params.dt);
     if (m_motion_state != m_prev_motion_state) {
         auto p = m_anim_params[m_motion_state];

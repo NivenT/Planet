@@ -32,6 +32,7 @@ private:
     void render_enemy_tab();
     void render_spawner_tab();
     void render_obstacle_tab();
+    void render_enemy_editor(EnemyParams& enemy, char* tex, char* script);
     void render_anim_editor(crstring tex, glm::ivec2& anim_dims, MotionAnimation* anims);
 
     nta::SpriteFont* m_font = nullptr;

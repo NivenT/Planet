@@ -157,4 +157,7 @@ void Player::update(const UpdateParams& params) {
             unset_flags(AGENT_STATE_ATTACKING);
         }
     }
+    if (m_motion_state == RUNNING) {
+        m_anim.set_speed(m_anim_params[RUNNING].speed*getVelocity().x/getMaxSpeed().x);
+    }
 }

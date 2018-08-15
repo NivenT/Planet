@@ -35,6 +35,7 @@ private:
     void applyForce(float x, float y) {}
     
     EnemyParams m_spawn;
+    /// \todo Rename to spawn_time
     float m_spawn_rate;
     float m_time;
 public:

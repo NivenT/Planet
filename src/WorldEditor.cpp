@@ -292,6 +292,8 @@ void WorldEditor::render_miniworld() {
 }
 
 void WorldEditor::render_anim_editor(crstring tex, ivec2& anim_dims, MotionAnimation* anims) {
+    /// \todo These should not be static variables here. They should be passed
+    ///         in to this function by reference instead
     static int curr = STANDING;
     static float state_width = 50.f;
     static float arrow_width = 50.f;
@@ -323,10 +325,9 @@ void WorldEditor::render_anim_editor(crstring tex, ivec2& anim_dims, MotionAnima
 
     ImGui::Image((void*)temp.get_tex_id(), ImVec2(width, width*tex_dims.y/tex_dims.x), 
                  ImVec2(uv.x, uv.y), ImVec2(uv.x+uv[2],uv.y+uv[3]));
-    ImGui::SliderInt("animation\nstart index", &p.start, 0, num_frames-1);
-    ImGui::SliderInt("animation\nlength", &p.length, 1, num_frames-p.start);
-    ImGui::SliderFloat("animation\nspeed", &p.speed, ANIMATION_MIN_SPEED,
-                       ANIMATION_MAX_SPEED);
+    ImGui::SliderInt("start index", &p.start, 0, num_frames-1);
+    ImGui::SliderInt("length", &p.length, 1, num_frames-p.start);
+    ImGui::SliderFloat("speed", &p.speed, ANIMATION_MIN_SPEED, ANIMATION_MAX_SPEED);
     time += p.speed/TARGET_FPS;
 }
 
@@ -423,34 +424,40 @@ void WorldEditor::render_item_tab() {
     m_curr_tab = GUI_ITEM_TAB;
 }
 
-void WorldEditor::render_enemy_tab() {
-    static const string folder = "resources/data/enemies/";
-    static char tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
-    static char script[GUI_TEXT_MAX_LENGTH] = "scripts/";
-    static char name[GUI_TEXT_MAX_LENGTH] = "shoe";
-
-    GUI_CMD(ImGui::ColorEdit4("color", (float*)&m_active_enemy.color))
-    GUI_CMD(ImGui::SliderFloat2("extents", (float*)&m_active_enemy.extents,
+void WorldEditor::render_enemy_editor(EnemyParams& enemy, char* tex, char* script) {
+    GUI_CMD(ImGui::ColorEdit4("color", (float*)&enemy.color))
+    GUI_CMD(ImGui::SliderFloat2("extents", (float*)&enemy.extents,
                                 ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
-    GUI_CMD(ImGui::SliderFloat("health", &m_active_enemy.init_health,
+    GUI_CMD(ImGui::SliderFloat("health", &enemy.init_health,
                                ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
     GUI_CMD(ImGui::InputText("texture", tex, GUI_TEXT_MAX_LENGTH))
     GUI_CMD(ImGui::InputText("script", script, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Update texture")) {
         m_gui_focus = true;
         if (ResourceManager::getTexture(tex).is_ok()) {
-            m_active_enemy.tex = tex;
+            enemy.tex = tex;
         }
     } 
     ImGui::SameLine();
     if (ImGui::Button("Update script")) {
         m_gui_focus = true;
-        m_active_enemy.update_script = script;
+        enemy.update_script = script;
     }
 
-    render_anim_editor(m_active_enemy.tex, m_active_enemy.anim_dims, &m_active_enemy.anims[0]);
-    GUI_CMD(ImGui::Checkbox("facing right?", &m_active_enemy.natural_direction))
+    ImGui::Separator();
+    ImGui::Text("Animations");
+    render_anim_editor(enemy.tex, enemy.anim_dims, &enemy.anims[0]);
+    GUI_CMD(ImGui::Checkbox("facing right?", &enemy.natural_direction))
+    ImGui::Separator();
+}
 
+void WorldEditor::render_enemy_tab() {
+    static const string folder = "resources/data/enemies/";
+    static char tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char script[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char name[GUI_TEXT_MAX_LENGTH] = "shoe";
+
+    render_enemy_editor(m_active_enemy, tex, script);
     GUI_CMD(ImGui::InputText("name", name, GUI_TEXT_MAX_LENGTH))
     if (ImGui::Button("Save")) {
         m_gui_focus = true;
@@ -470,82 +477,55 @@ void WorldEditor::render_enemy_tab() {
 
 void WorldEditor::render_spawner_tab() {
     static const string folder = "resources/data/spawners/";
-    /*
-    static char spawn_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
-    static char spawn_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
-    */
-    static char spawner_tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
-    static char spawner_script[GUI_TEXT_MAX_LENGTH] = "scripts/";
-    static char spawner_name[GUI_TEXT_MAX_LENGTH] = "shoe_spawner";
-    static char spawn_file[GUI_TEXT_MAX_LENGTH] = "resources/data/shoe.json";
+    static char tex[GUI_TEXT_MAX_LENGTH] = "resources/images/";
+    static char script[GUI_TEXT_MAX_LENGTH] = "scripts/";
+    static char name[GUI_TEXT_MAX_LENGTH] = "shoe_spawner";
+    static char spawn_file[GUI_TEXT_MAX_LENGTH] = "resources/data/enemies/shoe.json";
+    static bool spawn_view = false;
 
+    ImGui::Combo("##", (int*)&spawn_view, "Spawner Data\0Spawn Data\0");
+    if (!spawn_view) {
+        render_enemy_editor(m_active_spawner, tex, script);
 
-    ImGui::Text("Spawner data");
-    ImGui::Text("===================================");
-    GUI_CMD(ImGui::ColorEdit4("color##Spawner", (float*)&m_active_spawner.color))
-    GUI_CMD(ImGui::SliderFloat2("extents##Spawner", (float*)&m_active_spawner.extents,
-                                ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
-    GUI_CMD(ImGui::SliderFloat("health##Spawner", &m_active_spawner.init_health,
-                               ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
-    GUI_CMD(ImGui::InputText("spawn file", spawn_file, GUI_TEXT_MAX_LENGTH))
-    GUI_CMD(ImGui::InputText("texture##Spawner", spawner_tex, GUI_TEXT_MAX_LENGTH))
-    GUI_CMD(ImGui::InputText("script##Spawner", spawner_script, GUI_TEXT_MAX_LENGTH))
-    if (ImGui::Button("Update texture##Spawner")) {
-        m_gui_focus = true;
-        if (ResourceManager::getTexture(spawner_tex).is_ok()) {
-            m_active_spawner.tex = spawner_tex;
+        GUI_CMD(ImGui::InputText("name", name, GUI_TEXT_MAX_LENGTH))
+        if (ImGui::Button("Save")) {
+            m_gui_focus = true;
+
+            string extension = utils::ends_with(name, ".json") ? "" : ".json";
+            m_active_spawner.save(folder + name + extension);
+        } 
+        ImGui::SameLine();
+        if (ImGui::Button("Load")) {
+            m_gui_focus = true;
+
+            string extension = utils::ends_with(name, ".json") ? "" : ".json";
+            m_active_spawner = SpawnerParams::load(utils::Json::from_file(folder+name+extension));    
         }
-    } 
-    ImGui::SameLine();
-    if (ImGui::Button("Update script##Spawner")) {
-        m_gui_focus = true;
-        m_active_spawner.update_script = spawner_script;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Update spawn file")) {
-        m_gui_focus = true;
-        if (!utils::Json::from_file(spawn_file).is_null()) {
-            m_active_spawner.spawn = spawn_file;
+    } else {
+        GUI_CMD(ImGui::SliderFloat("spawn rate", &m_active_spawner.spawn_rate,
+                                       SPAWNER_FASTEST_RATE, SPAWNER_SLOWEST_RATE))
+        GUI_CMD(ImGui::InputText("spawn file", spawn_file, GUI_TEXT_MAX_LENGTH))
+        if (ImGui::Button("Update spawn file")) {
+            m_gui_focus = true;
+            if (!utils::Json::from_file(spawn_file).is_null()) {
+                m_active_spawner.spawn = spawn_file;
+            }
         }
+
+        EnemyParams params = EnemyParams::load(utils::Json::from_file(m_active_spawner.spawn));
+        Enemy temp(params);
+        MotionAnimation& p = params.anims[STANDING];
+        Animation2D anim(params.tex, params.anim_dims, p.start, p.length);
+
+        const vec2 tex_dims = anim.get_frame_dims();
+        const float width = ImGui::GetWindowContentRegionWidth()/(2.f*1.618f);
+        const vec4 uv = anim.get_uv();
+
+        ImGui::Separator();
+        ImGui::Text("The spawned enemy");
+        ImGui::Image((void*)anim.get_tex_id(), ImVec2(width, width*tex_dims.y/tex_dims.x), 
+                     ImVec2(uv.x, uv.y), ImVec2(uv.x+uv[2],uv.y+uv[3]));
     }
-
-    GUI_CMD(ImGui::InputText("name", spawner_name, GUI_TEXT_MAX_LENGTH))
-    if (ImGui::Button("Save")) {
-        m_gui_focus = true;
-
-        string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
-        m_active_spawner.save(folder + spawner_name + extension);
-    } 
-    ImGui::SameLine();
-    if (ImGui::Button("Load")) {
-        m_gui_focus = true;
-
-        string extension = utils::ends_with(spawner_name, ".json") ? "" : ".json";
-        m_active_spawner = SpawnerParams::load(utils::Json::from_file(folder+spawner_name+extension));    
-    }
-
-    /*
-    ImGui::Text("\nSpawn data");
-    ImGui::Text("===================================");
-    GUI_CMD(ImGui::ColorEdit4("color##Spawn", (float*)&m_active_spawner.spawn.color))
-    GUI_CMD(ImGui::SliderFloat2("extents##Spawn", (float*)&m_active_spawner.spawn.extents,
-                                ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
-    GUI_CMD(ImGui::SliderFloat("health##Spawn", &m_active_spawner.spawn.init_health,
-                               ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
-    GUI_CMD(ImGui::InputText("texture##Spawn", spawn_tex, GUI_TEXT_MAX_LENGTH))
-    GUI_CMD(ImGui::InputText("script##Spawn", spawn_script, GUI_TEXT_MAX_LENGTH))
-    if (ImGui::Button("Update texture##Spawn")) {
-        m_gui_focus = true;
-        if (ResourceManager::getTexture(spawn_tex).is_ok()) {
-            m_active_spawner.spawn.tex = spawn_tex;
-        }
-    } 
-    ImGui::SameLine();
-    if (ImGui::Button("Update script##Spawn")) {
-        m_gui_focus = true;
-        m_active_spawner.spawn.update_script = spawn_script;
-    }
-    */
 
     m_curr_tab = GUI_SPAWNER_TAB;
 }

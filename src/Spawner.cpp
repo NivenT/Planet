@@ -11,9 +11,8 @@ Spawner::Spawner(crstring texture, EnemyParams spawn, float health, crvec4 color
     m_spawn(spawn), m_spawn_rate(SPAWNER_SLOW_RATE), m_time(0) {   
 }
 
-Spawner::Spawner(const SpawnerParams& params) : 
-    Spawner(params.tex, EnemyParams::load(Json::from_file(params.spawn)), 
-            params.init_health, params.color) {
+Spawner::Spawner(const SpawnerParams& params) : Enemy(params) {
+    m_spawn = EnemyParams::load(Json::from_file(params.spawn));
     set_spawn_rate(params.spawn_rate);
 }
 void Spawner::set_spawn_rate(float rate) {

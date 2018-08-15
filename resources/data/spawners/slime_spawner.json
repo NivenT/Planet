@@ -1,0 +1,37 @@
+{
+  "anim_dims": [8, 8], 
+  "anims": [{
+    "length": 61, 
+    "speed": 20, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 61, 
+    "speed": 20, 
+    "start": 0
+  }], 
+  "color": [1, 1, 1, 1], 
+  "density": 1, 
+  "extents": [0.611, 0.608], 
+  "friction": 1, 
+  "init_health": 200, 
+  "max_speed": [12, 24], 
+  "natural_direction": true, 
+  "position": [-11.9354, -3.20816], 
+  "restitution": 0, 
+  "script": "", 
+  "spawn": "resources/data/enemies/slime.json", 
+  "spawn_rate": 5.611, 
+  "texture": "resources/images/nebula_spritesheet.png"
+}
