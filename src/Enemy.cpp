@@ -10,7 +10,7 @@ using namespace glm;
 Enemy::Enemy(crstring texture, crstring update, float health, crvec2 speed, crvec4 color, uint16_t type) : 
     Agent(speed, color, health, type | ENEMY_TYPE), m_extents(0), m_update_script(update) {
     // unsafe but meh
-    m_tex = ResourceManager::getTexture(texture).get_data();
+    m_anim = Animation2D(texture, ivec2(1,1));
 }
 
 Enemy::Enemy(const EnemyParams& p, uint16_t type) :
@@ -42,13 +42,6 @@ void Enemy::add_to_world(b2World* world, const CreationParams& params) {
     m_body->CreateFixture(&fixture_def);
 
     Agent::add_to_world(world, params);
-}
-
-void Enemy::render(SpriteBatch& batch) const {
-    const vec2 center = getCenter();
-    batch.addGlyph(vec4(center.x - m_extents.x, center.y + m_extents.y, 2.f*m_extents),
-                        vec4(0,0,1,1), m_tex.id, m_color, getOrientation());
-    render_health(batch);
 }
 
 void Enemy::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 

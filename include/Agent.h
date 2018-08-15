@@ -1,6 +1,8 @@
 #ifndef AGENT_H_INCLUDED
 #define AGENT_H_INCLUDED
 
+#include <nta/Animation2D.h>
+
 #include "Object.h"
 
 typedef uint16_t AgentFlags;
@@ -18,6 +20,8 @@ protected:
     const float m_max_health;
     uint64_t m_health_event_id;
     AgentFlags m_state_flags;
+    nta::Animation2D m_anim;
+    MotionAnimation m_anim_params[OBJECT_NUM_MOTION_STATES];
 public:
     Agent(crvec2 speed, crvec4 color, float health, uint16_t type);
     virtual ~Agent();
@@ -27,7 +31,9 @@ public:
     bool are_flags_set(AgentFlags flags) const;
     // TODO: Think of better name
     void popup(int flag, uint64_t& eid, int when = STANDARD_POPUP_TIME);
+    virtual void render(nta::SpriteBatch& batch) const;
     virtual void render_health(nta::SpriteBatch& batch) const;
+    virtual void update(const UpdateParams& params);
 
     friend ChaiManager;
 };

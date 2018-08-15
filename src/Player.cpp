@@ -14,6 +14,12 @@ Player::Player(uint16_t type) :
     m_inventory_event_id(0) {
     set_flags(AGENT_STATE_SHOW_HEALTH);
     m_anim = Animation2D("resources/images/HeavyBandit_Spritesheet.png", ivec2(7,8));
+    
+    m_anim_params[STANDING] = {0,1,1};
+    m_anim_params[RUNNING] = {8,8,8};
+    m_anim_params[JUMPING] = {34,1,1};
+    m_anim_params[FALLING] = {34,1,1};
+    m_anim_params[IDLE] = {4,1,1};
 }
 
 Player::~Player() {
@@ -54,13 +60,6 @@ void Player::add_to_world(b2World* world, const CreationParams& params) {
     m_body->CreateFixture(&fixture_def);
 
     Agent::add_to_world(world, params);
-}
-
-void Player::render(SpriteBatch& batch) const {
-    const vec4 uv = m_direction ? m_anim.get_uv() : m_anim.get_flipped_uv();
-    batch.addGlyph(vec4(getTopLeft(), 2.f*getExtents()), uv, m_anim.get_tex_id(),
-                    m_color, getOrientation());
-    render_health(batch);
 }
 
 // TODO: Make zip iterator class
@@ -156,18 +155,6 @@ void Player::update(const UpdateParams& params) {
         m_attack_anim.anim.step(params.dt*m_attack_anim.speed);
         if (m_attack_anim.anim.get_time() > m_attack_anim.anim.get_length()*m_attack_anim.num_cycles) {
             unset_flags(AGENT_STATE_ATTACKING);
-        }
-    }
-
-    m_anim.step(params.dt);
-    m_anim.set_speed(8.f*getVelocity().x/getMaxSpeed().x);
-    if (m_motion_state != m_prev_motion_state) {
-        switch(m_motion_state) {
-            case STANDING: m_anim.switch_animation(0,1); break;
-            case RUNNING: m_anim.switch_animation(8, 8); break;
-            case JUMPING: m_anim.switch_animation(34,1); break;
-            case FALLING: m_anim.switch_animation(34,1); break;
-            case IDLE: m_anim.switch_animation(4, 1); break;
         }
     }
 }

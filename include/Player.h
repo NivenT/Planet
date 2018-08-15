@@ -1,8 +1,6 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-#include <nta/Animation2D.h>
-
 #include "Agent.h"
 #include "Light.h"
 #include "Item.h"
@@ -24,7 +22,6 @@ private:
     void handle_input(const UpdateParams& params);
 
     Cycle<Item*> m_inventory;
-    nta::Animation2D m_anim;
     AttackAnim m_attack_anim;
     uint64_t m_inventory_event_id;
 public:
@@ -36,7 +33,6 @@ public:
     float get_attack_strength();
     void set_attacking(Object* requester);
     void add_to_world(b2World* world, const CreationParams& params);
-    void render(nta::SpriteBatch& batch) const;
     void render_inventory(nta::SpriteBatch& batch, nta::SpriteFont* font) const;
     void render_attack(nta::SpriteBatch& batch) const;
     void update(const UpdateParams& params);

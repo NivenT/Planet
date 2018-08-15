@@ -69,6 +69,13 @@ enum ObjectMotionState {
     STANDING, RUNNING, JUMPING, FALLING, IDLE
 };
 
+/// \todo (?) Move to jubilant-funicular
+struct MotionAnimation {
+    std::size_t start = 0;
+    std::size_t length = 1;
+    float speed = 1;
+};
+
 class Object {
 private:
     void handle_collisions(const UpdateParams& params);

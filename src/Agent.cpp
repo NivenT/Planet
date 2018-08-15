@@ -60,6 +60,13 @@ void Agent::popup(int flags, uint64_t& eid, int when) {
     }
 }
 
+void Agent::render(SpriteBatch& batch) const {
+    const vec4 uv = m_direction ? m_anim.get_uv() : m_anim.get_flipped_uv();
+    batch.addGlyph(vec4(getTopLeft(), 2.f*getExtents()), uv, m_anim.get_tex_id(),
+                    m_color, getOrientation());
+    render_health(batch);
+}
+
 void Agent::render_health(SpriteBatch& batch) const {
     if (m_health <= 0) return;
     if (!are_flags_set(AGENT_STATE_SHOW_HEALTH)) return;
@@ -81,4 +88,17 @@ void Agent::render_health(SpriteBatch& batch) const {
                    vec4(c.r, c.g, c.b, ALPHA));
     batch.addGlyph(vec4(bl.x, bl.y + HEIGHT, width*m_health/m_max_health, HEIGHT), vec4(0, 0, 1, 1), 
                    tex, vec4(c.r, c.g, c.b, 1));
+}
+
+void Agent::update(const UpdateParams& params) {
+    Object::update(params);
+
+    if (m_motion_state == RUNNING) {
+        m_anim.set_speed(m_anim_params[RUNNING].speed*getVelocity().x/getMaxSpeed().x);
+    }
+    m_anim.step(params.dt);
+    if (m_motion_state != m_prev_motion_state) {
+        auto p = m_anim_params[m_motion_state];
+        m_anim.switch_animation(p.start, p.length, p.speed);
+    }
 }
