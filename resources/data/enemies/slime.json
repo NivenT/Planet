@@ -1,13 +1,13 @@
 {
   "anim_dims": [1, 16], 
   "anims": [{
-    "length": 1, 
-    "speed": 1, 
-    "start": 2
+    "length": 2, 
+    "speed": 3.228, 
+    "start": 1
   }, {
-    "length": 9, 
+    "length": 6, 
     "speed": 5.748, 
-    "start": 0
+    "start": 3
   }, {
     "length": 1, 
     "speed": 1, 
@@ -28,7 +28,7 @@
   "init_health": 5, 
   "max_speed": [12, 24], 
   "natural_direction": false, 
-  "position": [-11.9006, -3.01191], 
+  "position": [-11.8273, -2.79582], 
   "restitution": 0, 
   "script": "scripts/slime.chai", 
   "texture": "resources/images/SlimeA.png"

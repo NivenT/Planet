@@ -31,6 +31,7 @@ void Enemy::add_to_world(b2World* world, const CreationParams& params) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(params.position.x, params.position.y);
+    body_def.fixedRotation = true;
     m_body = world->CreateBody(&body_def);
 
     m_extents = params.extents;

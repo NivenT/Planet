@@ -50,6 +50,8 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Agent::getHealth), "getHealth");
     add(chaiscript::fun(&Agent::applyDamage), "applyDamage");
     add(chaiscript::fun(&Agent::are_flags_set), "are_flags_set");
+    add(chaiscript::fun(&Agent::m_anim), "m_anim");
+    add(chaiscript::fun(&Agent::m_anim), "anim");
     add(chaiscript::user_type<Agent>(), "Agent");
 
     add(chaiscript::fun(&Object::getObjectType), "getObjectType");
@@ -120,6 +122,10 @@ void ChaiManager::init() {
     add(chaiscript::constructor<Animation2D(crstring, int, size_t, size_t)>(), "Animation2D");
     add(chaiscript::constructor<Animation2D(crstring, crivec2, size_t, size_t)>(), "Animation2D");
     add(chaiscript::fun([](Animation2D& a, const Animation2D& b){a = b;}), "=");
+    add(chaiscript::fun(&Animation2D::get_index), "get_index");
+    add(chaiscript::fun(&Animation2D::get_start), "get_start");
+    add(chaiscript::fun(&Animation2D::get_length), "get_length");
+    add(chaiscript::fun(&Animation2D::get_frame_dims), "get_frame_dims");
     add(chaiscript::user_type<Animation2D>(), "Animation2D");
 
     add(chaiscript::fun(&glm::vec2::x), "x");
