@@ -1,0 +1,35 @@
+{
+  "anim_dims": [1, 3], 
+  "anims": [{
+    "length": 1, 
+    "speed": 1.23, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 3, 
+    "speed": 3.924, 
+    "start": 0
+  }, {
+    "length": 3, 
+    "speed": 4.01, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 1
+  }], 
+  "color": [1, 1, 1, 1], 
+  "density": 1, 
+  "extents": [0.68, 0.625], 
+  "friction": 1, 
+  "init_health": 12, 
+  "max_speed": [8.143, 8.113], 
+  "natural_direction": true, 
+  "position": [-12.2906, -3.29323], 
+  "restitution": 0, 
+  "script": "scripts/ghost.chai", 
+  "texture": "resources/images/ghost.png"
+}

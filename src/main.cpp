@@ -26,6 +26,10 @@ void log_defs() {
     log(ENEMY_UNIT_AREA);
     log(NORMAL_ENEMY_INIT_HEALTH);
     log(SMALL_ITEM_SIZE);
+    log(ENEMY_MIN_MAX_SPEED);
+    log(ENEMY_MAX_MAX_SPEED);
+    log(ENEMY_MIN_EXTENTS);
+    log(ENEMY_MAX_EXTENTS);
 
     nta::Logger::unindent();
 }

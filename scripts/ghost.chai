@@ -1,0 +1,10 @@
+def run_ghost() {
+    var f = AGENT_SLOW_ACCELERATION * self.getMass();
+    var gravity = params.planet.getGravity(); // type: b2Vec2
+
+    var direction = normalize(params.player_pos - self.getCenter());
+    self.applyForce(direction.x * f, direction.y * f);
+    self.applyForce(-gravity.x * self.getMass(), -gravity.y * self.getMass());
+}
+
+run_ghost

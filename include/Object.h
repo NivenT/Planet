@@ -20,6 +20,7 @@ struct UpdateParams {
 
     Planet* planet;
     b2World* world;
+    glm::vec2 player_pos;
     float dt;
 };
 

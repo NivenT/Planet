@@ -103,10 +103,12 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Planet::getCoord), "getCoord");
     add(chaiscript::fun(&Planet::getTile), "getTile");
     add(chaiscript::fun(&Planet::remove_tile), "remove_tile");
+    add(chaiscript::fun(&Planet::getGravity), "getGravity");
     add(chaiscript::user_type<Planet>(), "Planet");
 
     add(chaiscript::fun(&UpdateParams::planet), "planet");
     add(chaiscript::fun(&UpdateParams::world), "world");
+    add(chaiscript::fun(&UpdateParams::player_pos), "player_pos");
     add(chaiscript::user_type<UpdateParams>(), "UpdateParams");
 
     add(chaiscript::fun(&Tile::active), "active");
@@ -141,6 +143,11 @@ void ChaiManager::init() {
     add(chaiscript::fun(&glm::ivec2::y), "y");
     add(chaiscript::constructor<glm::vec2(int, int)>(), "ivec2");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return glm::dot(a,b);}), "dot");
+
+    add(chaiscript::fun([](crvec2 x){return glm::normalize(x);}), "normalize");
+
+    add(chaiscript::fun(&b2Vec2::x), "x");
+    add(chaiscript::fun(&b2Vec2::y), "y");
 
     add_global_const(chaiscript::const_var(AGENT_STATE_SHOW_HEALTH), "AGENT_STATE_SHOW_HEALTH");
     add_global_const(chaiscript::const_var(AGENT_STATE_ATTACKING), "AGENT_STATE_ATTACKING");

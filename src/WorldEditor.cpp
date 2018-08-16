@@ -433,6 +433,8 @@ void WorldEditor::render_enemy_editor(EnemyParams& enemy, char* tex, char* scrip
     GUI_CMD(ImGui::ColorEdit4("color", (float*)&enemy.color))
     GUI_CMD(ImGui::SliderFloat2("extents", (float*)&enemy.extents,
                                 ENEMY_MIN_EXTENTS, ENEMY_MAX_EXTENTS))
+    GUI_CMD(ImGui::SliderFloat2("max speed", (float*)&enemy.max_speed,
+                                ENEMY_MIN_MAX_SPEED, ENEMY_MAX_MAX_SPEED))
     GUI_CMD(ImGui::SliderFloat("health", &enemy.init_health,
                                ENEMY_MIN_INIT_HEALTH, ENEMY_MAX_INIT_HEALTH))
     GUI_CMD(ImGui::InputText("texture", tex, GUI_TEXT_MAX_LENGTH))

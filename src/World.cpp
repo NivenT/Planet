@@ -102,6 +102,7 @@ void World::render_debug(DebugBatch& batch) const {
 bool World::update(UpdateParams& params) {
 	params.planet = &m_planet;
 	params.world = &m_world;
+	params.player_pos = m_player->getCenter();
 
 	for (size_t i = 0; i < m_objects.size(); i++) {
 		m_objects[i]->update(params);

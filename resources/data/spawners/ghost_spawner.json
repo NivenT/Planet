@@ -1,0 +1,37 @@
+{
+  "anim_dims": [8, 8], 
+  "anims": [{
+    "length": 61, 
+    "speed": 20, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 1, 
+    "speed": 1, 
+    "start": 0
+  }, {
+    "length": 61, 
+    "speed": 20, 
+    "start": 0
+  }], 
+  "color": [1, 1, 1, 0.760784], 
+  "density": 1, 
+  "extents": [0.851, 0.726], 
+  "friction": 1, 
+  "init_health": 200, 
+  "max_speed": [12, 24], 
+  "natural_direction": true, 
+  "position": [41.1607, -0.822818], 
+  "restitution": 0, 
+  "script": "", 
+  "spawn": "resources/data/enemies/ghost.json", 
+  "spawn_rate": 18.118, 
+  "texture": "resources/images/vortex_spritesheet.png"
+}
