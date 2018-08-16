@@ -4,14 +4,14 @@
 WIP Planet hopping game
 
 <p align="center">
- <img src="https://image.ibb.co/eJfpGU/Screenshot_from_2018_08_15.png" width=400>
  <img src="https://image.ibb.co/foD9GU/Screenshot_from_2018_08_15_21_08_20.png" width=400>
+ <img src="https://image.ibb.co/eJfpGU/Screenshot_from_2018_08_15.png" width=400>
  <img src="https://image.ibb.co/f3pc39/Peek_2018_08_15_21_02.gif" width=400>
 </p>
 
 Above are (old) screenshots of the game.
 - The (top) left one shows the game in debug mode
-- The (top) right one shows the view during regular gameplay (the shoe is what's being used as a test enemy)
+- The (top) right one shows the view during regular gameplay
 - The bottom one shows the World Editor
 
 The planet is made from square tiles, and all the physics is calculated like on a normal flat world. A shader is used to render the rectangular world as a circle.
@@ -35,6 +35,8 @@ The enemies are
 * A shoe that moves to the right
 * A slime that moves to the left
 * A ghost that follows the player
+
+You currently cannot change your own sprite.
 
 ## Known Bugs
 
