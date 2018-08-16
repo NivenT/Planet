@@ -4,13 +4,15 @@
 WIP Planet hopping game
 
 <p align="center">
- <img src="https://github.com/NivenT/Planet/blob/master/screenshots/screen1.png" width=400>
- <img src="https://github.com/NivenT/Planet/blob/master/screenshots/screen2.png" width=400>
+ <img src="https://image.ibb.co/eJfpGU/Screenshot_from_2018_08_15.png" width=400>
+ <img src="https://image.ibb.co/foD9GU/Screenshot_from_2018_08_15_21_08_20.png" width=400>
+ <img src="https://image.ibb.co/f3pc39/Peek_2018_08_15_21_02.gif" width=400>
 </p>
 
 Above are (old) screenshots of the game.
-- The left one shows the game in debug mode
-- The right one shows the view during regular gameplay (the shoe is what's being used as a test enemy)
+- The (top) left one shows the game in debug mode
+- The (top) right one shows the view during regular gameplay (the shoe is what's being used as a test enemy)
+- The bottom one shows the World Editor
 
 The planet is made from square tiles, and all the physics is calculated like on a normal flat world. A shader is used to render the rectangular world as a circle.
 
@@ -19,10 +21,20 @@ The main premise of the game is that you start off on some simple planet, and st
 
 A little more on the techincal side of the vision, planets should be round with believable (although almost certainly inaccurate) physics. This is currently acheived by having all the physics work on a rectangular planet, but using shader trickery to render things as if they were round. In addition, I am hoping for a good amount of customizability. This includes having enemy AIs and item effects programmed in [ChaiScript](https://github.com/ChaiScript/ChaiScript), and including a world editor where users can build new planets, put together new enemies, etc.
 
-# Current Progress (as of July 12, 2018)
-The game is currently a bit unstable while a decent, functioning world editor is being worked on. At the moment, you can use it to customize the planet you will spawn on when you press play game. However, nothing you do is saved once you exit out of the program.
+# Current Progress (as of August 15, 2018)
+There's still much to be done, but the game is fairly playable. The world editor is basically finished (except for some conveince features like deleting objects), so you are free to create custom worlds, items, enemies, etc. The things you make are stored in the `resources/data` folder, so check it out to see what creations are available to you.
 
-New items and enemies can be created and inserted via the world editor. More functionality will come to it soon
+By default, the repo comes with 3 items, 3 enemies (each with an associated spawner), and a couple of premade worlds (`test_planet2` is the better of them). The items are
+
+* A stick which can be used to attack enemies
+* A shovel which destorys whatever tile the mouse is hovering over
+* A rock that does nothing (but will be throwable in the (near) future)
+
+The enemies are
+
+* A shoe that moves to the right
+* A slime that moves to the left
+* A ghost that follows the player
 
 ## Known Bugs
 
@@ -37,18 +49,16 @@ New items and enemies can be created and inserted via the world editor. More fun
 ## Rough Roadmap
 This is a sketch of what I think I should try to do/add next. The items are not listed exactly in the order they will be taken care of because (I suspect) there will be a lot of going back and forth between different things as the game is being fleshed out.
 
-* Build a world editor
-  * Allow custom items and enemies
-    * Defined using text files
-  * Add (more) properties to tiles
-    * e.g. A shovel should be able to dig through grass but not rock
-  * Replace ChaiScript with Lua?
-  * I expect this to be the main development stage where a lot things get fleshed out
-* Clean up the code
-  * I suspect things to get messy as I'm trying to figure out how to get the world editor working
+* Add projectiles (e.g. a bullet or a rock)
+* Improve world editor
+  * Allow objects to be deleted or modified after they've been placed
+  * Allow large areas of tiles to be adjusted at once
+* Clean up the code (Optional)
+  * Things are somehow less messy than I expected
 * Add obstacles (e.g. a crate)
 * Allow for multiple planets in one game with travel between them
    * It's gonna be fun figuring out how to make the transition from planet to outer space back to planet look smooth
+   * Will I ever actually get here or just keep working on the earlier stuff indefinietly?
 * TBA
 
 # Beyond the Vision
@@ -76,7 +86,7 @@ make
 Once that's setup, you can run the game from the `build` folder using `./game`
 
 ## Alternate How to Build
-If you have issues with getting all the dependencies or don't want to install them globally, you also have the option of running the code using [docker](https://www.docker.com/community-edition). This has only been tested on Ubuntu, so mileage may vary. For this, you'll first get the code:
+If you have issues with getting all the dependencies or don't want to install them globally, you also have the option of running the code using [docker](https://www.docker.com/community-edition). This has only been tested on Ubuntu (with spotty success), so mileage may vary. For this, you'll first get the code:
 
 ```bash
 git clone https://github.com/NivenT/Planet
@@ -129,4 +139,4 @@ As of July 12, the controls are as below
 * Right Click (Tile Tab Only) - Copy the tile you clicked on
 
 # Scripts
-As alluded to above, a main focus of this game is customizable items and enemies. The implementation of this takes the form of various scripts loaded in during runtime. For more information on this and how to write your own, check out the [scripts folder](https://github.com/NivenT/Planet/tree/master/scripts)
+As alluded to above, a main focus of this game is customizable items and enemies. A big part of implementing this involves various scripts loaded in during runtime. For more information on this and how to write your own, check out the [scripts folder](https://github.com/NivenT/Planet/tree/master/scripts).
