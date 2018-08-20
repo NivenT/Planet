@@ -4,7 +4,7 @@
 #include <nta/ResourceManager.h>
 #include <nta/SpriteBatch.h>
 #include <nta/Random.h>
-#include <nta/json.h>
+#include <nta/Json.h>
 
 #include "defs.h"
 
