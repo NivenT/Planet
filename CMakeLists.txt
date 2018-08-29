@@ -32,7 +32,9 @@ add_executable(game src/main.cpp
                     src/ChaiManager.cpp
                     src/WorldEditor.cpp
                     src/Spawner.cpp
-                    src/World.cpp)
+                    src/World.cpp
+                    src/PhysicsComponent.cpp
+                    src/GraphicsComponent.cpp)
 # What is dl? (Needed for ChaiScript)
 target_link_libraries(game ${NTA_LIBRARIES} Box2D dl lambertw stdc++fs)
 target_include_directories(game PUBLIC include 

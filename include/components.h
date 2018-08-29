@@ -3,8 +3,11 @@
 
 #include <Box2D/Box2D.h>
 
+#include <nta/IOManager.h>
+
 #include <nta/Component.h>
 #include <nta/SpriteBatch.h>
+#include <nta/DebugBatch.h>
 #include <nta/Animation2D.h>
 #include <nta/Json.h>
 
@@ -66,13 +69,21 @@ public:
 };
 
 class GraphicsComponent : public nta::Component {
+private:
+    bool m_invisible = false; // set to true if it shouldn't be rendered for any reason
 public:
     GraphicsComponent() : nta::Component(COMPONENT_GRAPHICS_LIST_ID) {}
+    void receive(const nta::Message& msg);
     virtual void render(nta::SpriteBatch& batch) const = 0;
+    void render_debug(nta::DebugBatch& dbatch) const {}
+    bool isInvisible() const { return m_invisible; }
 };
 
 class PhysicsComponent : public nta::Component {
 protected:
+    virtual void setVelocity(nta::crvec2 vel);
+    virtual void applyForce(float x, float y);
+
     b2Body* m_body;
 public:
     PhysicsComponent() : nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
@@ -81,14 +92,59 @@ public:
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
-    glm::vec2 getTopLeft() const;
     glm::vec2 getVelocity() const;
-    virtual glm::vec2 getExtents() const = 0;
+    virtual glm::vec2 getExtents() const;
     float getOrientation() const;
     float getMass() const;
     
     virtual void add_to_world(b2World* world, const CreationParams& params) = 0;
     virtual void update(const UpdateParams& params) = 0;
+};
+
+class ObjectGraphicsComponent : public GraphicsComponent {
+protected:
+    std::string m_tex_file;
+
+    glm::vec4 m_color;
+    glm::vec2 m_top_left;
+    glm::vec2 m_extents;
+    float m_angle;
+public:
+    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col) : m_tex_file(tex), m_color(col) {}
+    virtual void receive(const nta::Message& message);
+};
+
+class TextureComponent : public ObjectGraphicsComponent {
+private:
+    // technically unneccesary since nta::ResourceManager caches textures
+    nta::GLTexture m_tex;
+public:
+    TextureComponent(nta::crstring texture, nta::crvec4 color = glm::vec4(1));
+    void render(nta::SpriteBatch& batch) const;
+};
+
+class AnimationComponent : public ObjectGraphicsComponent {
+private:
+    nta::Animation2D m_anim;
+    bool m_flipped;
+public:
+    AnimationComponent(nta::crstring texture, nta::crivec2 anim_dims = glm::ivec2(1), 
+                       nta::crvec4 color = glm::vec4(1));
+    void render(nta::SpriteBatch& batch) const;
+    void receive(const nta::Message& message);
+};
+
+class PlanetGraphicsComponent : public GraphicsComponent {
+private:
+    glm::vec2 getOffset() const;
+    
+    std::vector<std::vector<Tile>>* m_tiles = nullptr;
+    int m_sea_level;
+public:
+    PlanetGraphicsComponent() {}
+    void render(nta::SpriteBatch& batch) const;
+    void render_debug(nta::DebugBatch& dbatch) const;
+    void receive(const nta::Message& message);
 };
 
 #endif // COMPONENTS_H_INCLUDED

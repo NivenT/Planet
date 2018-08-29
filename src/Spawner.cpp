@@ -56,7 +56,7 @@ void Spawner::update(const UpdateParams& params) {
         m_spawn.position = getCenter();
 
         /// \todo pass m_params to notify instead of calling add_to_world yourself
-        notify(nta::Message(EVENT_SPAWN_ENEMY, (void*)&m_spawn));
+        notify(nta::Message(MESSAGE_SPAWN_ENEMY, (void*)&m_spawn));
     }
 
     m_time += params.dt;
