@@ -12,14 +12,14 @@
 // This is gonna end up having an obscene amount of functions...
 class WorldEditor : public nta::Screen {
 private:
-    glm::vec2 screen_to_game(crvec2 screen) const;
+    glm::vec2 screen_to_game(nta::crvec2 screen) const;
     bool gui_in_use() const;
 
     void update_camera();
-    void update_tile_tab(crvec2 mouse, const glm::ivec2& coord);
-    void update_item_tab(crvec2 mouse);
-    void update_enemy_tab(crvec2 mouse);
-    void update_spawner_tab(crvec2 mouse);
+    void update_tile_tab(nta::crvec2 mouse, const glm::ivec2& coord);
+    void update_item_tab(nta::crvec2 mouse);
+    void update_enemy_tab(nta::crvec2 mouse);
+    void update_spawner_tab(nta::crvec2 mouse);
 
     void prepare_batches();
     void render_batches(const nta::Camera2D camera, bool debug);
@@ -33,7 +33,8 @@ private:
     void render_spawner_tab();
     void render_obstacle_tab();
     void render_enemy_editor(EnemyParams& enemy, char* tex, char* script);
-    void render_anim_editor(crstring tex, glm::ivec2& anim_dims, MotionAnimation* anims);
+    void render_anim_editor(nta::crstring tex, glm::ivec2& anim_dims, 
+                            MotionAnimation* anims);
 
     nta::SpriteFont* m_font = nullptr;
     nta::GLSLProgram* m_prog = nullptr;

@@ -71,8 +71,8 @@ protected:
     glm::vec2 m_extents;
     std::string m_update_script;
 public:
-    Enemy(crstring texture, crstring update = "", float health = NORMAL_ENEMY_INIT_HEALTH, 
-          crvec2 speed = NORMAL_ENEMY_MAX_SPEED, crvec4 color = glm::vec4(1), uint16_t type = 0);
+    Enemy(nta::crstring texture, nta::crstring update = "", float health = NORMAL_ENEMY_INIT_HEALTH, 
+          nta::crvec2 speed = NORMAL_ENEMY_MAX_SPEED, nta::crvec4 color = glm::vec4(1), uint16_t type = 0);
     Enemy(const EnemyParams& params, uint16_t type = 0);
     ~Enemy();
     glm::vec2 getExtents() const;

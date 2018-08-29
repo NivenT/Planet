@@ -39,8 +39,8 @@ private:
     float m_spawn_rate;
     float m_time;
 public:
-    Spawner(crstring texture, EnemyParams spawn, float health = NORMAL_SPAWNER_INIT_HEALTH, 
-            crvec4 color = glm::vec4(1), uint16_t type = 0);
+    Spawner(nta::crstring texture, EnemyParams spawn, float health = NORMAL_SPAWNER_INIT_HEALTH, 
+            nta::crvec4 color = glm::vec4(1), uint16_t type = 0);
     Spawner(const SpawnerParams& params);
     void set_spawn_rate(float rate);
     void add_to_world(b2World* world, const CreationParams& params);

@@ -37,7 +37,7 @@ struct CreationParams {
             {"restitution", restitution}
         };
     }
-    void save(crstring path) {
+    void save(nta::crstring path) {
         nta::IOManager::writeFileFromBuffer(path, json().dump(2));
     }
     static CreationParams load(const nta::utils::Json& json) {
@@ -85,7 +85,7 @@ private:
     const glm::vec2 m_max_speed;
 protected:
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, Object*);
-    virtual void setVelocity(crvec2 vel);
+    virtual void setVelocity(nta::crvec2 vel);
     virtual void applyForce(float x, float y);
 
     glm::vec4 m_color;
@@ -95,8 +95,8 @@ protected:
     // true when facing right
     bool m_direction;
 public:
-    Object(float mx, float my, crvec4 c, uint16_t type);
-    Object(crvec2 m, crvec4 c, uint16_t type);
+    Object(float mx, float my, nta::crvec4 c, uint16_t type);
+    Object(nta::crvec2 m, nta::crvec4 c, uint16_t type);
     virtual ~Object();
     uint16_t getObjectType() const;
     glm::vec2 getCenter() const;
@@ -112,7 +112,7 @@ public:
     virtual glm::vec2 getExtents() const;
     virtual void add_to_world(b2World* world, const CreationParams& params);
     virtual void render(nta::SpriteBatch& batch) const = 0;
-    virtual void render_at(nta::SpriteBatch& batch, crvec2 center, RenderAtKey key);
+    virtual void render_at(nta::SpriteBatch& batch, nta::crvec2 center, RenderAtKey key);
     virtual void render_debug(nta::DebugBatch& dbatch) const;
     virtual void update(const UpdateParams& params);
 

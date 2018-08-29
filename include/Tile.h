@@ -14,9 +14,9 @@ struct Tile {
                           nta::Random::randFloat(), 1);
         tex.id = 0;
     }
-    Tile(nta::GLTexture tex, crvec4 color) : tex(tex), color(color) {
+    Tile(nta::GLTexture tex, nta::crvec4 color) : tex(tex), color(color) {
     }
-    Tile(crvec4 color) : color(color) {
+    Tile(nta::crvec4 color) : color(color) {
         tex.id = 0;
     }
     // This is almost certainly Rust influence gettting the better of me
@@ -48,7 +48,7 @@ struct Tile {
             {"solid", solid}
         };
     }
-    void render(nta::SpriteBatch& batch, glm::vec2 top_left) const {
+    void render(nta::SpriteBatch& batch, nta::crvec2 top_left) const {
         glm::vec4 col = color;
         col.a *= active ? 1 : TILE_INACTIVE_ALPHA;
         batch.addGlyph(glm::vec4(top_left, TILE_SIZE, TILE_SIZE), glm::vec4(0,0,1,1), 

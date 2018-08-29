@@ -22,7 +22,7 @@ void debug_render_aabb(DebugBatch& dbatch, const b2AABB& box) {
     }
 }
 
-void debug_render_poly(DebugBatch& dbatch, const b2PolygonShape* poly, vec2 position, float rotation) {
+void debug_render_poly(DebugBatch& dbatch, const b2PolygonShape* poly, crvec2 position, float rotation) {
     static const int NUM_PIECES = 15;
 
     const int count = poly->GetVertexCount();

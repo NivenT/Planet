@@ -7,7 +7,7 @@
 #include <nta/Screen.h>
 
 struct Button {
-    bool isPressed(crvec2 mouse) const {
+    bool isPressed(nta::crvec2 mouse) const {
         return ((mouse.x >= bounds.x && mouse.x <= bounds.x+bounds[2]) &&
                 (mouse.y <= bounds.y && mouse.y >= bounds.y-bounds[3]));
     }

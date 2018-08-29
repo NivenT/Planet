@@ -24,7 +24,7 @@ protected:
     MotionAnimation m_anim_params[OBJECT_NUM_MOTION_STATES];
     bool m_natural_direction = true;
 public:
-    Agent(crvec2 speed, crvec4 color, float health, uint16_t type);
+    Agent(nta::crvec2 speed, nta::crvec4 color, float health, uint16_t type);
     virtual ~Agent();
     virtual glm::vec2 getDirection() const;
     float getHealth() const;

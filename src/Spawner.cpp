@@ -5,7 +5,7 @@ using namespace glm;
 using namespace nta::utils;
 
 // ugh formatting
-Spawner::Spawner(crstring texture, EnemyParams spawn, float health, crvec4 color, 
+Spawner::Spawner(nta::crstring texture, EnemyParams spawn, float health, nta::crvec4 color, 
                  uint16_t type) : 
     Enemy(texture, "", health, SPAWNER_MAX_SPEED, color,  type | SPAWNER_TYPE), 
     m_spawn(spawn), m_spawn_rate(SPAWNER_SLOW_RATE), m_time(0) {   
@@ -56,7 +56,7 @@ void Spawner::update(const UpdateParams& params) {
         m_spawn.position = getCenter();
 
         /// \todo pass m_params to notify instead of calling add_to_world yourself
-        notify(nta::Event(EVENT_SPAWN_ENEMY, (void*)&m_spawn));
+        notify(nta::Message(EVENT_SPAWN_ENEMY, (void*)&m_spawn));
     }
 
     m_time += params.dt;

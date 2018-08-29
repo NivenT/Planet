@@ -143,7 +143,7 @@ void World::destroy() {
 	m_flags = 0;
 }
 
-void World::onNotify(const Event& event) {
+void World::onNotify(const Message& event) {
 	if (event & EVENT_SPAWN_ENEMY) {
 		EnemyParams params = *(EnemyParams*)event.data;
 		add_object(new Enemy(params), params);

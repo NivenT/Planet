@@ -27,7 +27,7 @@ struct WorldParams {
         }
         return ret;
     }
-    void save(crstring path) {
+    void save(nta::crstring path) {
         nta::IOManager::writeFileFromBuffer(path, json().dump(2));
     }
     static WorldParams load(const nta::utils::Json& json) {
@@ -82,7 +82,7 @@ public:
     bool update(UpdateParams& params);
     void destroy();
 
-    void onNotify(const nta::Event&);
+    void onNotify(const nta::Message&);
 };
 
 #endif // WORLD_H_INCLUDED
