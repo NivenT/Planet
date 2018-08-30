@@ -5,6 +5,7 @@
 
 #include <nta/IOManager.h>
 
+#include <nta/Entity.h>
 #include <nta/Component.h>
 #include <nta/SpriteBatch.h>
 #include <nta/DebugBatch.h>
@@ -12,6 +13,13 @@
 #include <nta/Json.h>
 
 #include "Planet.h"
+
+#define OBJECT_IS_IDLE(s) ((s == STANDING) || (s == IDLE))
+#define OBJECT_ON_GROUND(s) (OBJECT_IS_IDLE(s) || (s == RUNNING))
+
+enum ObjectMotionState {
+    STANDING, RUNNING, JUMPING, FALLING, IDLE
+};
 
 struct UpdateParams {
     UpdateParams() : planet(nullptr), world(nullptr) {
@@ -56,6 +64,7 @@ struct CreationParams {
     float density;
     float friction;
     float restitution;
+    nta::EntityID entity;
 };
 
 class SavableComponent : public nta::Component {
@@ -77,28 +86,6 @@ public:
     virtual void render(nta::SpriteBatch& batch) const = 0;
     void render_debug(nta::DebugBatch& dbatch) const {}
     bool isInvisible() const { return m_invisible; }
-};
-
-class PhysicsComponent : public nta::Component {
-protected:
-    virtual void setVelocity(nta::crvec2 vel);
-    virtual void applyForce(float x, float y);
-
-    b2Body* m_body;
-public:
-    PhysicsComponent() : nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
-    virtual ~PhysicsComponent() {}
-
-    void destroy(b2World* world);
-
-    glm::vec2 getCenter() const;
-    glm::vec2 getVelocity() const;
-    virtual glm::vec2 getExtents() const;
-    float getOrientation() const;
-    float getMass() const;
-    
-    virtual void add_to_world(b2World* world, const CreationParams& params) = 0;
-    virtual void update(const UpdateParams& params) = 0;
 };
 
 class ObjectGraphicsComponent : public GraphicsComponent {
@@ -137,7 +124,7 @@ public:
 class PlanetGraphicsComponent : public GraphicsComponent {
 private:
     glm::vec2 getOffset() const;
-    
+
     std::vector<std::vector<Tile>>* m_tiles = nullptr;
     int m_sea_level;
 public:
@@ -145,6 +132,37 @@ public:
     void render(nta::SpriteBatch& batch) const;
     void render_debug(nta::DebugBatch& dbatch) const;
     void receive(const nta::Message& message);
+};
+
+class PhysicsComponent : public nta::Component {
+private:
+    void handle_collisions(const UpdateParams& params);
+protected:
+    virtual void setVelocity(nta::crvec2 vel);
+    virtual void applyForce(float x, float y);
+    virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
+    
+    const glm::vec2 m_max_speed;
+    ObjectMotionState m_motion_state, m_prev_motion_state = FALLING;
+    std::size_t m_standing_frames = 0;
+    // true when facing right
+    bool m_direction;
+
+    b2Body* m_body;
+public:
+    PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
+    virtual ~PhysicsComponent() {}
+
+    void destroy(b2World* world);
+
+    glm::vec2 getCenter() const;
+    glm::vec2 getVelocity() const;
+    virtual glm::vec2 getExtents() const;
+    float getOrientation() const;
+    float getMass() const;
+    
+    virtual void add_to_world(b2World* world, const CreationParams& params);
+    virtual void update(const UpdateParams& params);
 };
 
 #endif // COMPONENTS_H_INCLUDED

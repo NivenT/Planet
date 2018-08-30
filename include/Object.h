@@ -9,9 +9,6 @@
 
 #include "components.h"
 
-#define OBJECT_ON_GROUND(s) ((s == STANDING) || (s == RUNNING))
-#define OBJECT_IS_IDLE(s) ((s == STANDING) || (s == IDLE))
-
 class ChaiManager;
 
 class RenderAtKey {
@@ -19,10 +16,6 @@ class RenderAtKey {
     RenderAtKey() {}
     RenderAtKey(const RenderAtKey&);
     RenderAtKey& operator=(const RenderAtKey&);
-};
-
-enum ObjectMotionState {
-    STANDING, RUNNING, JUMPING, FALLING, IDLE
 };
 
 /// \todo (?) Move to jubilant-funicular
