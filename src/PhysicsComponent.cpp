@@ -5,8 +5,18 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
+PhysicsComponent::PhysicsComponent(b2World* world, const CreationParams& p) :
+    Component(COMPONENT_PHYSICS_LIST_ID), m_max_speed(p.max_speed) {
+    add_to_world(world, p);
+}
+
 vec2 PhysicsComponent::getCenter() const {
     return vec2(m_body->GetPosition().x, m_body->GetPosition().y);
+}
+
+vec2 PhysicsComponent::getTopLeft() const {
+    vec2 c = getCenter(), e = getExtents();
+    return vec2(c.x - e.x, c.y + e.y);
 }
 
 vec2 PhysicsComponent::getExtents() const {
@@ -35,13 +45,6 @@ void PhysicsComponent::setVelocity(crvec2 vel) {
 void PhysicsComponent::applyForce(float x, float y) {
     m_body->ApplyForceToCenter(b2Vec2(x, y), true);
 }
-
-/*
-// Call at end of child's add_to_world
-void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params) {
-    m_body->SetUserData(this);
-}
-*/
 
 void PhysicsComponent::destroy(b2World* world) {
     if (m_body) world->DestroyBody(m_body);
@@ -139,4 +142,9 @@ void PhysicsComponent::update(const UpdateParams& params) {
     }
 
     if (!OBJECT_IS_IDLE(m_motion_state)) m_standing_frames = 0;
+
+    vec2 tl = getTopLeft();
+    float ang = getOrientation();
+    send(Message(MESSAGE_RECEIVE_TL, &tl));
+    send(Message(MESSAGE_RECEIVE_ANG, &ang));
 }

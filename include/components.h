@@ -5,8 +5,7 @@
 
 #include <nta/IOManager.h>
 
-#include <nta/Entity.h>
-#include <nta/Component.h>
+#include <nta/ECS.h>
 #include <nta/SpriteBatch.h>
 #include <nta/DebugBatch.h>
 #include <nta/Animation2D.h>
@@ -34,6 +33,8 @@ struct UpdateParams {
 struct CreationParams {
     CreationParams() : planet(nullptr), position(0), extents(0), 
         density(1), friction(1), restitution(0) {
+        entity = NTA_INVALID_ID;
+        max_speed = NORMAL_ENEMY_MAX_SPEED;
     }
     virtual nta::utils::Json json() const {
         return {
@@ -61,6 +62,7 @@ struct CreationParams {
     Planet* planet;
     glm::vec2 position;
     glm::vec2 extents;
+    glm::vec2 max_speed;
     float density;
     float friction;
     float restitution;
@@ -97,7 +99,7 @@ protected:
     glm::vec2 m_extents;
     float m_angle;
 public:
-    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col) : m_tex_file(tex), m_color(col) {}
+    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col) : m_tex_file(tex), m_color(col), GraphicsComponent() {}
     virtual void receive(const nta::Message& message);
 };
 
@@ -140,6 +142,9 @@ private:
 protected:
     virtual void setVelocity(nta::crvec2 vel);
     virtual void applyForce(float x, float y);
+
+    virtual void add_to_world(b2World* world, const CreationParams& params);
+
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
     
     const glm::vec2 m_max_speed;
@@ -150,19 +155,20 @@ protected:
 
     b2Body* m_body;
 public:
-    PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
+    PhysicsComponent(b2World* world, const CreationParams& params);
     virtual ~PhysicsComponent() {}
 
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
+    glm::vec2 getTopLeft() const;
     glm::vec2 getVelocity() const;
     virtual glm::vec2 getExtents() const;
     float getOrientation() const;
     float getMass() const;
     
-    virtual void add_to_world(b2World* world, const CreationParams& params);
     virtual void update(const UpdateParams& params);
+    virtual void receive(const nta::Message& message) {}
 };
 
 #endif // COMPONENTS_H_INCLUDED

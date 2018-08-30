@@ -35,10 +35,11 @@ vec2 MainGame::getMouse() const {
 void MainGame::onFocus(const ScreenSwitchInfo& info) {
     if (!info.data) Logger::writeErrorToLog("Tried starting game with empty World",
                                              nta::ErrorType::INVALID_VALUE);
-    // Want a copy of the world with a different underlying b2World
-    m_world = new World(*(WorldParams*)info.data);
+    m_world = new NewWorld(*(WorldParams*)info.data);
+    /*
     m_world->unset_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
     m_world->set_flags(WORLD_DRAW_PLAYER_EXTRAS_FLAG);
+    */
     m_state = ScreenState::RUNNING;
 }
 
@@ -158,7 +159,7 @@ void MainGame::update() {
             m_state = ScreenState::SWITCH_ESC;
         }
     }
-    if (!m_debug) m_camera.setCenter(m_world->get_player()->getCenter());
+    if (!m_debug) m_camera.setCenter(m_world->get_player_center());
 }
 
 void MainGame::prepare_batches() {

@@ -1,6 +1,7 @@
 #include "World.h"
 
 using namespace std;
+using namespace glm;
 using namespace nta;
 
 World::World(const Planet& planet) : m_planet(planet), m_player(nullptr), m_flags(0),
@@ -148,4 +149,71 @@ void World::onNotify(const Message& msg) {
 		EnemyParams params = *(EnemyParams*)msg.data;
 		add_object(new Enemy(params), params);
 	}
+}
+
+/// New World Stuff
+NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity()) {
+    m_planet = params.planet;
+    m_planet.add_to_world(&m_world);
+    add_player();
+}
+
+NewWorld::~NewWorld() {
+}
+
+vec2 NewWorld::get_player_center() const {
+    PhysicsComponent* comp = (PhysicsComponent*)m_ecs.get_component(m_player, COMPONENT_PHYSICS_LIST_ID);
+    return comp->getCenter();
+}
+
+void NewWorld::add_player() {
+    m_player = m_ecs.gen_entity();
+    auto anim = new AnimationComponent(PLAYER_ANIMATION_FILE, 
+                                       PLAYER_ANIMATION_DIMS);
+    m_ecs.add_component(anim, m_player);
+
+    CreationParams params;
+    params.planet = &m_planet;
+    params.position = PLAYER_INIT_POS;
+    params.extents = PLAYER_EXTENTS;
+    params.max_speed = PLAYER_MAX_SPEED;
+    params.density = PLAYER_DENSITY;
+    params.friction = PLAYER_FRICTION;
+    params.restitution = PLAYER_RESTITUTION;
+    params.entity = m_player;
+    m_ecs.add_component(new PhysicsComponent(&m_world, params), m_player);
+
+    anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
+}
+
+void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
+                      SpriteFont* font) const {
+    m_planet.render(batch);
+    for (auto graphics : *m_ecs.get_component_list(COMPONENT_GRAPHICS_LIST_ID)) {
+        ((GraphicsComponent*)graphics)->render(batch);
+    }
+}
+
+void NewWorld::render_debug(DebugBatch& batch) const {
+    m_planet.render_debug(batch);
+    for (auto graphics : *m_ecs.get_component_list(COMPONENT_GRAPHICS_LIST_ID)) {
+        ((GraphicsComponent*)graphics)->render_debug(batch);
+    }
+}
+
+bool NewWorld::update(UpdateParams& params) {
+    params.planet = &m_planet;
+    params.world = &m_world;
+    params.player_pos = get_player_center();
+
+    for (auto physics : *m_ecs.get_component_list(COMPONENT_PHYSICS_LIST_ID)) {
+        ((PhysicsComponent*)physics)->update(params);
+    }
+    m_world.Step(params.dt, 6, 2);
+
+    return false;
+}
+
+void NewWorld::onNotify(const nta::Message& msg) {
+    
 }
