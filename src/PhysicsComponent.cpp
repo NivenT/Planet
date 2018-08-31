@@ -5,11 +5,6 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
-PhysicsComponent::PhysicsComponent(b2World* world, const CreationParams& p) :
-    Component(COMPONENT_PHYSICS_LIST_ID), m_max_speed(p.max_speed) {
-    add_to_world(world, p);
-}
-
 vec2 PhysicsComponent::getCenter() const {
     return vec2(m_body->GetPosition().x, m_body->GetPosition().y);
 }
@@ -151,4 +146,33 @@ void PhysicsComponent::receive(const Message& msg) {
         vec2 force = *(vec2*)msg.data;
         applyForce(force.x, force.y);
     }
+}
+
+void SensorPhysicsComponent::add_to_world(b2World* world, 
+                                          const CreationParams& params) {
+    b2BodyDef body_def;
+    body_def.type = b2_dynamicBody;
+    body_def.position = b2Vec2(params.position.x, params.position.y);
+    m_body = world->CreateBody(&body_def);
+
+    m_extents = params.extents;
+    b2PolygonShape body_shape;
+    body_shape.SetAsBox(m_extents.x, m_extents.y);
+
+    // Solid fixture for certain collisions (e.g. with ground)
+    b2FixtureDef fixture_def;
+    fixture_def.shape = &body_shape;
+    fixture_def.density = params.density;
+    fixture_def.friction = params.friction;
+    fixture_def.restitution = params.restitution;
+    fixture_def.filter.maskBits = SPAWNER_MASK_BITS;
+    m_body->CreateFixture(&fixture_def);
+
+    // Sensor fixture for detecting collisions w/o resolution (e.g. with player)
+    b2FixtureDef sensor_def;
+    sensor_def.shape = &body_shape;
+    sensor_def.isSensor = true;
+    m_body->CreateFixture(&sensor_def);
+
+    m_body->SetUserData((void*)params.entity);
 }

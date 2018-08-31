@@ -143,27 +143,13 @@ public:
     void receive(const nta::Message& message);
 };
 
-class PlanetGraphicsComponent : public GraphicsComponent {
-private:
-    glm::vec2 getOffset() const;
-
-    std::vector<std::vector<Tile>>* m_tiles = nullptr;
-    int m_sea_level;
-public:
-    PlanetGraphicsComponent() {}
-    void render(nta::SpriteBatch& batch) const;
-    void render_debug(nta::DebugBatch& dbatch) const;
-    void receive(const nta::Message& message);
-};
-
+// This is big. I should probably decompose it into smaller components
 class PhysicsComponent : public nta::Component {
 private:
     void handle_collisions(const UpdateParams& params);
 protected:
     virtual void setVelocity(nta::crvec2 vel);
     virtual void applyForce(float x, float y);
-
-    virtual void add_to_world(b2World* world, const CreationParams& params);
 
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
     
@@ -177,9 +163,10 @@ protected:
 
     b2Body* m_body;
 public:
-    PhysicsComponent(b2World* world, const CreationParams& params);
+    PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
     virtual ~PhysicsComponent() {}
 
+    virtual void add_to_world(b2World* world, const CreationParams& params);
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
@@ -190,6 +177,12 @@ public:
     
     virtual void update(const UpdateParams& params);
     virtual void receive(const nta::Message& message);
+};
+
+class SensorPhysicsComponent : public PhysicsComponent {
+public:
+    SensorPhysicsComponent(nta::crvec2 max_speed) : PhysicsComponent(max_speed) {}
+    void add_to_world(b2World* world, const CreationParams& params);
 };
 
 class ControllerComponent : public nta::Component {

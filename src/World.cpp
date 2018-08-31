@@ -155,6 +155,18 @@ void World::onNotify(const Message& msg) {
 NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity()) {
     m_planet = params.planet;
     m_planet.add_to_world(&m_world);
+
+    for (auto& item : params.items) {
+        EntityID id = m_ecs.gen_entity();
+
+        auto tex = new TextureComponent(item.tex, item.color);
+        m_ecs.add_component(tex, id);
+        tex->receive(Message(MESSAGE_RECEIVE_EXT, &item.extents));
+
+        auto physics = new SensorPhysicsComponent(item.max_speed);
+        m_ecs.add_component(physics, id);
+        physics->add_to_world(&m_world, item);
+    }
     add_player();
 }
 
@@ -185,8 +197,11 @@ void NewWorld::add_player() {
     params.restitution = PLAYER_RESTITUTION;
     params.entity = m_player;
 
-    m_ecs.add_component(new PhysicsComponent(&m_world, params), m_player);
     anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
+
+    auto physics = new PhysicsComponent(params.max_speed);
+    m_ecs.add_component(physics, m_player);
+    physics->add_to_world(&m_world, params);
 
     m_ecs.add_component(new PlayerControllerComponent, m_player);
 
