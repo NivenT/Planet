@@ -39,7 +39,8 @@ void PhysicsComponent::destroy(b2World* world) {
     m_body = nullptr;
 }
 
-void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params) {
+void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params,
+                                    EntityID owner) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(params.position.x, params.position.y);
@@ -57,7 +58,8 @@ void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params
     fixture_def.restitution = params.restitution;
     m_body->CreateFixture(&fixture_def);
 
-    m_body->SetUserData((void*)params.entity);
+    m_body->SetUserData((void*)owner);
+    send(Message(MESSAGE_RECEIVE_BODY, m_body));
 }
 
 void PhysicsComponent::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
@@ -77,6 +79,9 @@ void PhysicsComponent::resolve_collision(const UpdateParams& params, b2ContactEd
             }
         }
     }
+
+    CollisionParams cParams = {params, edge, contact, obj};
+    send(Message(MESSAGE_RESOLVE_COLLISION, &cParams));
 }
 
 // Should I just move this code direcly into update?
@@ -149,7 +154,8 @@ void PhysicsComponent::receive(const Message& msg) {
 }
 
 void SensorPhysicsComponent::add_to_world(b2World* world, 
-                                          const CreationParams& params) {
+                                          const CreationParams& params,
+                                          EntityID owner) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(params.position.x, params.position.y);
@@ -174,5 +180,6 @@ void SensorPhysicsComponent::add_to_world(b2World* world,
     sensor_def.isSensor = true;
     m_body->CreateFixture(&sensor_def);
 
-    m_body->SetUserData((void*)params.entity);
+    m_body->SetUserData((void*)owner);
+    send(Message(MESSAGE_RECEIVE_BODY, m_body));
 }

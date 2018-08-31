@@ -1,4 +1,5 @@
 #include <nta/InputManager.h>
+#include <nta/CallbackManager.h>
 
 #include "components.h"
 
@@ -7,22 +8,15 @@ using namespace glm;
 using namespace nta;
 
 void PlayerControllerComponent::act(const UpdateParams& params) {
-    /*
-    if (InputManager::isPressed(SDLK_e) && !m_inventory.is_empty()) {
-        // TODO: Clear event if button released
-        if (InputManager::justPressed(SDLK_e)) {
-            m_inventory.advance();
-            CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_e);}, HOLD_TIME);
-        }
-        popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
-    } else if (InputManager::isPressed(SDLK_q) && !m_inventory.is_empty()) {
-        if (InputManager::justPressed(SDLK_q)) {
-            m_inventory.retreat();
-            CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_q);}, HOLD_TIME);
-        }
-        popup(PLAYER_STATE_SHOW_INVENTORY, m_inventory_event_id);
+    if (InputManager::justPressed(SDLK_e)) {
+        send(Message(MESSAGE_SHIFT_INVENTORY, (void*)1));
+    } else if (InputManager::justPressed(SDLK_q)) {
+        send(Message(MESSAGE_SHIFT_INVENTORY, (void*)-1));
+    } else if (InputManager::justPressed(SDLK_SPACE)) {
+        // I should probably get rid of this, but...
+        CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_SPACE);}, HOLD_TIME);
+        send(Message(MESSAGE_USE_ITEM));
     }
-    */
 
     vec2 force(0);
     // Should you have to be standing to move left and right?
@@ -37,12 +31,6 @@ void PlayerControllerComponent::act(const UpdateParams& params) {
         }
     }
     send(Message(MESSAGE_APPLY_FORCE, &force));
-    /*
-    if (InputManager::justPressed(SDLK_SPACE) && !m_inventory.is_empty()) {
-        CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_SPACE);}, HOLD_TIME);
-        m_inventory.curr()->use(params);
-    }
-    */
 }
 
 void PlayerControllerComponent::receive(const Message& msg) {

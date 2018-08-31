@@ -3,79 +3,15 @@
 
 #include <Box2D/Box2D.h>
 
-#include <nta/IOManager.h>
-
 #include <nta/ECS.h>
-#include <nta/SpriteBatch.h>
+#include <nta/SpriteFont.h>
 #include <nta/DebugBatch.h>
 #include <nta/Animation2D.h>
 #include <nta/Json.h>
 
 #include "Planet.h"
 #include "Cycle.h"
-
-#define OBJECT_IS_IDLE(s) ((s == STANDING) || (s == IDLE))
-#define OBJECT_ON_GROUND(s) (OBJECT_IS_IDLE(s) || (s == RUNNING))
-
-enum ObjectMotionState {
-    STANDING, RUNNING, JUMPING, FALLING, IDLE
-};
-
-// This name is trash
-struct MotionAnimation {
-    int start = 0;
-    int length = 1;
-    float speed = 1;
-};
-
-struct UpdateParams {
-    UpdateParams() : planet(nullptr), world(nullptr) {
-    }
-
-    Planet* planet;
-    b2World* world;
-    glm::vec2 player_pos;
-    float dt;
-};
-
-struct CreationParams {
-    CreationParams() : planet(nullptr), position(0), extents(0), 
-        density(1), friction(1), restitution(0) {
-        entity = NTA_INVALID_ID;
-        max_speed = NORMAL_ENEMY_MAX_SPEED;
-    }
-    virtual nta::utils::Json json() const {
-        return {
-            {"position", {position.x, position.y}},
-            {"extents", {extents.x, extents.y}},
-            {"density", density},
-            {"friction", friction},
-            {"restitution", restitution}
-        };
-    }
-    void save(nta::crstring path) {
-        nta::IOManager::writeFileFromBuffer(path, json().dump(2));
-    }
-    static CreationParams load(const nta::utils::Json& json) {
-        CreationParams ret;
-        ret.position = glm::vec2(json["position"][0], json["position"][1]);
-        ret.extents = glm::vec2(json["extents"][0], json["extents"][1]);
-        ret.density = json["density"];
-        ret.friction = json["friction"];
-        ret.restitution = json["restitution"];
-        return ret;
-    }
-
-    // The planet an object belongs to
-    Planet* planet;
-    glm::vec2 position;
-    glm::vec2 extents;
-    glm::vec2 max_speed;
-    float density;
-    float friction;
-    float restitution;
-    nta::EntityID entity;
-};
+#include "utils.h"
 
 class SavableComponent : public nta::Component {
 public:
@@ -88,7 +24,7 @@ public:
 };
 
 class GraphicsComponent : public nta::Component {
-private:
+protected:
     bool m_invisible = false; // set to true if it shouldn't be rendered for any reason
 public:
     GraphicsComponent(nta::ComponentListID lists = 0) : nta::Component(COMPONENT_GRAPHICS_LIST_ID | lists) {}
@@ -118,6 +54,7 @@ private:
 public:
     TextureComponent(nta::crstring texture, nta::crvec4 color = glm::vec4(1));
     void render(nta::SpriteBatch& batch) const;
+    void render_icon(nta::SpriteBatch& batch, nta::crvec2 top_left, float alpha) const;
 };
 
 class AnimationComponent : public ObjectGraphicsComponent {
@@ -166,7 +103,7 @@ public:
     PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
     virtual ~PhysicsComponent() {}
 
-    virtual void add_to_world(b2World* world, const CreationParams& params);
+    virtual void add_to_world(b2World* world, const CreationParams& params, nta::EntityID owner);
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
@@ -182,7 +119,7 @@ public:
 class SensorPhysicsComponent : public PhysicsComponent {
 public:
     SensorPhysicsComponent(nta::crvec2 max_speed) : PhysicsComponent(max_speed) {}
-    void add_to_world(b2World* world, const CreationParams& params);
+    void add_to_world(b2World* world, const CreationParams& params, nta::EntityID owner);
 };
 
 class ControllerComponent : public nta::Component {
@@ -215,19 +152,31 @@ public:
     void receive(const nta::Message&);
 };
 
-/*
 class InventoryComponent : public nta::Component {
 private:
-    /// \todo Make Cycle of EntityID
-    Cycle<Item*> m_inventory;
+    void popup();
+
+    Cycle<nta::EntityID> m_inventory;
     bool m_show_inventory;
+    int m_unshow_countdown;
 public:
-    InventoryComponent() : m_show_inventory(false), nta::Component(COMPONENT_INVENTORY_LIST_ID) {}
-    void render(nta::SpriteBatch& batch) const;
+    InventoryComponent() : m_show_inventory(false), m_unshow_countdown(0), nta::Component(COMPONENT_INVENTORY_LIST_ID) {}
+    void render(nta::SpriteBatch& batch, nta::SpriteFont* font) const;
     void receive(const nta::Message&);
 
-    nta::EntityID get_curr_item() const;
+    void countdown();
 };
-*/
+
+class PickupComponent : public nta::Component {
+private:
+    nta::EntityID m_owner = NTA_INVALID_ID;
+    bool m_picked_up = false;
+
+    b2Body* m_body = nullptr;
+public:
+    PickupComponent() : nta::Component(COMPONENT_PICKUP_LIST_ID) {}
+    void pickup(nta::EntityID owner, b2World* world);
+    void receive(const nta::Message&);
+};
 
 #endif // COMPONENTS_H_INCLUDED

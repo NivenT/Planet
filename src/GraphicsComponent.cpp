@@ -30,10 +30,16 @@ TextureComponent::TextureComponent(crstring texture, crvec4 color) :
 }
 
 void TextureComponent::render(SpriteBatch& batch) const {
+    if (m_invisible) return;
     batch.addGlyph(vec4(m_top_left, 2.f*m_extents), vec4(0,0,1,1), m_tex.id,
                     m_color, m_angle);
 }
 
+void TextureComponent::render_icon(SpriteBatch& batch, crvec2 top_left, 
+                                   float alpha) const {
+    batch.addGlyph(vec4(top_left, ITEM_ICON_DIMS), vec4(0,0,1,1), m_tex.id,
+                   vec4(m_color.r, m_color.g, m_color.b, m_color.a * alpha));
+}
 
 AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims, 
                                        MotionAnimation anims[], crvec4 color) : 
@@ -45,6 +51,7 @@ AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims,
 }
 
 void AnimationComponent::render(SpriteBatch& batch) const {
+    if (m_invisible) return;
     const vec4 uv = m_flipped ? m_anim.get_flipped_uv() : m_anim.get_uv();
     batch.addGlyph(vec4(m_top_left, 2.f*m_extents), uv, m_anim.get_tex_id(),
                     m_color, m_angle);

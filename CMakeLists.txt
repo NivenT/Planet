@@ -19,24 +19,8 @@ add_subdirectory(Box2D)
 
 add_library(lambertw lambertw/LambertW.c)
 
-add_executable(game src/main.cpp 
-                    src/MainGame.cpp 
-                    src/Planet.cpp 
-                    src/Object.cpp
-                    src/Agent.cpp
-                    src/Player.cpp
-                    src/utils.cpp
-                    src/Item.cpp
-                    src/Enemy.cpp
-                    src/MainMenu.cpp
-                    src/ChaiManager.cpp
-                    src/WorldEditor.cpp
-                    src/Spawner.cpp
-                    src/World.cpp
-                    src/PhysicsComponent.cpp
-                    src/GraphicsComponent.cpp
-                    src/ControllerComponent.cpp
-                    src/HealthComponent.cpp)
+file(GLOB SRCS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*.cpp)
+add_executable(game ${SRCS})
 # What is dl? (Needed for ChaiScript)
 target_link_libraries(game ${NTA_LIBRARIES} Box2D dl lambertw stdc++fs)
 target_include_directories(game PUBLIC include 

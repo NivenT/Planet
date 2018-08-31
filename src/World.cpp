@@ -159,13 +159,17 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
     for (auto& item : params.items) {
         EntityID id = m_ecs.gen_entity();
 
+        m_ecs.add_component(new PickupComponent, id);
+
         auto tex = new TextureComponent(item.tex, item.color);
         m_ecs.add_component(tex, id);
         tex->receive(Message(MESSAGE_RECEIVE_EXT, &item.extents));
 
         auto physics = new SensorPhysicsComponent(item.max_speed);
         m_ecs.add_component(physics, id);
-        physics->add_to_world(&m_world, item);
+        physics->add_to_world(&m_world, item, id);
+
+        assert(m_ecs.get_components(id)->size() == 3);
     }
     add_player();
 }
@@ -195,13 +199,12 @@ void NewWorld::add_player() {
     params.density = PLAYER_DENSITY;
     params.friction = PLAYER_FRICTION;
     params.restitution = PLAYER_RESTITUTION;
-    params.entity = m_player;
 
     anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
 
     auto physics = new PhysicsComponent(params.max_speed);
     m_ecs.add_component(physics, m_player);
-    physics->add_to_world(&m_world, params);
+    physics->add_to_world(&m_world, params, m_player);
 
     m_ecs.add_component(new PlayerControllerComponent, m_player);
 
@@ -209,6 +212,8 @@ void NewWorld::add_player() {
     m_ecs.add_component(health, m_player);
     health->receive(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR));
     health->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
+
+    m_ecs.add_component(new InventoryComponent, m_player);
 }
 
 void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
@@ -219,6 +224,9 @@ void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch,
     }
     for (auto health : *m_ecs.get_component_list(COMPONENT_HEALTH_LIST_ID)) {
         ((HealthComponent*)health)->render(batch);
+    }
+    for (auto inventory : *m_ecs.get_component_list(COMPONENT_INVENTORY_LIST_ID)) {
+        ((InventoryComponent*)inventory)->render(overlay_batch, font);
     }
 }
 
@@ -242,6 +250,9 @@ bool NewWorld::update(UpdateParams& params) {
     }
     for (auto animation : *m_ecs.get_component_list(COMPONENT_ANIMATION_LIST_ID)) {
         ((AnimationComponent*)animation)->step(params.dt);
+    }
+    for (auto inventory : *m_ecs.get_component_list(COMPONENT_INVENTORY_LIST_ID)) {
+        ((InventoryComponent*)inventory)->countdown();
     }
     m_world.Step(params.dt, 6, 2);
 
