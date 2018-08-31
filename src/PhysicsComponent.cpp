@@ -141,8 +141,9 @@ void PhysicsComponent::update(const UpdateParams& params) {
     float ang = getOrientation();
     send(Message(MESSAGE_RECEIVE_TL, &tl));
     send(Message(MESSAGE_RECEIVE_ANG, &ang));
+    send(Message(MESSAGE_RECEIVE_VEL, &vel));
     send(Message(MESSAGE_RECEIVE_MOTION_STATE, &m_motion_state));
-    if (m_direction != prev_direction) send(Message(MESSAGE_TOGGLE_FLIPPED));
+    if (m_direction != prev_direction) send(Message(MESSAGE_RECEIVE_DIR, &m_direction));
 }
 
 void PhysicsComponent::receive(const Message& msg) {

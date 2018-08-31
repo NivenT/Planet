@@ -121,7 +121,7 @@ public:
 };
 
 class AnimationComponent : public ObjectGraphicsComponent {
-private:
+protected:
     nta::Animation2D m_anim;
     MotionAnimation m_anim_params[NUM_MOTION_STATES];
     ObjectMotionState m_motion_state;
@@ -130,6 +130,15 @@ public:
     AnimationComponent(nta::crstring texture, nta::crivec2 anim_dims = glm::ivec2(1), 
                        MotionAnimation anims[] = {}, nta::crvec4 color = glm::vec4(1));
     void render(nta::SpriteBatch& batch) const;
+    virtual void step(float dt);
+    void receive(const nta::Message& message);
+};
+
+class PlayerAnimationComponent : public AnimationComponent {
+private:
+    float m_vel_x;
+public:
+    PlayerAnimationComponent(nta::crstring texture, nta::crivec2 anim_dims, MotionAnimation anims[], nta::crvec4 color = glm::vec4(1)) : AnimationComponent(texture, anim_dims, anims, color) {}
     void step(float dt);
     void receive(const nta::Message& message);
 };
@@ -201,10 +210,14 @@ public:
 class HealthComponent : public nta::Component {
 private:
     float m_health;
+    float m_max_health;
     bool m_show_bar;
-    glm::vec4 m_bar_color;
+    glm::vec3 m_bar_color;
+
+    glm::vec2 m_extents;
+    glm::vec2 m_top_left;
 public:
-    HealthComponent(float init_health, nta::crvec4 col) : m_health(init_health), m_show_bar(false), m_bar_color(col), nta::Component(COMPONENT_HEALTH_LIST_ID) {}
+    HealthComponent(float init_health, nta::crvec3 col) : m_health(init_health), m_max_health(init_health), m_show_bar(false), m_bar_color(col), nta::Component(COMPONENT_HEALTH_LIST_ID) {}
     void render(nta::SpriteBatch& batch) const;
     void receive(const nta::Message&);
 };

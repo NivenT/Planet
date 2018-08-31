@@ -25,7 +25,7 @@
 #define MESSAGE_RECEIVE_EXT             2
 #define MESSAGE_RECEIVE_ANG             3
 #define MESSAGE_TOGGLE_VISIBILITY       4
-#define MESSAGE_TOGGLE_FLIPPED          5
+#define MESSAGE_RECEIVE_DIR             5
 #define MESSAGE_RECEIVE_TILES           6
 #define MESSAGE_RECEIVE_SL              7
 #define MESSAGE_RECEIVE_HEALTH          8
@@ -34,6 +34,7 @@
 #define MESSAGE_TOGGLE_SHOW_INVENTORY   11
 #define MESSAGE_APPLY_FORCE             12
 #define MESSAGE_RECEIVE_MOTION_STATE    13
+#define MESSAGE_RECEIVE_VEL             14
 
 /// Objects
 #define OBJECT_TYPE    0b0000'0000'0000'0001

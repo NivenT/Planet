@@ -51,8 +51,8 @@ void AnimationComponent::render(SpriteBatch& batch) const {
 }
 
 void AnimationComponent::receive(const Message& msg) {
-    if (msg == MESSAGE_TOGGLE_FLIPPED) {
-        m_flipped = !m_flipped;
+    if (msg == MESSAGE_RECEIVE_DIR) {
+        m_flipped = !*(bool*)msg.data;
     } else if (msg == MESSAGE_RECEIVE_MOTION_STATE) {
         ObjectMotionState state = *(ObjectMotionState*)msg.data;
         if (state != m_motion_state) {
@@ -67,6 +67,21 @@ void AnimationComponent::receive(const Message& msg) {
 
 void AnimationComponent::step(float dt) {
     m_anim.step(dt);
+}
+
+void PlayerAnimationComponent::step(float dt) {
+    if (m_motion_state == RUNNING) {
+        m_anim.set_speed(m_anim_params[RUNNING].speed*m_vel_x/PLAYER_MAX_SPEED.x);
+    }
+    AnimationComponent::step(dt);
+}
+
+void PlayerAnimationComponent::receive(const Message& msg) {
+    if (msg == MESSAGE_RECEIVE_VEL) {
+        m_vel_x = *(float*)msg.data;
+    } else {
+        AnimationComponent::receive(msg);
+    }
 }
 
 vec2 PlanetGraphicsComponent::getOffset() const {

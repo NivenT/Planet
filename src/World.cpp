@@ -170,9 +170,9 @@ void NewWorld::add_player() {
     MotionAnimation temp[] = PLAYER_MOTION_ANIMATIONS;
 
     m_player = m_ecs.gen_entity();
-    auto anim = new AnimationComponent(PLAYER_ANIMATION_FILE, 
-                                       PLAYER_ANIMATION_DIMS,
-                                       temp);
+    auto anim = new PlayerAnimationComponent(PLAYER_ANIMATION_FILE, 
+                                             PLAYER_ANIMATION_DIMS,
+                                             temp);
     m_ecs.add_component(anim, m_player);
 
     CreationParams params;
@@ -189,6 +189,11 @@ void NewWorld::add_player() {
     anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
 
     m_ecs.add_component(new PlayerControllerComponent, m_player);
+
+    auto health = new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEATLH_COLOR);
+    m_ecs.add_component(health, m_player);
+    health->receive(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR));
+    health->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
 }
 
 void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
@@ -196,6 +201,9 @@ void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch,
     m_planet.render(batch);
     for (auto graphics : *m_ecs.get_component_list(COMPONENT_GRAPHICS_LIST_ID)) {
         ((GraphicsComponent*)graphics)->render(batch);
+    }
+    for (auto health : *m_ecs.get_component_list(COMPONENT_HEALTH_LIST_ID)) {
+        ((HealthComponent*)health)->render(batch);
     }
 }
 
