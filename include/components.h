@@ -12,12 +12,20 @@
 #include <nta/Json.h>
 
 #include "Planet.h"
+#include "Cycle.h"
 
 #define OBJECT_IS_IDLE(s) ((s == STANDING) || (s == IDLE))
 #define OBJECT_ON_GROUND(s) (OBJECT_IS_IDLE(s) || (s == RUNNING))
 
 enum ObjectMotionState {
     STANDING, RUNNING, JUMPING, FALLING, IDLE
+};
+
+// This name is trash
+struct MotionAnimation {
+    int start = 0;
+    int length = 1;
+    float speed = 1;
 };
 
 struct UpdateParams {
@@ -83,7 +91,7 @@ class GraphicsComponent : public nta::Component {
 private:
     bool m_invisible = false; // set to true if it shouldn't be rendered for any reason
 public:
-    GraphicsComponent() : nta::Component(COMPONENT_GRAPHICS_LIST_ID) {}
+    GraphicsComponent(nta::ComponentListID lists = 0) : nta::Component(COMPONENT_GRAPHICS_LIST_ID | lists) {}
     void receive(const nta::Message& msg);
     virtual void render(nta::SpriteBatch& batch) const = 0;
     void render_debug(nta::DebugBatch& dbatch) const {}
@@ -99,7 +107,7 @@ protected:
     glm::vec2 m_extents;
     float m_angle;
 public:
-    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col) : m_tex_file(tex), m_color(col), GraphicsComponent() {}
+    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col, nta::ComponentListID lists = 0) : m_tex_file(tex), m_color(col), GraphicsComponent(lists) {}
     virtual void receive(const nta::Message& message);
 };
 
@@ -115,11 +123,14 @@ public:
 class AnimationComponent : public ObjectGraphicsComponent {
 private:
     nta::Animation2D m_anim;
+    MotionAnimation m_anim_params[NUM_MOTION_STATES];
+    ObjectMotionState m_motion_state;
     bool m_flipped;
 public:
     AnimationComponent(nta::crstring texture, nta::crivec2 anim_dims = glm::ivec2(1), 
-                       nta::crvec4 color = glm::vec4(1));
+                       MotionAnimation anims[] = {}, nta::crvec4 color = glm::vec4(1));
     void render(nta::SpriteBatch& batch) const;
+    void step(float dt);
     void receive(const nta::Message& message);
 };
 
@@ -148,6 +159,8 @@ protected:
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
     
     const glm::vec2 m_max_speed;
+    glm::vec2 m_extents;
+
     ObjectMotionState m_motion_state, m_prev_motion_state = FALLING;
     std::size_t m_standing_frames = 0;
     // true when facing right
@@ -163,12 +176,52 @@ public:
     glm::vec2 getCenter() const;
     glm::vec2 getTopLeft() const;
     glm::vec2 getVelocity() const;
-    virtual glm::vec2 getExtents() const;
     float getOrientation() const;
     float getMass() const;
     
     virtual void update(const UpdateParams& params);
-    virtual void receive(const nta::Message& message) {}
+    virtual void receive(const nta::Message& message);
 };
+
+class ControllerComponent : public nta::Component {
+public:
+    ControllerComponent() : nta::Component(COMPONENT_CONTROLLER_LIST_ID) {}
+    virtual void act(const UpdateParams& params) = 0;
+};
+
+class PlayerControllerComponent : public ControllerComponent {
+private:
+    ObjectMotionState m_motion_state = STANDING;
+public:
+    PlayerControllerComponent() {}
+    void act(const UpdateParams& params);
+    void receive(const nta::Message&);
+};
+
+class HealthComponent : public nta::Component {
+private:
+    float m_health;
+    bool m_show_bar;
+    glm::vec4 m_bar_color;
+public:
+    HealthComponent(float init_health, nta::crvec4 col) : m_health(init_health), m_show_bar(false), m_bar_color(col), nta::Component(COMPONENT_HEALTH_LIST_ID) {}
+    void render(nta::SpriteBatch& batch) const;
+    void receive(const nta::Message&);
+};
+
+/*
+class InventoryComponent : public nta::Component {
+private:
+    /// \todo Make Cycle of EntityID
+    Cycle<Item*> m_inventory;
+    bool m_show_inventory;
+public:
+    InventoryComponent() : m_show_inventory(false), nta::Component(COMPONENT_INVENTORY_LIST_ID) {}
+    void render(nta::SpriteBatch& batch) const;
+    void receive(const nta::Message&);
+
+    nta::EntityID get_curr_item() const;
+};
+*/
 
 #endif // COMPONENTS_H_INCLUDED

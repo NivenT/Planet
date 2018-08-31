@@ -7,17 +7,17 @@ using namespace glm;
 using namespace nta;
 
 void GraphicsComponent::receive(const Message& msg) {
-    if (msg & MESSAGE_TOGGLE_VISIBILITY) {
+    if (msg == MESSAGE_TOGGLE_VISIBILITY) {
         m_invisible = !m_invisible;
     }
 }
 
 void ObjectGraphicsComponent::receive(const Message& msg) {
-    if (msg & MESSAGE_RECEIVE_TL) {
+    if (msg == MESSAGE_RECEIVE_TL) {
         m_top_left = *(vec2*)msg.data;
-    } else if (msg & MESSAGE_RECEIVE_EXT) {
+    } else if (msg == MESSAGE_RECEIVE_EXT) {
         m_extents = *(vec2*)msg.data;
-    } else if (msg & MESSAGE_RECEIVE_ANG) {
+    } else if (msg == MESSAGE_RECEIVE_ANG) {
         m_angle = *(float*)msg.data;
     } else {
         GraphicsComponent::receive(msg);
@@ -35,9 +35,13 @@ void TextureComponent::render(SpriteBatch& batch) const {
 }
 
 
-AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims, crvec4 color) : 
-    ObjectGraphicsComponent(texture, color) {
+AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims, 
+                                       MotionAnimation anims[], crvec4 color) : 
+    ObjectGraphicsComponent(texture, color, COMPONENT_ANIMATION_LIST_ID) {
     m_anim = Animation2D(m_tex_file, anim_dims);
+    if (anim_dims != ivec2(1)) {
+        memcpy(m_anim_params, anims, NUM_MOTION_STATES*sizeof(MotionAnimation));
+    }
 }
 
 void AnimationComponent::render(SpriteBatch& batch) const {
@@ -47,11 +51,22 @@ void AnimationComponent::render(SpriteBatch& batch) const {
 }
 
 void AnimationComponent::receive(const Message& msg) {
-    if (msg & MESSAGE_TOGGLE_FLIPPED) {
+    if (msg == MESSAGE_TOGGLE_FLIPPED) {
         m_flipped = !m_flipped;
+    } else if (msg == MESSAGE_RECEIVE_MOTION_STATE) {
+        ObjectMotionState state = *(ObjectMotionState*)msg.data;
+        if (state != m_motion_state) {
+            auto p = m_anim_params[state];
+            m_anim.switch_animation(p.start, p.length, p.speed);
+        }
+        m_motion_state = state;
     } else {
         ObjectGraphicsComponent::receive(msg);
     }
+}
+
+void AnimationComponent::step(float dt) {
+    m_anim.step(dt);
 }
 
 vec2 PlanetGraphicsComponent::getOffset() const {
@@ -88,9 +103,9 @@ void PlanetGraphicsComponent::render_debug(nta::DebugBatch& dbatch) const {
 }
 
 void PlanetGraphicsComponent::receive(const Message& msg) {
-    if (msg & MESSAGE_RECEIVE_TILES) {
+    if (msg == MESSAGE_RECEIVE_TILES) {
         m_tiles = (vector<vector<Tile>>*)msg.data;
-    } else if (msg & MESSAGE_RECEIVE_SL) {
+    } else if (msg == MESSAGE_RECEIVE_SL) {
         m_sea_level = *(int*)msg.data;
     } else {
         GraphicsComponent::receive(msg);

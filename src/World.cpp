@@ -167,9 +167,12 @@ vec2 NewWorld::get_player_center() const {
 }
 
 void NewWorld::add_player() {
+    MotionAnimation temp[] = PLAYER_MOTION_ANIMATIONS;
+
     m_player = m_ecs.gen_entity();
     auto anim = new AnimationComponent(PLAYER_ANIMATION_FILE, 
-                                       PLAYER_ANIMATION_DIMS);
+                                       PLAYER_ANIMATION_DIMS,
+                                       temp);
     m_ecs.add_component(anim, m_player);
 
     CreationParams params;
@@ -181,9 +184,11 @@ void NewWorld::add_player() {
     params.friction = PLAYER_FRICTION;
     params.restitution = PLAYER_RESTITUTION;
     params.entity = m_player;
-    m_ecs.add_component(new PhysicsComponent(&m_world, params), m_player);
 
+    m_ecs.add_component(new PhysicsComponent(&m_world, params), m_player);
     anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
+
+    m_ecs.add_component(new PlayerControllerComponent, m_player);
 }
 
 void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
@@ -206,8 +211,14 @@ bool NewWorld::update(UpdateParams& params) {
     params.world = &m_world;
     params.player_pos = get_player_center();
 
+    for (auto controller : *m_ecs.get_component_list(COMPONENT_CONTROLLER_LIST_ID)) {
+        ((ControllerComponent*)controller)->act(params);
+    }
     for (auto physics : *m_ecs.get_component_list(COMPONENT_PHYSICS_LIST_ID)) {
         ((PhysicsComponent*)physics)->update(params);
+    }
+    for (auto animation : *m_ecs.get_component_list(COMPONENT_ANIMATION_LIST_ID)) {
+        ((AnimationComponent*)animation)->step(params.dt);
     }
     m_world.Step(params.dt, 6, 2);
 

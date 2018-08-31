@@ -15,15 +15,8 @@ vec2 PhysicsComponent::getCenter() const {
 }
 
 vec2 PhysicsComponent::getTopLeft() const {
-    vec2 c = getCenter(), e = getExtents();
-    return vec2(c.x - e.x, c.y + e.y);
-}
-
-vec2 PhysicsComponent::getExtents() const {
-    // assume there's only one fixture and one child (<-- likely not always a true assumption)
-    b2Fixture const * const fixture = m_body->GetFixtureList();
-    const b2Vec2 extents = fixture->GetAABB(0).GetExtents();
-    return vec2(extents.x, extents.y);
+    vec2 c = getCenter();
+    return vec2(c.x - m_extents.x, c.y + m_extents.y);
 }
 
 float PhysicsComponent::getOrientation() const {
@@ -58,7 +51,7 @@ void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params
     body_def.fixedRotation = true;
     m_body = world->CreateBody(&body_def);
 
-    //m_extents = params.extents;
+    m_extents = params.extents;
     b2PolygonShape body_shape;
     body_shape.SetAsBox(params.extents.x, params.extents.y);
 
@@ -83,7 +76,7 @@ void PhysicsComponent::resolve_collision(const UpdateParams& params, b2ContactEd
         float c = angle(manifold.points[0]-manifold.points[1], b2Vec2(1,0));
         if (abs(c) >= 0.707) {
             for (int i = 0; i < b2_maxManifoldPoints; i++) {
-                if (manifold.points[i].y < getCenter().y - getExtents().y + EPS) {
+                if (manifold.points[i].y < getCenter().y - m_extents.y + EPS) {
                     m_motion_state = STANDING;
                 }
             }
@@ -129,6 +122,7 @@ void PhysicsComponent::update(const UpdateParams& params) {
     }
     setVelocity(vel);
 
+    bool prev_direction = m_direction;
     if (abs(vel.x) >= OBJECT_FACING_THRESHOLD) m_direction = vel.x > 0;
 
     if (m_motion_state == STANDING && abs(vel.x) >= OBJECT_RUNNING_THRESHOLD) {
@@ -147,4 +141,13 @@ void PhysicsComponent::update(const UpdateParams& params) {
     float ang = getOrientation();
     send(Message(MESSAGE_RECEIVE_TL, &tl));
     send(Message(MESSAGE_RECEIVE_ANG, &ang));
+    send(Message(MESSAGE_RECEIVE_MOTION_STATE, &m_motion_state));
+    if (m_direction != prev_direction) send(Message(MESSAGE_TOGGLE_FLIPPED));
+}
+
+void PhysicsComponent::receive(const Message& msg) {
+    if (msg == MESSAGE_APPLY_FORCE) {
+        vec2 force = *(vec2*)msg.data;
+        applyForce(force.x, force.y);
+    }
 }

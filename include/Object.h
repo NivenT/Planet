@@ -18,13 +18,6 @@ class RenderAtKey {
     RenderAtKey& operator=(const RenderAtKey&);
 };
 
-/// \todo (?) Move to jubilant-funicular
-struct MotionAnimation {
-    int start = 0;
-    int length = 1;
-    float speed = 1;
-};
-
 class Object {
 private:
     void handle_collisions(const UpdateParams& params);

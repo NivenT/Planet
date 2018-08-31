@@ -1,10 +1,6 @@
 #ifndef DEFS_H_INCLUDED
 #define DEFS_H_INCLUDED
 
-/// Note: Many #define's here depend on other #include's appearing before them
-///       in the files that include this header (e.g. glm). I'm not sure how I
-///       feel about that
-
 #define TITLE "Planet (WIP Title)"
 #define TARGET_FPS 60
 
@@ -15,19 +11,29 @@
 #define SPAWNER_MASK_BITS PLANET_CATEGORY_BITS
 
 /// Components
-#define COMPONENT_SAVE_LIST_ID      0b0000'0000'0000'0001
-#define COMPONENT_GRAPHICS_LIST_ID  0b0000'0000'0000'0010
-#define COMPONENT_PHYSICS_LIST_ID   0b0000'0000'0000'0100
+#define COMPONENT_SAVE_LIST_ID          0b0000'0000'0000'0001
+#define COMPONENT_GRAPHICS_LIST_ID      0b0000'0000'0000'0010
+#define COMPONENT_PHYSICS_LIST_ID       0b0000'0000'0000'0100
+#define COMPONENT_CONTROLLER_LIST_ID    0b0000'0000'0000'1000
+#define COMPONENT_INVENTORY_LIST_ID     0b0000'0000'0001'0000
+#define COMPONENT_HEALTH_LIST_ID        0b0000'0000'0010'0000
+#define COMPONENT_ANIMATION_LIST_ID     0b0000'0000'0100'0000
 
 /// Messages
-#define MESSAGE_SPAWN_ENEMY         0b0000'0000'0000'0001
-#define MESSAGE_RECEIVE_TL          0b0000'0000'0000'0010
-#define MESSAGE_RECEIVE_EXT         0b0000'0000'0000'0100
-#define MESSAGE_RECEIVE_ANG         0b0000'0000'0000'1000
-#define MESSAGE_TOGGLE_VISIBILITY   0b0000'0000'0001'0000
-#define MESSAGE_TOGGLE_FLIPPED      0b0000'0000'0010'0000
-#define MESSAGE_RECEIVE_TILES       0b0000'0000'0100'0000
-#define MESSAGE_RECEIVE_SL          0b0000'0000'1000'0000
+#define MESSAGE_SPAWN_ENEMY             0
+#define MESSAGE_RECEIVE_TL              1
+#define MESSAGE_RECEIVE_EXT             2
+#define MESSAGE_RECEIVE_ANG             3
+#define MESSAGE_TOGGLE_VISIBILITY       4
+#define MESSAGE_TOGGLE_FLIPPED          5
+#define MESSAGE_RECEIVE_TILES           6
+#define MESSAGE_RECEIVE_SL              7
+#define MESSAGE_RECEIVE_HEALTH          8
+#define MESSAGE_TOGGLE_SHOW_HEALTH_BAR  9
+#define MESSAGE_ADD_TO_INVENTORY        10
+#define MESSAGE_TOGGLE_SHOW_INVENTORY   11
+#define MESSAGE_APPLY_FORCE             12
+#define MESSAGE_RECEIVE_MOTION_STATE    13
 
 /// Objects
 #define OBJECT_TYPE    0b0000'0000'0000'0001
@@ -45,6 +51,7 @@
 #define OBJECT_IDLE_THRESHOLD (TARGET_FPS * 10)
 
 #define OBJECT_NUM_MOTION_STATES 5
+#define NUM_MOTION_STATES 5
 
 /// Tiles
 #define TILE_SIZE 1.f
@@ -93,6 +100,7 @@
 
 #define PLAYER_ANIMATION_FILE "resources/images/HeavyBandit_Spritesheet.png"
 #define PLAYER_ANIMATION_DIMS glm::ivec2(7, 8)
+#define PLAYER_MOTION_ANIMATIONS {{0,1,1}, {8,8,8}, {34,1,1}, {34,1,1}, {4,1,1}}
 
 #define PLAYER_STATE_SHOW_INVENTORY 0b0000'0000'0001'0000
 
