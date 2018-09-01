@@ -65,7 +65,7 @@ protected:
     bool m_flipped;
 public:
     AnimationComponent(nta::crstring texture, nta::crivec2 anim_dims = glm::ivec2(1), 
-                       MotionAnimation anims[] = {}, nta::crvec4 color = glm::vec4(1));
+                       const MotionAnimation anims[] = {}, nta::crvec4 color = glm::vec4(1));
     void render(nta::SpriteBatch& batch) const;
     virtual void step(float dt);
     void receive(const nta::Message& message);
@@ -75,7 +75,8 @@ class PlayerAnimationComponent : public AnimationComponent {
 private:
     float m_vel_x;
 public:
-    PlayerAnimationComponent(nta::crstring texture, nta::crivec2 anim_dims, MotionAnimation anims[], nta::crvec4 color = glm::vec4(1)) : AnimationComponent(texture, anim_dims, anims, color) {}
+    PlayerAnimationComponent(nta::crstring texture, nta::crivec2 anim_dims, 
+                             const MotionAnimation anims[], nta::crvec4 color = glm::vec4(1)) : AnimationComponent(texture, anim_dims, anims, color) {}
     void step(float dt);
     void receive(const nta::Message& message);
 };
@@ -101,7 +102,7 @@ protected:
     b2Body* m_body;
 public:
     PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
-    virtual ~PhysicsComponent() {}
+    virtual ~PhysicsComponent();
 
     virtual void add_to_world(b2World* world, const CreationParams& params, nta::EntityID owner);
     void destroy(b2World* world);
@@ -137,30 +138,43 @@ public:
     void receive(const nta::Message&);
 };
 
-class HealthComponent : public nta::Component {
+class CountdownComponent : public nta::Component {
+protected:
+    void start_countdown(int time = STANDARD_POPUP_TIME);
+
+    int m_countdown = 0;
+    bool m_flag = false;
+public:
+    CountdownComponent(nta::ComponentListID lists) : nta::Component(lists | COMPONENT_COUNTDOWN_LIST_ID) {}
+    void countdown();
+};
+
+class HealthComponent : public CountdownComponent {
 private:
     float m_health;
     float m_max_health;
-    bool m_show_bar;
+
     glm::vec3 m_bar_color;
 
     glm::vec2 m_extents;
     glm::vec2 m_top_left;
+
+    // for damage calculation during collisions
+    glm::vec2 m_vel;
+    float m_mass;
 public:
-    HealthComponent(float init_health, nta::crvec3 col) : m_health(init_health), m_max_health(init_health), m_show_bar(false), m_bar_color(col), nta::Component(COMPONENT_HEALTH_LIST_ID) {}
+    HealthComponent(float init_health, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), CountdownComponent(COMPONENT_HEALTH_LIST_ID) {}
     void render(nta::SpriteBatch& batch) const;
     void receive(const nta::Message&);
+
+    void countdown();
 };
 
-class InventoryComponent : public nta::Component {
+class InventoryComponent : public CountdownComponent {
 private:
-    void popup();
-
     Cycle<nta::EntityID> m_inventory;
-    bool m_show_inventory;
-    int m_unshow_countdown;
 public:
-    InventoryComponent() : m_show_inventory(false), m_unshow_countdown(0), nta::Component(COMPONENT_INVENTORY_LIST_ID) {}
+    InventoryComponent() : CountdownComponent(COMPONENT_INVENTORY_LIST_ID) {}
     void render(nta::SpriteBatch& batch, nta::SpriteFont* font) const;
     void receive(const nta::Message&);
 
@@ -178,5 +192,14 @@ public:
     void pickup(nta::EntityID owner, b2World* world);
     void receive(const nta::Message&);
 };
+
+class GarbageComponent : public nta::Component {
+private:
+    std::stack<nta::EntityID> m_trash;
+public:
+    GarbageComponent() : nta::Component(COMPONENT_GARBAGE_LIST_ID) {}
+    void receive(const nta::Message&);
+    void dump();
+}
 
 #endif // COMPONENTS_H_INCLUDED

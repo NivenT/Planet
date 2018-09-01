@@ -10,8 +10,6 @@ void PickupComponent::pickup(EntityID owner, b2World* world) {
 
     send(Message(MESSAGE_TOGGLE_VISIBILITY));
     m_system->delete_components(m_system->get_owner(this), COMPONENT_PHYSICS_LIST_ID);
-    world->DestroyBody(m_body);
-    send(Message(MESSAGE_RECEIVE_BODY, nullptr));
 }
 
 void PickupComponent::receive(const Message& msg) {

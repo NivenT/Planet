@@ -10,6 +10,7 @@
 struct EnemyParams : public CreationParams {
     EnemyParams() {
         extents = ENEMY_UNIT_EXTENTS * glm::vec2(3,1);
+        max_speed = NORMAL_ENEMY_MAX_SPEED;
     }
     EnemyParams(const CreationParams& super) : CreationParams(super) {}
     nta::utils::Json json() const {
@@ -56,7 +57,6 @@ struct EnemyParams : public CreationParams {
     std::string tex;
     std::string update_script;
     glm::vec4 color = glm::vec4(1);
-    glm::vec2 max_speed = NORMAL_ENEMY_MAX_SPEED;
     float init_health = NORMAL_ENEMY_INIT_HEALTH;
     MotionAnimation anims[OBJECT_NUM_MOTION_STATES];
     glm::ivec2 anim_dims = glm::ivec2(1,1);

@@ -168,8 +168,24 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
         auto physics = new SensorPhysicsComponent(item.max_speed);
         m_ecs.add_component(physics, id);
         physics->add_to_world(&m_world, item, id);
+    }
+    for (auto& enemy : params.enemies) {
+        EntityID id = m_ecs.gen_entity();
 
-        assert(m_ecs.get_components(id)->size() == 3);
+        m_ecs.add_component(new AnimationComponent(enemy.tex, enemy.anim_dims,
+                                                   enemy.anims, enemy.color),
+                            id);
+
+        auto physics = new PhysicsComponent(enemy.max_speed);
+        m_ecs.add_component(physics, id);
+        physics->add_to_world(&m_world, enemy, id);
+
+        m_ecs.add_component(new HealthComponent(enemy.init_health, ENEMY_HEALTH_COLOR),
+                            id);
+
+        float mass = physics->getMass();
+        m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &enemy.extents), id);
+        m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), id);
     }
     add_player();
 }
@@ -186,10 +202,10 @@ void NewWorld::add_player() {
     MotionAnimation temp[] = PLAYER_MOTION_ANIMATIONS;
 
     m_player = m_ecs.gen_entity();
-    auto anim = new PlayerAnimationComponent(PLAYER_ANIMATION_FILE, 
-                                             PLAYER_ANIMATION_DIMS,
-                                             temp);
-    m_ecs.add_component(anim, m_player);
+    m_ecs.add_component(new PlayerAnimationComponent(PLAYER_ANIMATION_FILE, 
+                                                     PLAYER_ANIMATION_DIMS,
+                                                     temp), 
+                        m_player);
 
     CreationParams params;
     params.planet = &m_planet;
@@ -200,20 +216,19 @@ void NewWorld::add_player() {
     params.friction = PLAYER_FRICTION;
     params.restitution = PLAYER_RESTITUTION;
 
-    anim->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
-
     auto physics = new PhysicsComponent(params.max_speed);
     m_ecs.add_component(physics, m_player);
     physics->add_to_world(&m_world, params, m_player);
 
     m_ecs.add_component(new PlayerControllerComponent, m_player);
-
-    auto health = new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEATLH_COLOR);
-    m_ecs.add_component(health, m_player);
-    health->receive(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR));
-    health->receive(Message(MESSAGE_RECEIVE_EXT, &params.extents));
-
+    m_ecs.add_component(new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEATLH_COLOR), 
+                        m_player);
     m_ecs.add_component(new InventoryComponent, m_player);
+
+    float mass = physics->getMass();
+    m_ecs.broadcast(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR), m_player);
+    m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &params.extents), m_player);
+    m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), m_player);
 }
 
 void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
@@ -251,12 +266,12 @@ bool NewWorld::update(UpdateParams& params) {
     for (auto animation : *m_ecs.get_component_list(COMPONENT_ANIMATION_LIST_ID)) {
         ((AnimationComponent*)animation)->step(params.dt);
     }
-    for (auto inventory : *m_ecs.get_component_list(COMPONENT_INVENTORY_LIST_ID)) {
-        ((InventoryComponent*)inventory)->countdown();
+    for (auto count : *m_ecs.get_component_list(COMPONENT_COUNTDOWN_LIST_ID)) {
+        ((CountdownComponent*)count)->countdown();
     }
     m_world.Step(params.dt, 6, 2);
 
-    return false;
+    return !m_ecs.does_entity_exist(m_player);
 }
 
 void NewWorld::onNotify(const nta::Message& msg) {

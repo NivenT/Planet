@@ -10,6 +10,7 @@
 struct ItemParams : public CreationParams {
     ItemParams() {
         extents = SMALL_ITEM_EXTENTS;
+        max_speed = ITEM_MAX_SPEED;
     }
     ItemParams(const CreationParams& super) : CreationParams(super) {}
     nta::utils::Json json() const {
@@ -37,7 +38,6 @@ struct ItemParams : public CreationParams {
     std::string tex;
     std::string use_script;
     glm::vec4 color = glm::vec4(1);
-    glm::vec2 max_speed = ITEM_MAX_SPEED;
 };
 
 class Item : public Object {

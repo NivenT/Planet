@@ -5,6 +5,12 @@ using namespace std;
 using namespace glm;
 using namespace nta;
 
+PhysicsComponent::~PhysicsComponent() {
+    m_body->GetWorld()->DestroyBody(m_body);
+    send(Message(MESSAGE_RECEIVE_BODY, nullptr));
+    m_body = nullptr;
+}
+
 vec2 PhysicsComponent::getCenter() const {
     return vec2(m_body->GetPosition().x, m_body->GetPosition().y);
 }

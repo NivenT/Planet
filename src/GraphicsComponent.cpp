@@ -42,7 +42,7 @@ void TextureComponent::render_icon(SpriteBatch& batch, crvec2 top_left,
 }
 
 AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims, 
-                                       MotionAnimation anims[], crvec4 color) : 
+                                       const MotionAnimation anims[], crvec4 color) : 
     ObjectGraphicsComponent(texture, color, COMPONENT_ANIMATION_LIST_ID) {
     m_anim = Animation2D(m_tex_file, anim_dims);
     if (anim_dims != ivec2(1)) {
