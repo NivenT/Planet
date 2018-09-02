@@ -11,8 +11,8 @@ void GarbageComponent::dump() {
     }
 }
 
-void GarbageComponent::receive(Message& msg) {
-    switch(msg) {
-        case MESSAGE_DESTROY_ENTITY: m_trash.push((EntityID)msg.data); break;
+void GarbageComponent::receive(const Message& msg) {
+    switch(msg.type) {
+        case MESSAGE_DESTROY_ENTITY: m_trash.push(*(EntityID*)msg.data); break;
     }
 }

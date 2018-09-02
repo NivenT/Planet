@@ -155,7 +155,8 @@ void World::onNotify(const Message& msg) {
 NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity()) {
     m_planet = params.planet;
     m_planet.add_to_world(&m_world);
-
+    m_ecs.add_component(new GarbageComponent, m_ecs.gen_entity());
+    
     for (auto& item : params.items) {
         EntityID id = m_ecs.gen_entity();
 
@@ -268,6 +269,9 @@ bool NewWorld::update(UpdateParams& params) {
     }
     for (auto count : *m_ecs.get_component_list(COMPONENT_COUNTDOWN_LIST_ID)) {
         ((CountdownComponent*)count)->countdown();
+    }
+    for (auto garbage : *m_ecs.get_component_list(COMPONENT_GARBAGE_LIST_ID)) {
+        ((GarbageComponent*)garbage)->dump();
     }
     m_world.Step(params.dt, 6, 2);
 

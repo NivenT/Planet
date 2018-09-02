@@ -64,7 +64,7 @@ void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params
     fixture_def.restitution = params.restitution;
     m_body->CreateFixture(&fixture_def);
 
-    m_body->SetUserData((void*)owner);
+    m_body->SetUserData((void*)owner.to_inner());
     send(Message(MESSAGE_RECEIVE_BODY, m_body));
 }
 
@@ -98,7 +98,7 @@ void PhysicsComponent::handle_collisions(const UpdateParams& params) {
         void* object = edge->other->GetUserData();
         b2Contact* contact = edge->contact;
         
-        resolve_collision(params, edge, contact, (EntityID)object);
+        resolve_collision(params, edge, contact, (EntityID::inner)object);
     }
 }
 
@@ -186,6 +186,7 @@ void SensorPhysicsComponent::add_to_world(b2World* world,
     sensor_def.isSensor = true;
     m_body->CreateFixture(&sensor_def);
 
-    m_body->SetUserData((void*)owner);
+    // should probably just new EntityID(owner) instead, but dynamic allocation and junk
+    m_body->SetUserData((void*)owner.to_inner());
     send(Message(MESSAGE_RECEIVE_BODY, m_body));
 }

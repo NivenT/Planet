@@ -48,7 +48,9 @@ void HealthComponent::receive(const nta::Message& msg) {
                 start_countdown();
 
                 if (m_health <= 0) {
-                    send(Message(MESSAGE_DESTROY_ENTITY, (void*)m_system->get_owner(this)));
+                    EntityID me = m_system->get_owner(this);
+                    m_system->broadcast(Message(MESSAGE_DESTROY_ENTITY, &me),
+                                        COMPONENT_GARBAGE_LIST_ID);
                 }
             }
         } break;

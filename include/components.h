@@ -200,6 +200,6 @@ public:
     GarbageComponent() : nta::Component(COMPONENT_GARBAGE_LIST_ID) {}
     void receive(const nta::Message&);
     void dump();
-}
+};
 
 #endif // COMPONENTS_H_INCLUDED
