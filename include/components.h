@@ -13,6 +13,8 @@
 #include "Cycle.h"
 #include "utils.h"
 
+class ChaiManager;
+
 class SavableComponent : public nta::Component {
 public:
     SavableComponent(nta::crstring name) : name(name), nta::Component(COMPONENT_SAVE_LIST_ID) {}
@@ -115,6 +117,8 @@ public:
     
     virtual void update(const UpdateParams& params);
     virtual void receive(const nta::Message& message);
+
+    friend ChaiManager;
 };
 
 class SensorPhysicsComponent : public PhysicsComponent {
@@ -169,6 +173,8 @@ public:
     HealthComponent(float init_health, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), CountdownComponent(COMPONENT_HEALTH_LIST_ID) {}
     void render(nta::SpriteBatch& batch) const;
     void receive(const nta::Message&);
+    float getHealth() { return m_health; }
+    float getMaxHealth() { return m_max_health; }
 
     void countdown();
 };

@@ -6,14 +6,15 @@
 #include "Item.h"
 #include "Player.h"
 
+
+using namespace glm;
 using namespace std;
-using namespace chaiscript;
 using namespace nta;
 
-ChaiScript ChaiManager::m_chai;
+chaiscript::ChaiScript ChaiManager::m_chai;
 map<string, function<void()>> ChaiManager::m_scripts;
 
-ChaiScript& ChaiManager::get_chai() {
+chaiscript::ChaiScript& ChaiManager::get_chai() {
     return m_chai;
 }
 
@@ -130,21 +131,46 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Animation2D::get_frame_dims), "get_frame_dims");
     add(chaiscript::user_type<Animation2D>(), "Animation2D");
 
-    add(chaiscript::fun(&glm::vec2::x), "x");
-    add(chaiscript::fun(&glm::vec2::y), "y");
+    add(chaiscript::fun(&ECS::gen_entity), "gen_entity");
+    add(chaiscript::fun(&ECS::delete_entity), "delete_entity");
+    add(chaiscript::fun(&ECS::delete_component), "delete_component");
+    add(chaiscript::fun(&ECS::delete_components), "delete_components");
+    add(chaiscript::fun(&ECS::has_component), "has_component");
+    add(chaiscript::fun(&ECS::does_entity_exist), "does_entity_exist");
+    add(chaiscript::fun(&ECS::get_owner), "get_owner");
+    add(chaiscript::fun(&ECS::get_component_list), "get_component_list");
+    add(chaiscript::fun(&ECS::get_components), "get_components");
+    add(chaiscript::fun(&ECS::get_siblings), "get_siblings");
+    add(chaiscript::fun(&ECS::get_component), "get_component");
+    add(chaiscript::user_type<ECS>(), "ECS");
+
+    add(chaiscript::fun(&PhysicsComponent::getCenter), "getCenter");
+    add(chaiscript::fun(&PhysicsComponent::getTopLeft), "getTopLeft");
+    add(chaiscript::fun(&PhysicsComponent::getVelocity), "getVelocity");
+    add(chaiscript::fun(&PhysicsComponent::getOrientation), "getOrientation");
+    add(chaiscript::fun(&PhysicsComponent::getMass), "getMass");
+    add(chaiscript::fun(&PhysicsComponent::applyForce), "applyForce");
+    add(chaiscript::user_type<PhysicsComponent>(), "PhysicsComponent");
+
+    add(chaiscript::fun(&HealthComponent::getHealth), "getHealth");
+    add(chaiscript::fun(&HealthComponent::getMaxHealth), "getMaxHealth");
+    add(chaiscript::user_type<HealthComponent>(), "HealthComponent");
+
+    add(chaiscript::fun(&vec2::x), "x");
+    add(chaiscript::fun(&vec2::y), "y");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a-b;}), "-");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a+b;}), "+");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a*b;}), "*");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a/b;}), "/");
-    add(chaiscript::fun([](glm::vec2& a, crvec2 b){return a=b;}), "=");
-    add(chaiscript::constructor<glm::vec2(float, float)>(), "vec2");
-    add(chaiscript::constructor<glm::vec2(const glm::vec2&)>(), "vec2");
-    add(chaiscript::fun(&glm::ivec2::x), "x");
-    add(chaiscript::fun(&glm::ivec2::y), "y");
-    add(chaiscript::constructor<glm::vec2(int, int)>(), "ivec2");
-    add(chaiscript::fun([](crvec2 a, crvec2 b){return glm::dot(a,b);}), "dot");
+    add(chaiscript::fun([](vec2& a, crvec2 b){return a=b;}), "=");
+    add(chaiscript::constructor<vec2(float, float)>(), "vec2");
+    add(chaiscript::constructor<vec2(const vec2&)>(), "vec2");
+    add(chaiscript::fun(&ivec2::x), "x");
+    add(chaiscript::fun(&ivec2::y), "y");
+    add(chaiscript::constructor<vec2(int, int)>(), "ivec2");
+    add(chaiscript::fun([](crvec2 a, crvec2 b){return dot(a,b);}), "dot");
 
-    add(chaiscript::fun([](crvec2 x){return glm::normalize(x);}), "normalize");
+    add(chaiscript::fun([](crvec2 x){return normalize(x);}), "normalize");
 
     add(chaiscript::fun(&b2Vec2::x), "x");
     add(chaiscript::fun(&b2Vec2::y), "y");
@@ -162,4 +188,19 @@ void ChaiManager::init() {
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");
+}
+
+void ChaiManager::eval_script(crstring file_name, const ChaiParams& params) {
+    PhysicsComponent* physics = (PhysicsComponent*)params.ecs->get_component(params.id, COMPONENT_PHYSICS_LIST_ID);
+
+    m_chai.set_global(chaiscript::var(params.ecs), "ecs");
+    m_chai.set_global(chaiscript::var(params.id), "self");
+    m_chai.set_global(chaiscript::var(physics),"physics");
+
+    try {
+        get_script(file_name)();
+    } catch (const std::exception& e) {
+        Logger::writeErrorToLog("Chaiscript error while running " + file_name + ": "
+                                + e.what());
+    }
 }

@@ -5,6 +5,13 @@
 
 #include <nta/Logger.h>
 
+#include "components.h"
+
+struct ChaiParams {
+    nta::EntityID id;
+    nta::ECS* ecs;
+};
+
 class ChaiManager {
 private:
     static chaiscript::ChaiScript m_chai;
@@ -22,6 +29,7 @@ public:
     static std::function<void()> get_script(nta::crstring file_name);
     template<typename T, typename S>
     static void eval_script(nta::crstring file_name, T self, S params);
+    static void eval_script(nta::crstring file_name, const ChaiParams& params);
     template<typename T>
     static T eval_snippet(nta::crstring snippet);
     static void destroy();
