@@ -36,7 +36,7 @@ struct UpdateParams {
 };
 
 struct CreationParams {
-    CreationParams() : planet(nullptr), position(0), extents(0), 
+    CreationParams() : position(0), extents(0), 
         density(1), friction(1), restitution(0) {
         max_speed = NORMAL_ENEMY_MAX_SPEED;
     }
@@ -62,8 +62,6 @@ struct CreationParams {
         return ret;
     }
 
-    // The planet an object belongs to
-    Planet* planet;
     glm::vec2 position;
     glm::vec2 extents;
     glm::vec2 max_speed;

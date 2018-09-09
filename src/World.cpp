@@ -232,7 +232,6 @@ void NewWorld::add_player() {
                         m_player);
 
     CreationParams params;
-    params.planet = &m_planet;
     params.position = PLAYER_INIT_POS;
     params.extents = PLAYER_EXTENTS;
     params.max_speed = PLAYER_MAX_SPEED;

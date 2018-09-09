@@ -55,7 +55,7 @@ void Item::add_to_world(b2World* world, const CreationParams& params) {
     sensor_def.isSensor = true;
     m_body->CreateFixture(&sensor_def);
 
-    m_planet = params.planet;
+    //m_planet = params.planet;
     m_equipped = false; // Should be unnecessary but can't hurt
     Object::add_to_world(world, params);
 }

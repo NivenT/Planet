@@ -46,6 +46,7 @@
 #define MESSAGE_RECEIVE_BODY            18
 #define MESSAGE_RECEIVE_MASS            19
 #define MESSAGE_DESTROY_ENTITY          20
+#define MESSAGE_RECEIVE_CEN             21
 
 /// Health
 #define PLAYER_HEATLH_COLOR glm::vec3(0, 1, 0)

@@ -144,8 +144,10 @@ void PhysicsComponent::update(const UpdateParams& params) {
     if (!OBJECT_IS_IDLE(m_motion_state)) m_standing_frames = 0;
 
     vec2 tl = getTopLeft();
+    vec2 cen = getCenter();
     float ang = getOrientation();
     send(Message(MESSAGE_RECEIVE_TL, &tl));
+    send(Message(MESSAGE_RECEIVE_CEN, &cen));
     send(Message(MESSAGE_RECEIVE_ANG, &ang));
     send(Message(MESSAGE_RECEIVE_VEL, &vel));
     send(Message(MESSAGE_RECEIVE_MOTION_STATE, &m_motion_state));

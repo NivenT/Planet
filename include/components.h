@@ -186,13 +186,15 @@ public:
 
 class SpawnerComponent : public CountdownComponent {
 private:
-    const EnemyParams m_spawn;
+    EnemyParams m_spawn;
     int m_spawn_time;
+
+    glm::vec2 m_pos;
 protected:
     void onFinish();
 public:
     SpawnerComponent(int st, const EnemyParams& e);
-    void receive(const nta::Message&) {}
+    void receive(const nta::Message&);
 };
 
 class PickupComponent : public nta::Component {

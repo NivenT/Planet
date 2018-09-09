@@ -153,7 +153,7 @@ void WorldEditor::update_tile_tab(crvec2 mouse, const ivec2& coord) {
 void WorldEditor::update_item_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_item.position = mouse;
-        m_active_item.planet = &m_world.planet;
+        //m_active_item.planet = &m_world.planet;
         m_world.items.push_back(m_active_item);
     }
 }
@@ -161,7 +161,7 @@ void WorldEditor::update_item_tab(crvec2 mouse) {
 void WorldEditor::update_enemy_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_enemy.position = mouse;
-        m_active_enemy.planet = &m_world.planet;
+        //m_active_enemy.planet = &m_world.planet;
         m_world.enemies.push_back(m_active_enemy);
     }
 }
@@ -169,7 +169,7 @@ void WorldEditor::update_enemy_tab(crvec2 mouse) {
 void WorldEditor::update_spawner_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_spawner.position = mouse;
-        m_active_spawner.planet = &m_world.planet;
+        //m_active_spawner.planet = &m_world.planet;
         m_world.spawners.push_back(m_active_spawner);
     }
 }

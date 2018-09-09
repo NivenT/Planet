@@ -52,7 +52,7 @@ void Spawner::update(const UpdateParams& params) {
     while (m_time > m_spawn_rate) {
         m_time -= m_spawn_rate;
 
-        m_spawn.planet = params.planet;
+        //m_spawn.planet = params.planet;
         m_spawn.position = getCenter();
 
         /// \todo pass m_params to notify instead of calling add_to_world yourself
