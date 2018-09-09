@@ -144,6 +144,9 @@ protected:
 
     int m_countdown = 0;
     bool m_flag = false;
+protected:
+    virtual void onFinish() { m_flag = false; }
+    virtual void onStart() { m_flag = true; }
 public:
     CountdownComponent(nta::ComponentListID lists) : nta::Component(lists | COMPONENT_COUNTDOWN_LIST_ID) {}
     void countdown();
@@ -181,6 +184,17 @@ public:
     void countdown();
 };
 
+class SpawnerComponent : public CountdownComponent {
+private:
+    const EnemyParams m_spawn;
+    int m_spawn_time;
+protected:
+    void onFinish();
+public:
+    SpawnerComponent(int st, const EnemyParams& e);
+    void receive(const nta::Message&) {}
+};
+
 class PickupComponent : public nta::Component {
 private:
     nta::EntityID m_owner = NTA_INVALID_ID;
@@ -200,6 +214,17 @@ public:
     GarbageComponent() : nta::Component(COMPONENT_GARBAGE_LIST_ID) {}
     void receive(const nta::Message&);
     void dump();
+};
+
+class EventQueueComponent : public nta::Component {
+private:
+    std::stack<EnemyParams> m_spawns;
+
+    b2World* m_world;
+public:
+    EventQueueComponent(b2World* w) : m_world(w), nta::Component(COMPONENT_EVENTQ_LIST_ID) {}
+    void receive(const nta::Message&);
+    void process();
 };
 
 #endif // COMPONENTS_H_INCLUDED

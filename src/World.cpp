@@ -156,6 +156,7 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
     m_planet = params.planet;
     m_planet.add_to_world(&m_world);
     m_ecs.add_component(new GarbageComponent, m_ecs.gen_entity());
+    m_ecs.add_component(new EventQueueComponent(&m_world), m_ecs.gen_entity());
     
     for (auto& item : params.items) {
         EntityID id = m_ecs.gen_entity();
@@ -164,11 +165,12 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
 
         auto tex = new TextureComponent(item.tex, item.color);
         m_ecs.add_component(tex, id);
-        tex->receive(Message(MESSAGE_RECEIVE_EXT, &item.extents));
 
         auto physics = new SensorPhysicsComponent(item.max_speed);
         m_ecs.add_component(physics, id);
         physics->add_to_world(&m_world, item, id);
+
+        m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &item.extents), id);
     }
     for (auto& enemy : params.enemies) {
         EntityID id = m_ecs.gen_entity();
@@ -186,6 +188,27 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
 
         float mass = physics->getMass();
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &enemy.extents), id);
+        m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), id);
+    }
+    for (auto& spawner : params.spawners) {
+        EntityID id = m_ecs.gen_entity();
+
+        m_ecs.add_component(new AnimationComponent(spawner.tex, spawner.anim_dims,
+                                                   spawner.anims, spawner.color),
+                            id);
+        auto physics = new SensorPhysicsComponent(spawner.max_speed);
+        m_ecs.add_component(physics, id);
+        physics->add_to_world(&m_world, spawner, id);
+
+        m_ecs.add_component(new HealthComponent(spawner.init_health, ENEMY_HEALTH_COLOR),
+                            id);
+
+        m_ecs.add_component(new SpawnerComponent(spawner.spawn_rate*TARGET_FPS,
+                                                 EnemyParams::load(utils::Json::from_file(spawner.spawn))),
+                            id);
+
+        float mass = physics->getMass();
+        m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &spawner.extents), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), id);
     }
     add_player();
@@ -269,6 +292,9 @@ bool NewWorld::update(UpdateParams& params) {
     }
     for (auto count : *m_ecs.get_component_list(COMPONENT_COUNTDOWN_LIST_ID)) {
         ((CountdownComponent*)count)->countdown();
+    }
+    for (auto queue : *m_ecs.get_component_list(COMPONENT_EVENTQ_LIST_ID)) {
+        ((EventQueueComponent*)queue)->process();
     }
     for (auto garbage : *m_ecs.get_component_list(COMPONENT_GARBAGE_LIST_ID)) {
         ((GarbageComponent*)garbage)->dump();
