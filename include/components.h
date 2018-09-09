@@ -142,6 +142,15 @@ public:
     void receive(const nta::Message&);
 };
 
+class ScriptComponent : public ControllerComponent {
+private:
+    std::string m_script;
+public:
+    ScriptComponent(nta::crstring script) : m_script(script) {}
+    void act(const UpdateParams& params);
+    void receive(const nta::Message&) {}
+};
+
 class CountdownComponent : public nta::Component {
 protected:
     void start_countdown(int time = STANDARD_POPUP_TIME);

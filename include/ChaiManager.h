@@ -8,6 +8,7 @@
 #include "components.h"
 
 struct ChaiParams {
+    UpdateParams params;
     nta::EntityID id;
     nta::ECS* ecs;
 };

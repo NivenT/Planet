@@ -185,6 +185,7 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
 
         m_ecs.add_component(new HealthComponent(enemy.init_health, ENEMY_HEALTH_COLOR),
                             id);
+        m_ecs.add_component(new ScriptComponent(enemy.update_script), id);
 
         float mass = physics->getMass();
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &enemy.extents), id);

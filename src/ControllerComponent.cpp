@@ -1,7 +1,8 @@
 #include <nta/InputManager.h>
 #include <nta/CallbackManager.h>
+#include <nta/Path.h>
 
-#include "components.h"
+#include "ChaiManager.h"
 
 using namespace std;
 using namespace glm;
@@ -37,4 +38,15 @@ void PlayerControllerComponent::receive(const Message& msg) {
     if (msg == MESSAGE_RECEIVE_MOTION_STATE) {
         m_motion_state = *(ObjectMotionState*)msg.data;
     }
+}
+
+void ScriptComponent::act(const UpdateParams& params) {
+    if (!utils::Path(m_script).is_file()) return;
+
+    ChaiParams cParams;
+    cParams.id = m_system->get_owner(this);
+    cParams.ecs = m_system;
+    cParams.params = params;
+
+    ChaiManager::eval_script(m_script, cParams);
 }

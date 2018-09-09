@@ -193,6 +193,7 @@ void ChaiManager::init() {
 void ChaiManager::eval_script(crstring file_name, const ChaiParams& params) {
     PhysicsComponent* physics = (PhysicsComponent*)params.ecs->get_component(params.id, COMPONENT_PHYSICS_LIST_ID);
 
+    m_chai.set_global(chaiscript::var(params.params), "params");
     m_chai.set_global(chaiscript::var(params.ecs), "ecs");
     m_chai.set_global(chaiscript::var(params.id), "self");
     m_chai.set_global(chaiscript::var(physics),"physics");
