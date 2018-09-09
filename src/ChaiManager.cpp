@@ -145,10 +145,12 @@ void ChaiManager::init() {
     add(chaiscript::user_type<ECS>(), "ECS");
 
     add(chaiscript::fun(&PhysicsComponent::getCenter), "getCenter");
+    add(chaiscript::fun(&PhysicsComponent::getExtents), "getExtents");
     add(chaiscript::fun(&PhysicsComponent::getTopLeft), "getTopLeft");
     add(chaiscript::fun(&PhysicsComponent::getVelocity), "getVelocity");
     add(chaiscript::fun(&PhysicsComponent::getOrientation), "getOrientation");
     add(chaiscript::fun(&PhysicsComponent::getMass), "getMass");
+    add(chaiscript::fun(&PhysicsComponent::is_standing), "is_standing");
     add(chaiscript::fun(&PhysicsComponent::applyForce), "applyForce");
     add(chaiscript::user_type<PhysicsComponent>(), "PhysicsComponent");
 

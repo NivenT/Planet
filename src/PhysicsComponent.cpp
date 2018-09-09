@@ -15,6 +15,10 @@ vec2 PhysicsComponent::getCenter() const {
     return vec2(m_body->GetPosition().x, m_body->GetPosition().y);
 }
 
+vec2 PhysicsComponent::getExtents() const {
+    return m_extents;
+}
+
 vec2 PhysicsComponent::getTopLeft() const {
     vec2 c = getCenter();
     return vec2(c.x - m_extents.x, c.y + m_extents.y);
@@ -30,6 +34,10 @@ vec2 PhysicsComponent::getVelocity() const {
 
 float PhysicsComponent::getMass() const {
     return m_body->GetMass();
+}
+
+bool PhysicsComponent::is_standing() const {
+    return OBJECT_ON_GROUND(m_motion_state);
 }
 
 void PhysicsComponent::setVelocity(crvec2 vel) {

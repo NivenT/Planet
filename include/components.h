@@ -110,10 +110,12 @@ public:
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
+    glm::vec2 getExtents() const;
     glm::vec2 getTopLeft() const;
     glm::vec2 getVelocity() const;
     float getOrientation() const;
     float getMass() const;
+    bool is_standing() const;
     
     virtual void update(const UpdateParams& params);
     virtual void receive(const nta::Message& message);

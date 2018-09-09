@@ -21,6 +21,7 @@ void EventQueueComponent::process() {
 
         m_system->add_component(new HealthComponent(spawn.init_health, ENEMY_HEALTH_COLOR),
                             id);
+        m_system->add_component(new ScriptComponent(spawn.update_script), id);
 
         float mass = physics->getMass();
         m_system->broadcast(Message(MESSAGE_RECEIVE_EXT, &spawn.extents), id);

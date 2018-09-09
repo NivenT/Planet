@@ -1,15 +1,15 @@
 def run_shoe() {
-    var fx = AGENT_NORMAL_ACCELERATION * self.getMass();
-    if (self.is_standing()) {
-        self.applyForce(fx, 0);
+    var fx = AGENT_NORMAL_ACCELERATION * physics.getMass();
+    if (physics.is_standing()) {
+        physics.applyForce(fx, 0);
         
-        var extents = self.getExtents();
-        var beneath = self.getCenter() + vec2(extents.x/2, -extents.y-TILE_SIZE/2);
+        var extents = physics.getExtents();
+        var beneath = physics.getCenter() + vec2(extents.x/2, -extents.y-TILE_SIZE/2);
 
         var coord = params.planet.getCoord(beneath);
         var tile = params.planet.getTile(coord);
         if (!tile.active) {
-            self.applyForce(0, fx*10);
+            physics.applyForce(0, fx*10);
         }
     }
 }
