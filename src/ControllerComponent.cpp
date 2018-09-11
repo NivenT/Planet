@@ -16,7 +16,7 @@ void PlayerControllerComponent::act(const UpdateParams& params) {
     } else if (InputManager::justPressed(SDLK_SPACE)) {
         // I should probably get rid of this, but...
         CallbackManager::setTimeout([](){InputManager::releaseKey(SDLK_SPACE);}, HOLD_TIME);
-        send(Message(MESSAGE_USE_ITEM));
+        send(Message(MESSAGE_USE_ITEM, &params));
     }
 
     vec2 force(0);

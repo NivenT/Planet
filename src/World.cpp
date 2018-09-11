@@ -170,6 +170,9 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
         m_ecs.add_component(physics, id);
         physics->add_to_world(&m_world, item, id);
 
+        auto effect = new EffectComponent(item.use_script);
+        m_ecs.add_component(effect, id);
+
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &item.extents), id);
     }
     for (auto& enemy : params.enemies) {

@@ -23,9 +23,9 @@ public:
     void push_back(const T& val);
     void pop_back();
     void pop_curr();
-    // Does not guarantee elements will remain in same order
+    /// Does not guarantee elements will remain in same order
     void remove(std::size_t index);
-    // slower than remove but guarantees remaining elements in same order
+    /// slower than remove but guarantees remaining elements in same order
     void stable_remove(std::size_t index);
     void advance();
     void retreat();

@@ -24,24 +24,28 @@ void InventoryComponent::render(SpriteBatch& batch, SpriteFont* font) const {
 }
 
 void InventoryComponent::receive(const nta::Message& msg) {
-    if (msg == MESSAGE_TOGGLE_SHOW_INVENTORY) {
-        m_flag = !m_flag;
-    } else if (msg == MESSAGE_SHIFT_INVENTORY && !m_inventory.is_empty()) {
-        if ((long)msg.data == 1) {
+    switch(msg.type) {
+        case MESSAGE_TOGGLE_SHOW_INVENTORY: m_flag = !m_flag; break;
+        case MESSAGE_SHIFT_INVENTORY: if (!m_inventory.is_empty()) {
+            if ((long)msg.data == 1) {
             m_inventory.advance();
-        } else {
-            m_inventory.retreat();
-        }
-        start_countdown();
-    } else if (msg == MESSAGE_RESOLVE_COLLISION) {
-        CollisionParams p = *(CollisionParams*)msg.data;
-        PickupComponent* pickup = (PickupComponent*)m_system->get_component(p.other, COMPONENT_PICKUP_LIST_ID);
-        if (pickup) {
-            pickup->pickup(m_system->get_owner(this), p.params.world);
-            m_inventory.push_back(m_system->get_owner(pickup));
+            } else {
+                m_inventory.retreat();
+            }
             start_countdown();
-        }
-    } else if (msg == MESSAGE_USE_ITEM) {
-
+        } break;
+        case MESSAGE_RESOLVE_COLLISION: {
+            CollisionParams p = *(CollisionParams*)msg.data;
+            PickupComponent* pickup = (PickupComponent*)m_system->get_component(p.other, COMPONENT_PICKUP_LIST_ID);
+            if (pickup) {
+                pickup->pickup(m_system->get_owner(this), p.params.world);
+                m_inventory.push_back(m_system->get_owner(pickup));
+                start_countdown();
+            }
+        } break;
+        case MESSAGE_USE_ITEM: if (!m_inventory.is_empty()) {
+            // Gotta love C++ (technically, I should make shur I'm not dereferencing a nullptr, but then this line would be less ridiculous)
+            ((EffectComponent*)m_system->get_component(m_inventory.curr(), COMPONENT_EFFECT_LIST_ID))->use(*(UpdateParams*)msg.data);
+        } break;
     }
 }

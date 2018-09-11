@@ -6,7 +6,6 @@
 #include "Item.h"
 #include "Player.h"
 
-
 using namespace glm;
 using namespace std;
 using namespace nta;
@@ -144,6 +143,8 @@ void ChaiManager::init() {
     add(chaiscript::fun(&ECS::get_component), "get_component");
     add(chaiscript::user_type<ECS>(), "ECS");
 
+    add(chaiscript::user_type<Component>(), "Component");
+
     add(chaiscript::fun(&PhysicsComponent::getCenter), "getCenter");
     add(chaiscript::fun(&PhysicsComponent::getExtents), "getExtents");
     add(chaiscript::fun(&PhysicsComponent::getTopLeft), "getTopLeft");
@@ -153,10 +154,17 @@ void ChaiManager::init() {
     add(chaiscript::fun(&PhysicsComponent::is_standing), "is_standing");
     add(chaiscript::fun(&PhysicsComponent::applyForce), "applyForce");
     add(chaiscript::user_type<PhysicsComponent>(), "PhysicsComponent");
+    m_chai.add(chaiscript::base_class<Component, PhysicsComponent>());
 
     add(chaiscript::fun(&HealthComponent::getHealth), "getHealth");
     add(chaiscript::fun(&HealthComponent::getMaxHealth), "getMaxHealth");
     add(chaiscript::user_type<HealthComponent>(), "HealthComponent");
+    m_chai.add(chaiscript::base_class<Component, HealthComponent>());
+
+    add(chaiscript::fun(&PickupComponent::getOwner), "getOwner");
+    add(chaiscript::fun(&PickupComponent::is_picked_up), "is_picked_up");
+    add(chaiscript::user_type<PickupComponent>(), "PickupComponent");
+    m_chai.add(chaiscript::base_class<Component, PickupComponent>());
 
     add(chaiscript::fun(&vec2::x), "x");
     add(chaiscript::fun(&vec2::y), "y");
@@ -187,6 +195,18 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(PLAYER_WEAK_ATT_FORCE), "PLAYER_WEAK_ATT_FORCE");
     add_global_const(chaiscript::const_var(SMALL_ITEM_EXTENTS), "SMALL_ITEM_EXTENTS");
     add_global_const(chaiscript::const_var(TILE_SIZE), "TILE_SIZE");
+    add_global_const(chaiscript::const_var(COMPONENT_SAVE_LIST_ID), "COMPONENT_SAVE_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_GRAPHICS_LIST_ID), "COMPONENT_GRAPHICS_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_PHYSICS_LIST_ID), "COMPONENT_PHYSICS_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_CONTROLLER_LIST_ID), "COMPONENT_CONTROLLER_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_INVENTORY_LIST_ID), "COMPONENT_INVENTORY_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_HEALTH_LIST_ID), "COMPONENT_HEALTH_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_ANIMATION_LIST_ID), "COMPONENT_ANIMATION_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_PICKUP_LIST_ID), "COMPONENT_PICKUP_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_COUNTDOWN_LIST_ID), "COMPONENT_COUNTDOWN_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_GARBAGE_LIST_ID), "COMPONENT_GARBAGE_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_EVENTQ_LIST_ID), "COMPONENT_EVENTQ_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_EFFECT_LIST_ID), "COMPONENT_EFFECT_LIST_ID");
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");
@@ -194,11 +214,13 @@ void ChaiManager::init() {
 
 void ChaiManager::eval_script(crstring file_name, const ChaiParams& params) {
     PhysicsComponent* physics = (PhysicsComponent*)params.ecs->get_component(params.id, COMPONENT_PHYSICS_LIST_ID);
+    PickupComponent* pickup = (PickupComponent*)params.ecs->get_component(params.id, COMPONENT_PICKUP_LIST_ID);
 
     m_chai.set_global(chaiscript::var(params.params), "params");
     m_chai.set_global(chaiscript::var(params.ecs), "ecs");
     m_chai.set_global(chaiscript::var(params.id), "self");
     m_chai.set_global(chaiscript::var(physics),"physics");
+    m_chai.set_global(chaiscript::var(pickup), "pickup");
 
     try {
         get_script(file_name)();

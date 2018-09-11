@@ -224,6 +224,9 @@ public:
     PickupComponent() : nta::Component(COMPONENT_PICKUP_LIST_ID) {}
     void pickup(nta::EntityID owner, b2World* world);
     void receive(const nta::Message&);
+
+    nta::EntityID getOwner() const { return m_owner; }
+    bool is_picked_up() const { return m_picked_up; }
 };
 
 class GarbageComponent : public nta::Component {
@@ -244,6 +247,15 @@ public:
     EventQueueComponent(b2World* w) : m_world(w), nta::Component(COMPONENT_EVENTQ_LIST_ID) {}
     void receive(const nta::Message&);
     void process();
+};
+
+class EffectComponent : public nta::Component {
+private:
+    std::string m_effect;
+public:
+    EffectComponent(nta::crstring effect) : m_effect(effect), nta::Component(COMPONENT_EFFECT_LIST_ID) {}
+    void receive(const nta::Message&) {}
+    void use(const UpdateParams& params);
 };
 
 #endif // COMPONENTS_H_INCLUDED
