@@ -89,7 +89,6 @@ private:
     void handle_collisions(const UpdateParams& params);
 protected:
     virtual void setVelocity(nta::crvec2 vel);
-    virtual void applyForce(float x, float y);
 
     virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
     
@@ -116,11 +115,11 @@ public:
     float getOrientation() const;
     float getMass() const;
     bool is_standing() const;
+
+    virtual void applyForce(float x, float y);
     
     virtual void update(const UpdateParams& params);
     virtual void receive(const nta::Message& message);
-
-    friend ChaiManager;
 };
 
 class SensorPhysicsComponent : public PhysicsComponent {
@@ -256,6 +255,29 @@ public:
     EffectComponent(nta::crstring effect) : m_effect(effect), nta::Component(COMPONENT_EFFECT_LIST_ID) {}
     void receive(const nta::Message&) {}
     void use(const UpdateParams& params);
+};
+
+class AttackComponent : public nta::Component {
+private:
+    nta::Animation2D m_anim;
+    // difference between attack top_left and the entity's top_right
+    glm::vec2 m_offset;
+    glm::vec2 m_dims;
+    float m_knockback = 0;
+    int m_num_cycles = 0;
+
+    glm::vec2 m_top_left;
+    glm::vec2 m_extents;
+    bool m_direction;
+public:
+    AttackComponent() : nta::Component(COMPONENT_ATTACK_LIST_ID) {}
+    void receive(const nta::Message&);
+
+    bool is_attacking() const { return m_num_cycles > 0; }
+    void render(nta::SpriteBatch& batch) const;
+    void step(float dt);
+
+    friend ChaiManager;
 };
 
 #endif // COMPONENTS_H_INCLUDED

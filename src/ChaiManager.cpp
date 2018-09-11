@@ -121,8 +121,8 @@ void ChaiManager::init() {
     add(chaiscript::fun(&InputManager::justReleased), "justReleased");
     add(chaiscript::user_type<InputManager>(), "InputManager");
 
-    add(chaiscript::constructor<Animation2D(crstring, int, size_t, size_t)>(), "Animation2D");
-    add(chaiscript::constructor<Animation2D(crstring, crivec2, size_t, size_t)>(), "Animation2D");
+    add(chaiscript::constructor<Animation2D(crstring, int, size_t, size_t, float)>(), "Animation2D");
+    add(chaiscript::constructor<Animation2D(crstring, crivec2, size_t, size_t, float)>(), "Animation2D");
     add(chaiscript::fun([](Animation2D& a, const Animation2D& b){a = b;}), "=");
     add(chaiscript::fun(&Animation2D::get_index), "get_index");
     add(chaiscript::fun(&Animation2D::get_start), "get_start");
@@ -166,6 +166,15 @@ void ChaiManager::init() {
     add(chaiscript::user_type<PickupComponent>(), "PickupComponent");
     m_chai.add(chaiscript::base_class<Component, PickupComponent>());
 
+    add(chaiscript::fun(&AttackComponent::m_anim), "anim");
+    add(chaiscript::fun(&AttackComponent::m_offset), "offset");
+    add(chaiscript::fun(&AttackComponent::m_dims), "dims");
+    add(chaiscript::fun(&AttackComponent::m_knockback), "knockback");
+    add(chaiscript::fun(&AttackComponent::m_num_cycles), "num_cycles");
+    add(chaiscript::fun(&AttackComponent::is_attacking), "is_attacking");
+    add(chaiscript::user_type<AttackComponent>(), "AttackComponent");
+    m_chai.add(chaiscript::base_class<Component, AttackComponent>());
+
     add(chaiscript::fun(&vec2::x), "x");
     add(chaiscript::fun(&vec2::y), "y");
     add(chaiscript::fun([](crvec2 a, crvec2 b){return a-b;}), "-");
@@ -207,6 +216,7 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(COMPONENT_GARBAGE_LIST_ID), "COMPONENT_GARBAGE_LIST_ID");
     add_global_const(chaiscript::const_var(COMPONENT_EVENTQ_LIST_ID), "COMPONENT_EVENTQ_LIST_ID");
     add_global_const(chaiscript::const_var(COMPONENT_EFFECT_LIST_ID), "COMPONENT_EFFECT_LIST_ID");
+    add_global_const(chaiscript::const_var(COMPONENT_ATTACK_LIST_ID), "COMPONENT_ATTACK_LIST_ID");
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");

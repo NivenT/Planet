@@ -251,6 +251,7 @@ void NewWorld::add_player() {
     m_ecs.add_component(new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEATLH_COLOR), 
                         m_player);
     m_ecs.add_component(new InventoryComponent, m_player);
+    m_ecs.add_component(new AttackComponent, m_player);
 
     float mass = physics->getMass();
     m_ecs.broadcast(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR), m_player);
@@ -269,6 +270,9 @@ void NewWorld::render(SpriteBatch& batch, SpriteBatch& overlay_batch,
     }
     for (auto inventory : *m_ecs.get_component_list(COMPONENT_INVENTORY_LIST_ID)) {
         ((InventoryComponent*)inventory)->render(overlay_batch, font);
+    }
+    for (auto attack : *m_ecs.get_component_list(COMPONENT_ATTACK_LIST_ID)) {
+        ((AttackComponent*)attack)->render(batch);
     }
 }
 
@@ -292,6 +296,9 @@ bool NewWorld::update(UpdateParams& params) {
     }
     for (auto animation : *m_ecs.get_component_list(COMPONENT_ANIMATION_LIST_ID)) {
         ((AnimationComponent*)animation)->step(params.dt);
+    }
+    for (auto attack : *m_ecs.get_component_list(COMPONENT_ATTACK_LIST_ID)) {
+        ((AttackComponent*)attack)->step(params.dt);
     }
     for (auto count : *m_ecs.get_component_list(COMPONENT_COUNTDOWN_LIST_ID)) {
         ((CountdownComponent*)count)->countdown();
