@@ -168,7 +168,7 @@ void MainGame::prepare_batches() {
     m_debug_batch.begin();
 
     m_world->render(m_batch, m_overlay_batch, m_font);
-    m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
+    m_font->drawText(m_overlay_batch, "FPS: " + to_string((int)m_manager->getFPS()), 
                          vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
     if (m_paused) {
         m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, MEDIUM_TEXT_HEIGHT));

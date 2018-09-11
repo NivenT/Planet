@@ -2,8 +2,8 @@ def run_stick() {
     var owner_attack = ecs.get_component(pickup.getOwner(), COMPONENT_ATTACK_LIST_ID);
     if (!owner_attack.is_attacking()) {
         owner_attack.anim = Animation2D("resources/images/stick2.png", 9, 0, 9, 30);
-        owner_attack.offset = PLAYER_DIMS * vec2(0.3, -0.1);
-        owner_attack.dims = SMALL_ITEM_EXTENTS * vec2(2, 6);
+        owner_attack.offset = PLAYER_DIMS * vec2(-0.1, -0.2);
+        owner_attack.dims = SMALL_ITEM_EXTENTS * vec2(2, 5);
         owner_attack.knockback = PLAYER_WEAK_ATT_FORCE;
         // This is what causes the attack to happen
         owner_attack.num_cycles = 1;

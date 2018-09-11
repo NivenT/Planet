@@ -186,7 +186,8 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
         m_ecs.add_component(physics, id);
         physics->add_to_world(&m_world, enemy, id);
 
-        m_ecs.add_component(new HealthComponent(enemy.init_health, ENEMY_HEALTH_COLOR),
+        m_ecs.add_component(new HealthComponent(enemy.init_health, ENEMY_HEALTH_CATEGORY,
+                                                ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR), 
                             id);
         m_ecs.add_component(new ScriptComponent(enemy.update_script), id);
 
@@ -204,7 +205,8 @@ NewWorld::NewWorld(const WorldParams& params) : m_world(params.planet.getGravity
         m_ecs.add_component(physics, id);
         physics->add_to_world(&m_world, spawner, id);
 
-        m_ecs.add_component(new HealthComponent(spawner.init_health, ENEMY_HEALTH_COLOR),
+        m_ecs.add_component(new HealthComponent(spawner.init_health, ENEMY_HEALTH_CATEGORY,
+                                                ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR),
                             id);
 
         m_ecs.add_component(new SpawnerComponent(spawner.spawn_rate*TARGET_FPS,
@@ -248,7 +250,8 @@ void NewWorld::add_player() {
     physics->add_to_world(&m_world, params, m_player);
 
     m_ecs.add_component(new PlayerControllerComponent, m_player);
-    m_ecs.add_component(new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEATLH_COLOR), 
+    m_ecs.add_component(new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEALTH_CATEGORY,
+                                            PLAYER_HEALTH_MASK, PLAYER_HEATLH_COLOR), 
                         m_player);
     m_ecs.add_component(new InventoryComponent, m_player);
     m_ecs.add_component(new AttackComponent, m_player);

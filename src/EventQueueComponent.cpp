@@ -19,8 +19,9 @@ void EventQueueComponent::process() {
         m_system->add_component(physics, id);
         physics->add_to_world(m_world, spawn, id);
 
-        m_system->add_component(new HealthComponent(spawn.init_health, ENEMY_HEALTH_COLOR),
-                            id);
+        m_system->add_component(new HealthComponent(spawn.init_health, ENEMY_HEALTH_CATEGORY,
+                                                    ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR), 
+                                id);
         m_system->add_component(new ScriptComponent(spawn.update_script), id);
 
         float mass = physics->getMass();

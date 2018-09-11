@@ -176,11 +176,14 @@ private:
     glm::vec2 m_extents;
     glm::vec2 m_top_left;
 
+    uint16_t m_category_bits;
+    uint16_t m_mask_bits;
+
     // for damage calculation during collisions
     glm::vec2 m_vel;
     float m_mass;
 public:
-    HealthComponent(float init_health, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), CountdownComponent(COMPONENT_HEALTH_LIST_ID) {}
+    HealthComponent(float init_health, uint16_t cat, uint16_t mask, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), m_category_bits(cat), m_mask_bits(mask), CountdownComponent(COMPONENT_HEALTH_LIST_ID) {}
     void render(nta::SpriteBatch& batch) const;
     void receive(const nta::Message&);
     float getHealth() { return m_health; }

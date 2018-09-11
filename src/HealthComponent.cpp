@@ -40,6 +40,8 @@ void HealthComponent::receive(const nta::Message& msg) {
             CollisionParams p = *(CollisionParams*)msg.data;
             HealthComponent* health = (HealthComponent*)m_system->get_component(p.other, COMPONENT_HEALTH_LIST_ID);
             if (health) {
+                if (!(m_mask_bits & health->m_category_bits)) return;
+
                 float mom = m_mass*m_vel.length();
                 float other_mom = health->m_mass*health->m_vel.length();
                 float scale = health->m_mass*(mom + other_mom)/(m_mass + health->m_mass);
