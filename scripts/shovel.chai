@@ -1,11 +1,13 @@
 def run_shovel() {
     //if (!self.equipped) return;
 
-    var player_exts = self.owner.getExtents();
+    var owner_physics = ecs.get_component(pickup.getOwner(), COMPONENT_PHYSICS_LIST_ID);
+
+    var player_exts = owner_physics.getExtents();
     var player_diag2 = player_exts.x*player_exts.x + player_exts.y*player_exts.y;
 
     var mouse = getMouse();
-    var dist = mouse - self.owner.getCenter();
+    var dist = mouse - owner_physics.getCenter();
     if (dot(dist, dist) < 4*player_diag2) {
         params.planet.remove_tile(params.planet.getCoord(mouse));
     }

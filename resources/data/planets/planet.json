@@ -34,6 +34,27 @@
     "script": "scripts/ghost.chai", 
     "texture": "resources/images/ghost.png"
   }], 
+  "items": [{
+    "color": [1, 1, 1, 1], 
+    "density": 1, 
+    "extents": [0.270563, 0.270563], 
+    "friction": 1, 
+    "max_speed": [0, 20], 
+    "position": [-1.32707, 4.68716], 
+    "restitution": 0, 
+    "script": "scripts/stick.chai", 
+    "texture": "resources/images/stick.png"
+  }, {
+    "color": [1, 1, 1, 1], 
+    "density": 1, 
+    "extents": [0.284, 0.287], 
+    "friction": 1, 
+    "max_speed": [0, 20], 
+    "position": [8.49226, 2.85464], 
+    "restitution": 0, 
+    "script": "scripts/shovel.chai", 
+    "texture": "resources/images/shovel.png"
+  }], 
   "planet": {
     "dimensions": [28, 176], 
     "gravity": [0, -9.81], 

@@ -153,7 +153,7 @@ void WorldEditor::update_tile_tab(crvec2 mouse, const ivec2& coord) {
 void WorldEditor::update_item_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_item.position = mouse;
-        m_active_item.planet = &m_world.planet;
+        //m_active_item.planet = &m_world.planet;
         m_world.items.push_back(m_active_item);
     }
 }
@@ -161,7 +161,7 @@ void WorldEditor::update_item_tab(crvec2 mouse) {
 void WorldEditor::update_enemy_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_enemy.position = mouse;
-        m_active_enemy.planet = &m_world.planet;
+        //m_active_enemy.planet = &m_world.planet;
         m_world.enemies.push_back(m_active_enemy);
     }
 }
@@ -169,7 +169,7 @@ void WorldEditor::update_enemy_tab(crvec2 mouse) {
 void WorldEditor::update_spawner_tab(crvec2 mouse) {
     if (InputManager::justPressed(SDL_BUTTON_LEFT)) {
         m_active_spawner.position = mouse;
-        m_active_spawner.planet = &m_world.planet;
+        //m_active_spawner.planet = &m_world.planet;
         m_world.spawners.push_back(m_active_spawner);
     }
 }
@@ -207,41 +207,38 @@ void WorldEditor::prepare_batches() {
     auto text = m_gui_focus ? "GUI Focus" : "Editor Focus";
     m_font->drawText(m_overlay_batch, text, glm::vec4(80, 100, 20, MEDIUM_TEXT_HEIGHT));
 
-    World temp_world(m_world);
-    temp_world.set_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
 
     vec2 mouse = screen_to_game(InputManager::getMouseCoordsStandard(m_window->getHeight()));
     // I really don't like having a switch statement here
     switch(m_curr_tab) {
         case GUI_ITEM_TAB: {
             m_active_item.position = mouse;
-            temp_world.add_object(new Item(m_active_item), m_active_item);
+            m_world.items.push_back(m_active_item);
         } break;
         case GUI_ENEMY_TAB: {
             m_active_enemy.position = mouse;
-            temp_world.add_object(new Enemy(m_active_enemy), m_active_enemy);
+            m_world.enemies.push_back(m_active_enemy);
         } break;
         case GUI_SPAWNER_TAB: {
             m_active_spawner.position = mouse;
-            temp_world.add_object(new Spawner(m_active_spawner), m_active_spawner);
+            m_world.spawners.push_back(m_active_spawner);
         } break;
     }
-    temp_world.render(m_batch, m_overlay_batch, m_font);
+    World(m_world, false).render(m_batch, m_overlay_batch, m_font);
     switch(m_curr_tab) {
-        case GUI_TILE_TAB:
-            m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f);
-            break;
+        case GUI_ITEM_TAB: m_world.items.pop_back(); break;
+        case GUI_ENEMY_TAB: m_world.enemies.pop_back(); break;
+        case GUI_SPAWNER_TAB: m_world.spawners.pop_back(); break;
+        case GUI_TILE_TAB: m_active_tile.render(m_batch, mouse + vec2(-TILE_SIZE, TILE_SIZE)/2.f); break;
     }
+
     m_font->drawText(m_batch, "Player\nSpawn",
                      glm::vec4(PLAYER_INIT_POS.x,PLAYER_INIT_POS.y,PLAYER_DIMS));
-
     m_world.planet.render_debug(m_dbatch);
 
     m_dbatch.end();
     m_overlay_batch.end();
     m_batch.end();
-
-    temp_world.destroy();
 }
 
 void WorldEditor::render_batches(const nta::Camera2D camera, bool debug) {
@@ -520,7 +517,6 @@ void WorldEditor::render_spawner_tab() {
         }
 
         EnemyParams params = EnemyParams::load(utils::Json::from_file(m_active_spawner.spawn));
-        Enemy temp(params);
         MotionAnimation& p = params.anims[STANDING];
         Animation2D anim(params.tex, params.anim_dims, p.start, p.length);
 

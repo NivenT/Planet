@@ -10,7 +10,6 @@
 
 #include "MainGame.h"
 #include "ChaiManager.h"
-#include "Spawner.h"
 #include "utils.h"
 
 using namespace std;
@@ -35,10 +34,7 @@ vec2 MainGame::getMouse() const {
 void MainGame::onFocus(const ScreenSwitchInfo& info) {
     if (!info.data) Logger::writeErrorToLog("Tried starting game with empty World",
                                              nta::ErrorType::INVALID_VALUE);
-    // Want a copy of the world with a different underlying b2World
     m_world = new World(*(WorldParams*)info.data);
-    m_world->unset_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
-    m_world->set_flags(WORLD_DRAW_PLAYER_EXTRAS_FLAG);
     m_state = ScreenState::RUNNING;
 }
 
@@ -158,7 +154,7 @@ void MainGame::update() {
             m_state = ScreenState::SWITCH_ESC;
         }
     }
-    if (!m_debug) m_camera.setCenter(m_world->get_player()->getCenter());
+    if (!m_debug) m_camera.setCenter(m_world->get_player_center());
 }
 
 void MainGame::prepare_batches() {
@@ -167,7 +163,7 @@ void MainGame::prepare_batches() {
     m_debug_batch.begin();
 
     m_world->render(m_batch, m_overlay_batch, m_font);
-    m_font->drawText(m_overlay_batch, "fps: " + to_string((int)m_manager->getFPS()), 
+    m_font->drawText(m_overlay_batch, "FPS: " + to_string((int)m_manager->getFPS()), 
                          vec4(0, MEDIUM_TEXT_HEIGHT, 15, MEDIUM_TEXT_HEIGHT));
     if (m_paused) {
         m_font->drawText(m_overlay_batch, "Paused", vec4(85, 100, 15, MEDIUM_TEXT_HEIGHT));

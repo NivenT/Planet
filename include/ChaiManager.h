@@ -5,6 +5,14 @@
 
 #include <nta/Logger.h>
 
+#include "components.h"
+
+struct ChaiParams {
+    UpdateParams params;
+    nta::EntityID id;
+    nta::ECS* ecs;
+};
+
 class ChaiManager {
 private:
     static chaiscript::ChaiScript m_chai;
@@ -12,41 +20,42 @@ private:
 public:
     static void init();
     template<typename T>
-    static void add(T data, crstring name);
+    static void add(T data, nta::crstring name);
     template<typename T>
-    static void add_global_const(T data, crstring name);
+    static void add_global_const(T data, nta::crstring name);
     template<typename T>
-    static void add_global(T data, crstring name);
+    static void add_global(T data, nta::crstring name);
     static chaiscript::ChaiScript& get_chai();
     /// Script must end in the name of a function
-    static std::function<void()> get_script(crstring file_name);
+    static std::function<void()> get_script(nta::crstring file_name);
     template<typename T, typename S>
-    static void eval_script(crstring file_name, T self, S params);
+    static void eval_script(nta::crstring file_name, T self, S params);
+    static void eval_script(nta::crstring file_name, const ChaiParams& params);
     template<typename T>
-    static T eval_snippet(crstring snippet);
+    static T eval_snippet(nta::crstring snippet);
     static void destroy();
 };
 
 template<typename T>
-void ChaiManager::add(T data, crstring name) {
+void ChaiManager::add(T data, nta::crstring name) {
     nta::Logger::writeToLog("Adding " + name + " to ChaiManager");
     m_chai.add(data, name);
 }
 
 template<typename T>
-void ChaiManager::add_global(T data, crstring name) {
+void ChaiManager::add_global(T data, nta::crstring name) {
     nta::Logger::writeToLog("Adding global " + name + " to ChaiManager");
     m_chai.add_global(data, name);
 }
 
 template<typename T>
-void ChaiManager::add_global_const(T data, crstring name) {
+void ChaiManager::add_global_const(T data, nta::crstring name) {
     nta::Logger::writeToLog("Adding const global " + name + " to ChaiManager");
     m_chai.add_global_const(data, name);
 }
 
 template<typename T>
-T ChaiManager::eval_snippet(crstring snippet) {
+T ChaiManager::eval_snippet(nta::crstring snippet) {
     try {
         return m_chai.eval<T>(snippet);
     } catch (const std::exception& e) {
@@ -55,7 +64,7 @@ T ChaiManager::eval_snippet(crstring snippet) {
 }
 
 template<typename T, typename S>
-void ChaiManager::eval_script(crstring file_name, T self, S params) {
+void ChaiManager::eval_script(nta::crstring file_name, T self, S params) {
     m_chai.set_global(self, "self");
     m_chai.set_global(params, "params");
     try {
