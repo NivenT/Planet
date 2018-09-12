@@ -10,7 +10,6 @@
 
 #include "MainGame.h"
 #include "ChaiManager.h"
-#include "Spawner.h"
 #include "utils.h"
 
 using namespace std;
@@ -35,11 +34,7 @@ vec2 MainGame::getMouse() const {
 void MainGame::onFocus(const ScreenSwitchInfo& info) {
     if (!info.data) Logger::writeErrorToLog("Tried starting game with empty World",
                                              nta::ErrorType::INVALID_VALUE);
-    m_world = new NewWorld(*(WorldParams*)info.data);
-    /*
-    m_world->unset_flags(WORLD_DONT_DRAW_PLAYER_FLAG);
-    m_world->set_flags(WORLD_DRAW_PLAYER_EXTRAS_FLAG);
-    */
+    m_world = new World(*(WorldParams*)info.data);
     m_state = ScreenState::RUNNING;
 }
 

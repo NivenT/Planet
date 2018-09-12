@@ -1,25 +1,25 @@
 {
   "anim_dims": [1, 16], 
   "anims": [{
-    "length": 2, 
+    "length": 1, 
     "speed": 3.228, 
-    "start": 1
+    "start": 0
   }, {
-    "length": 6, 
+    "length": 3, 
     "speed": 5.748, 
-    "start": 3
+    "start": 7
   }, {
     "length": 1, 
     "speed": 1, 
-    "start": 5
+    "start": 10
   }, {
     "length": 1, 
     "speed": 1, 
-    "start": 5
+    "start": 11
   }, {
-    "length": 8, 
+    "length": 9, 
     "speed": 5.748, 
-    "start": 8
+    "start": 0
   }], 
   "color": [1, 1, 1, 1], 
   "density": 1, 
@@ -28,7 +28,7 @@
   "init_health": 5, 
   "max_speed": [12, 24], 
   "natural_direction": false, 
-  "position": [-11.8273, -2.79582], 
+  "position": [-12.2807, -3.36703], 
   "restitution": 0, 
   "script": "scripts/slime.chai", 
   "texture": "resources/images/SlimeA.png"

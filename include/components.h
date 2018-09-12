@@ -64,7 +64,7 @@ protected:
     nta::Animation2D m_anim;
     MotionAnimation m_anim_params[NUM_MOTION_STATES];
     ObjectMotionState m_motion_state;
-    bool m_flipped;
+    bool m_flipped = false;
 public:
     AnimationComponent(nta::crstring texture, nta::crivec2 anim_dims = glm::ivec2(1), 
                        const MotionAnimation anims[] = {}, nta::crvec4 color = glm::vec4(1));

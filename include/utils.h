@@ -70,6 +70,35 @@ struct CreationParams {
     float restitution;
 };
 
+struct ItemParams : public CreationParams {
+    ItemParams() {
+        extents = SMALL_ITEM_EXTENTS;
+        max_speed = ITEM_MAX_SPEED;
+    }
+    ItemParams(const CreationParams& super) : CreationParams(super) {}
+    nta::utils::Json json() const {
+        return CreationParams::json().merge({
+            {"texture", tex},
+            {"script", use_script},
+            {"color", {color.r, color.g, color.b, color.a}},
+            {"max_speed", {max_speed.x, max_speed.y}}
+        });
+    }
+    static ItemParams load(const nta::utils::Json& json) {
+        ItemParams ret(CreationParams::load(json));
+        ret.tex = (std::string)json["texture"];
+        ret.use_script = (std::string)json["script"];
+        ret.color = glm::vec4(json["color"][0], json["color"][1],
+                              json["color"][2], json["color"][3]);
+        ret.max_speed = glm::vec2(json["max_speed"][0], json["max_speed"][1]);
+        return ret;
+    }
+
+    std::string tex;
+    std::string use_script;
+    glm::vec4 color = glm::vec4(1);
+};
+
 /// \todo Get rid of (probably)
 struct EnemyParams : public CreationParams {
     EnemyParams() {
@@ -99,10 +128,6 @@ struct EnemyParams : public CreationParams {
     static EnemyParams load(const nta::utils::Json& json) {
         EnemyParams ret(CreationParams::load(json));
         ret.tex = (std::string)json["texture"];
-        /*
-        ret.update_script = is_regular_file((std::string)json["script"]) ?
-                                (std::string)json["script"] : "";
-        */
         ret.update_script = (std::string)json["script"];
         ret.color = glm::vec4(json["color"][0], json["color"][1],
                               json["color"][2], json["color"][3]);
@@ -125,6 +150,30 @@ struct EnemyParams : public CreationParams {
     MotionAnimation anims[OBJECT_NUM_MOTION_STATES];
     glm::ivec2 anim_dims = glm::ivec2(1,1);
     bool natural_direction = true;
+};
+
+struct SpawnerParams : public EnemyParams {
+    SpawnerParams() {
+        init_health = NORMAL_SPAWNER_INIT_HEALTH;
+    }
+    SpawnerParams(const EnemyParams& super) : EnemyParams(super) {}
+    nta::utils::Json json() const {
+        return EnemyParams::json().merge({
+            {"spawn", spawn},
+            {"spawn_rate", spawn_rate}
+        });
+    }
+    static SpawnerParams load(const nta::utils::Json& json) {
+        SpawnerParams ret(EnemyParams::load(json));
+        ret.spawn = (std::string)json["spawn"];
+        ret.spawn_rate = json["spawn_rate"];
+        return ret;
+    }
+
+    //EnemyParams spawn;
+    // e.g. Resources/data/enemies/shoe.json
+    std::string spawn;
+    float spawn_rate = SPAWNER_SLOW_RATE;
 };
 
 struct CollisionParams {

@@ -30,7 +30,7 @@ private:
     nta::DebugBatch m_debug_batch;
     nta::Camera2D m_camera;
 
-    NewWorld* m_world = nullptr;
+    World* m_world = nullptr;
 
     // This is getting ridiculous
     bool m_debug;

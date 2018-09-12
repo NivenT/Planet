@@ -1,7 +1,6 @@
 #include <nta/Logger.h>
 
 #include "Planet.h"
-#include "Player.h"
 
 using namespace glm;
 using namespace std;

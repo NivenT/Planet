@@ -2,9 +2,6 @@
 #include <nta/InputManager.h>
 
 #include "ChaiManager.h"
-#include "Enemy.h"
-#include "Item.h"
-#include "Player.h"
 
 using namespace glm;
 using namespace std;
@@ -42,62 +39,6 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(JUMPING), "JUMPING");
     add_global_const(chaiscript::const_var(FALLING), "FALLING");
     add(chaiscript::user_type<ObjectMotionState>(), "ObjectMotionState");
-
-    add(chaiscript::fun(&Enemy::m_max_speed), "m_max_speed");
-    add(chaiscript::fun(&Enemy::m_max_speed), "max_speed");
-    add(chaiscript::user_type<Enemy>(), "Enemy");
-
-    add(chaiscript::fun(&Agent::getHealth), "getHealth");
-    add(chaiscript::fun(&Agent::applyDamage), "applyDamage");
-    add(chaiscript::fun(&Agent::are_flags_set), "are_flags_set");
-    add(chaiscript::fun(&Agent::m_anim), "m_anim");
-    add(chaiscript::fun(&Agent::m_anim), "anim");
-    add(chaiscript::user_type<Agent>(), "Agent");
-
-    add(chaiscript::fun(&Object::getObjectType), "getObjectType");
-    add(chaiscript::fun(&Object::getCenter), "getCenter");
-    add(chaiscript::fun(&Object::getOrientation), "getOrientation");
-    add(chaiscript::fun(&Object::getVelocity), "getVelocity");
-    add(chaiscript::fun(&Object::getTopLeft), "getTopLeft");
-    add(chaiscript::fun(&Object::getExtents), "getExtents");
-    add(chaiscript::fun(&Object::getMass), "getMass");
-    add(chaiscript::fun(&Object::setVelocity), "setVelocity");
-    add(chaiscript::fun(&Object::applyForce), "applyForce");
-    add(chaiscript::fun(&Object::is_standing), "is_standing");
-    add(chaiscript::fun(&Object::m_body), "m_body");
-    add(chaiscript::fun(&Object::m_body), "body");
-    add(chaiscript::fun(&Object::m_motion_state), "m_motion_state");
-    add(chaiscript::fun(&Object::m_motion_state), "motion_state");
-    //add(chaiscript::user_type<Object>(), "Object"); 
-
-    m_chai.add(chaiscript::base_class<Object, Agent>());
-    m_chai.add(chaiscript::base_class<Object, Enemy>());
-    m_chai.add(chaiscript::base_class<Agent, Enemy>());
-
-    add(chaiscript::fun(&Item::m_equipped), "m_equipped");
-    add(chaiscript::fun(&Item::m_equipped), "equipped");
-    add(chaiscript::fun(&Item::m_owner), "m_owner");
-    add(chaiscript::fun(&Item::m_owner), "owner");
-    add(chaiscript::fun(&Item::m_planet), "m_planet");
-    add(chaiscript::fun(&Item::m_planet), "planet");
-    add(chaiscript::user_type<Item>(), "Item");
-
-    m_chai.add(chaiscript::base_class<Object, Item>());
-
-    add(chaiscript::fun(&Player::get_attack_anim), "get_attack_anim");
-    add(chaiscript::fun(&Player::set_attacking), "set_attacking");
-    add(chaiscript::user_type<Player>(), "Player");
-    
-    m_chai.add(chaiscript::base_class<Object, Player>());
-    m_chai.add(chaiscript::base_class<Agent, Player>());
-
-    add(chaiscript::fun(&Player::AttackAnim::anim), "anim");
-    add(chaiscript::fun(&Player::AttackAnim::offset), "offset");
-    add(chaiscript::fun(&Player::AttackAnim::dims), "dims");
-    add(chaiscript::fun(&Player::AttackAnim::speed), "speed");
-    add(chaiscript::fun(&Player::AttackAnim::num_cycles), "num_cycles");
-    add(chaiscript::fun(&Player::AttackAnim::knockback), "knockback");
-    add(chaiscript::user_type<Player::AttackAnim>(), "AttackAnim");
 
     // really gotta figure out this snake case v. camel case thing
     add(chaiscript::fun(&Planet::getCoord), "getCoord");

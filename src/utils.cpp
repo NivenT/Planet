@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "Object.h"
 
 using namespace glm;
 using namespace nta;
