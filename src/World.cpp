@@ -1,3 +1,4 @@
+#include <iostream>
 #include "World.h"
 
 using namespace std;
@@ -8,50 +9,50 @@ using namespace nta;
 World::World(const WorldParams& params, bool player) : m_world(params.planet.getGravity()) {
     m_planet = params.planet;
     m_planet.add_to_world(&m_world);
-    m_ecs.add_component(new GarbageComponent, m_ecs.gen_entity());
-    m_ecs.add_component(new EventQueueComponent(&m_world), m_ecs.gen_entity());
+    m_ecs.add_component<GarbageComponent>(m_ecs.gen_entity());
+    m_ecs.add_component<EventQueueComponent>(m_ecs.gen_entity(), &m_world);
     
     for (auto& item : params.items) {
-        EntityID id = m_ecs.gen_entity();
+        Entity id = m_ecs.gen_entity();
 
-        m_ecs.add_component(new PickupComponent, id);
+        m_ecs.add_component<PickupComponent>(id);
+        m_ecs.add_component<TextureComponent>(id, item.tex, item.color);
+        m_ecs.add_component<SensorPhysicsComponent>(id, item.max_speed);
+        m_ecs.add_component<EffectComponent>(id, item.use_script);
 
-        auto tex = new TextureComponent(item.tex, item.color);
-        m_ecs.add_component(tex, id);
+        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<TextureComponent>(id).unwrap());
 
-        auto physics = new SensorPhysicsComponent(item.max_speed);
-        m_ecs.add_component(physics, id);
-        physics->add_to_world(&m_world, item, id);
+        SensorPhysicsComponent& physics = m_ecs.get_component<SensorPhysicsComponent>(id).unwrap();
+        m_ecs.add_component_to_list<PhysicsComponent>(&physics);
+        physics.add_to_world(&m_world, item, id);
 
-        auto effect = new EffectComponent(item.use_script);
-        m_ecs.add_component(effect, id);
-
-        vec2 tl = physics->getTopLeft(), cen = physics->getCenter();
-        float ang = physics->getOrientation();
+        vec2 tl = physics.getTopLeft(), cen = physics.getCenter();
+        float ang = physics.getOrientation();
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_TL, &tl), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_CEN, &cen), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_ANG, &ang), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &item.extents), id);
     }
     for (auto& enemy : params.enemies) {
-        EntityID id = m_ecs.gen_entity();
+        Entity id = m_ecs.gen_entity();
 
-        m_ecs.add_component(new AnimationComponent(enemy.tex, enemy.anim_dims,
-                                                   enemy.anims, enemy.color),
-                            id);
+        m_ecs.add_component<AnimationComponent>(id, enemy.tex, enemy.anim_dims,
+                                                enemy.anims, enemy.color);
+        m_ecs.add_component<PhysicsComponent>(id, enemy.max_speed);
+        m_ecs.add_component<HealthComponent>(id, enemy.init_health, ENEMY_HEALTH_CATEGORY,
+                                             ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR);
+        m_ecs.add_component<ScriptComponent>(id, enemy.update_script);
 
-        auto physics = new PhysicsComponent(enemy.max_speed);
-        m_ecs.add_component(physics, id);
-        physics->add_to_world(&m_world, enemy, id);
+        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<AnimationComponent>(id).unwrap());
+        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(id).unwrap());
+        m_ecs.add_component_to_list<ControllerComponent>(&m_ecs.get_component<ScriptComponent>(id).unwrap());
 
-        m_ecs.add_component(new HealthComponent(enemy.init_health, ENEMY_HEALTH_CATEGORY,
-                                                ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR), 
-                            id);
-        m_ecs.add_component(new ScriptComponent(enemy.update_script), id);
+        PhysicsComponent& physics = m_ecs.get_component<PhysicsComponent>(id).unwrap();
+        physics.add_to_world(&m_world, enemy, id);
 
-        vec2 tl = physics->getTopLeft(), cen = physics->getCenter();
-        float ang = physics->getOrientation();
-        float mass = physics->getMass();
+        vec2 tl = physics.getTopLeft(), cen = physics.getCenter();
+        float ang = physics.getOrientation();
+        float mass = physics.getMass();
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_TL, &tl), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_CEN, &cen), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_ANG, &ang), id);
@@ -59,26 +60,27 @@ World::World(const WorldParams& params, bool player) : m_world(params.planet.get
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), id);
     }
     for (auto& spawner : params.spawners) {
-        EntityID id = m_ecs.gen_entity();
+        Entity id = m_ecs.gen_entity();
 
-        m_ecs.add_component(new AnimationComponent(spawner.tex, spawner.anim_dims,
-                                                   spawner.anims, spawner.color),
-                            id);
-        auto physics = new SensorPhysicsComponent(spawner.max_speed);
-        m_ecs.add_component(physics, id);
-        physics->add_to_world(&m_world, spawner, id);
+        m_ecs.add_component<AnimationComponent>(id, spawner.tex, spawner.anim_dims,
+                                                spawner.anims, spawner.color);
+        m_ecs.add_component<SensorPhysicsComponent>(id, spawner.max_speed);
+        m_ecs.add_component<HealthComponent>(id, spawner.init_health, ENEMY_HEALTH_CATEGORY,
+                                             ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR);
+        m_ecs.add_component<SpawnerComponent>(id, spawner.spawn_rate*TARGET_FPS,
+                                              EnemyParams::load(utils::Json::from_file(spawner.spawn)));
 
-        m_ecs.add_component(new HealthComponent(spawner.init_health, ENEMY_HEALTH_CATEGORY,
-                                                ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR),
-                            id);
+        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<AnimationComponent>(id).unwrap());
+        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(id).unwrap());
+        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<SpawnerComponent>(id).unwrap());
 
-        m_ecs.add_component(new SpawnerComponent(spawner.spawn_rate*TARGET_FPS,
-                                                 EnemyParams::load(utils::Json::from_file(spawner.spawn))),
-                            id);
+        SensorPhysicsComponent& physics = m_ecs.get_component<SensorPhysicsComponent>(id).unwrap();
+        m_ecs.add_component_to_list<PhysicsComponent>(&physics);
+        physics.add_to_world(&m_world, spawner, id);
 
-        vec2 tl = physics->getTopLeft(), cen = physics->getCenter();
-        float ang = physics->getOrientation();
-        float mass = physics->getMass();
+        vec2 tl = physics.getTopLeft(), cen = physics.getCenter();
+        float ang = physics.getOrientation();
+        float mass = physics.getMass();
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_TL, &tl), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_CEN, &cen), id);
         m_ecs.broadcast(Message(MESSAGE_RECEIVE_ANG, &ang), id);
@@ -94,19 +96,10 @@ World::~World() {
 }
 
 vec2 World::get_player_center() const {
-    PhysicsComponent* comp = (PhysicsComponent*)m_ecs.get_component(m_player, COMPONENT_PHYSICS_LIST_ID);
-    return comp->getCenter();
+    return m_ecs.get_component<PhysicsComponent>(m_player).unwrap().getCenter();
 }
 
 void World::add_player() {
-    MotionAnimation temp[] = PLAYER_MOTION_ANIMATIONS;
-
-    m_player = m_ecs.gen_entity();
-    m_ecs.add_component(new PlayerAnimationComponent(PLAYER_ANIMATION_FILE, 
-                                                     PLAYER_ANIMATION_DIMS,
-                                                     temp), 
-                        m_player);
-
     CreationParams params;
     params.position = PLAYER_INIT_POS;
     params.extents = PLAYER_EXTENTS;
@@ -114,19 +107,30 @@ void World::add_player() {
     params.density = PLAYER_DENSITY;
     params.friction = PLAYER_FRICTION;
     params.restitution = PLAYER_RESTITUTION;
+    MotionAnimation temp[] = PLAYER_MOTION_ANIMATIONS;
 
-    auto physics = new PhysicsComponent(params.max_speed);
-    m_ecs.add_component(physics, m_player);
-    physics->add_to_world(&m_world, params, m_player);
+    m_player = m_ecs.gen_entity();
 
-    m_ecs.add_component(new PlayerControllerComponent, m_player);
-    m_ecs.add_component(new HealthComponent(PLAYER_INIT_HEALTH, PLAYER_HEALTH_CATEGORY,
-                                            PLAYER_HEALTH_MASK, PLAYER_HEATLH_COLOR), 
-                        m_player);
-    m_ecs.add_component(new InventoryComponent, m_player);
-    m_ecs.add_component(new AttackComponent, m_player);
+    m_ecs.add_component<PlayerAnimationComponent>(m_player, PLAYER_ANIMATION_FILE,
+                                                  PLAYER_ANIMATION_DIMS, temp);
+    m_ecs.add_component<PhysicsComponent>(m_player, params.max_speed);
+    m_ecs.add_component<PlayerControllerComponent>(m_player);
+    m_ecs.add_component<HealthComponent>(m_player, PLAYER_INIT_HEALTH,
+                                         PLAYER_HEALTH_CATEGORY, PLAYER_HEALTH_MASK,
+                                         PLAYER_HEATLH_COLOR);
+    m_ecs.add_component<InventoryComponent>(m_player);
+    m_ecs.add_component<AttackComponent>(m_player);
 
-    float mass = physics->getMass();
+    m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap());
+    m_ecs.add_component_to_list<AnimationComponent>(&m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap());
+    m_ecs.add_component_to_list<ControllerComponent>(&m_ecs.get_component<PlayerControllerComponent>(m_player).unwrap());
+    m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(m_player).unwrap());
+    m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<InventoryComponent>(m_player).unwrap());
+
+    auto& physics = m_ecs.get_component<PhysicsComponent>(m_player).unwrap();
+    physics.add_to_world(&m_world, params, m_player);
+
+    float mass = physics.getMass();
     m_ecs.broadcast(Message(MESSAGE_TOGGLE_SHOW_HEALTH_BAR), m_player);
     m_ecs.broadcast(Message(MESSAGE_RECEIVE_EXT, &params.extents), m_player);
     m_ecs.broadcast(Message(MESSAGE_RECEIVE_MASS, &mass), m_player);
@@ -135,24 +139,24 @@ void World::add_player() {
 void World::render(SpriteBatch& batch, SpriteBatch& overlay_batch, 
                       SpriteFont* font) const {
     m_planet.render(batch);
-    for (auto graphics : *m_ecs.get_component_list(COMPONENT_GRAPHICS_LIST_ID)) {
-        ((GraphicsComponent*)graphics)->render(batch);
+    for (auto graphics : m_ecs.get_component_list<GraphicsComponent>()) {
+        graphics->render(batch);
     }
-    for (auto health : *m_ecs.get_component_list(COMPONENT_HEALTH_LIST_ID)) {
-        ((HealthComponent*)health)->render(batch);
+    for (auto health : m_ecs.get_component_list<HealthComponent>()) {
+        health->render(batch);
     }
-    for (auto inventory : *m_ecs.get_component_list(COMPONENT_INVENTORY_LIST_ID)) {
-        ((InventoryComponent*)inventory)->render(overlay_batch, font);
+    for (auto inventory : m_ecs.get_component_list<InventoryComponent>()) {
+        inventory->render(overlay_batch, font);
     }
-    for (auto attack : *m_ecs.get_component_list(COMPONENT_ATTACK_LIST_ID)) {
-        ((AttackComponent*)attack)->render(batch);
+    for (auto attack : m_ecs.get_component_list<AttackComponent>()) {
+        attack->render(batch);
     }
 }
 
 void World::render_debug(DebugBatch& batch) const {
     m_planet.render_debug(batch);
-    for (auto graphics : *m_ecs.get_component_list(COMPONENT_GRAPHICS_LIST_ID)) {
-        ((GraphicsComponent*)graphics)->render_debug(batch);
+    for (auto graphics : m_ecs.get_component_list<GraphicsComponent>()) {
+        graphics->render_debug(batch);
     }
 }
 
@@ -161,28 +165,32 @@ bool World::update(UpdateParams& params) {
     params.world = &m_world;
     params.player_pos = get_player_center();
 
-    for (auto controller : *m_ecs.get_component_list(COMPONENT_CONTROLLER_LIST_ID)) {
-        ((ControllerComponent*)controller)->act(params);
+    for (auto controller : m_ecs.get_component_list<ControllerComponent>()) {
+        controller->act(params);
     }
-    for (auto physics : *m_ecs.get_component_list(COMPONENT_PHYSICS_LIST_ID)) {
-        ((PhysicsComponent*)physics)->update(params);
+    for (auto physics : m_ecs.get_component_list<PhysicsComponent>()) {
+        physics->update(params);
     }
-    for (auto animation : *m_ecs.get_component_list(COMPONENT_ANIMATION_LIST_ID)) {
-        ((AnimationComponent*)animation)->step(params.dt);
+    for (auto animation : m_ecs.get_component_list<AnimationComponent>()) {
+        animation->step(params.dt);
     }
-    for (auto attack : *m_ecs.get_component_list(COMPONENT_ATTACK_LIST_ID)) {
-        ((AttackComponent*)attack)->step(params.dt);
+    for (auto attack : m_ecs.get_component_list<AttackComponent>()) {
+        attack->step(params.dt);
     }
-    for (auto count : *m_ecs.get_component_list(COMPONENT_COUNTDOWN_LIST_ID)) {
-        ((CountdownComponent*)count)->countdown();
+    for (auto count : m_ecs.get_component_list<CountdownComponent>()) {
+        count->countdown();
     }
-    for (auto queue : *m_ecs.get_component_list(COMPONENT_EVENTQ_LIST_ID)) {
-        ((EventQueueComponent*)queue)->process();
+    for (auto queue : m_ecs.get_component_list<EventQueueComponent>()) {
+        queue->process();
     }
-    for (auto garbage : *m_ecs.get_component_list(COMPONENT_GARBAGE_LIST_ID)) {
-        ((GarbageComponent*)garbage)->dump();
+    for (auto garbage : m_ecs.get_component_list<GarbageComponent>()) {
+        garbage->dump();
     }
     m_world.Step(params.dt, 6, 2);
+
+    if (m_ecs.get_component<AttackComponent>(m_player).unwrap().is_attacking()) {
+        cout<<"attacking"<<endl;
+    }
 
     // Should prbably ensure that m_player has a PlayerControllerComponent
     return !m_ecs.does_entity_exist(m_player);

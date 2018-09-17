@@ -1,7 +1,7 @@
 def run_shovel() {
     //if (!self.equipped) return;
 
-    var owner_physics = ecs.get_component(pickup.getOwner(), COMPONENT_PHYSICS_LIST_ID);
+    var owner_physics = ecs.getPhysicsComponent(pickup.getOwner());
 
     var player_exts = owner_physics.getExtents();
     var player_diag2 = player_exts.x*player_exts.x + player_exts.y*player_exts.y;

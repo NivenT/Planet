@@ -9,7 +9,7 @@
 
 struct ChaiParams {
     UpdateParams params;
-    nta::EntityID id;
+    nta::Entity id;
     nta::ECS* ecs;
 };
 

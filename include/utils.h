@@ -180,7 +180,7 @@ struct CollisionParams {
     UpdateParams params;
     b2ContactEdge* edge;
     b2Contact* contact;
-    nta::EntityID other;
+    nta::Entity other;
 };
 
 class Planet;

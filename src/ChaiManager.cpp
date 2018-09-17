@@ -6,6 +6,7 @@
 using namespace glm;
 using namespace std;
 using namespace nta;
+using namespace nta::utils;
 
 chaiscript::ChaiScript ChaiManager::m_chai;
 map<string, function<void()>> ChaiManager::m_scripts;
@@ -71,6 +72,9 @@ void ChaiManager::init() {
     add(chaiscript::fun(&Animation2D::get_frame_dims), "get_frame_dims");
     add(chaiscript::user_type<Animation2D>(), "Animation2D");
 
+
+    // should be able to get a PhysicsComponent and an AttackComponent (at least)
+    /*
     add(chaiscript::fun(&ECS::gen_entity), "gen_entity");
     add(chaiscript::fun(&ECS::delete_entity), "delete_entity");
     add(chaiscript::fun(&ECS::delete_component), "delete_component");
@@ -82,6 +86,16 @@ void ChaiManager::init() {
     add(chaiscript::fun(&ECS::get_components), "get_components");
     add(chaiscript::fun(&ECS::get_siblings), "get_siblings");
     add(chaiscript::fun(&ECS::get_component), "get_component");
+    */
+    add(chaiscript::fun([](ECS& ecs, Entity e) {
+        return &ecs.get_component<PhysicsComponent>(e).unwrap();
+    }), "getPhysicsComponent");
+    add(chaiscript::fun([](ECS& ecs, Entity e) {
+        return &ecs.get_component<AttackComponent>(e).unwrap();
+    }), "getAttackComponent");
+    add(chaiscript::fun([](ECS& ecs, Entity e) {
+        return &ecs.get_component<HealthComponent>(e).unwrap();
+    }), "getHealthComponent");
     add(chaiscript::user_type<ECS>(), "ECS");
 
     add(chaiscript::user_type<Component>(), "Component");
@@ -145,27 +159,18 @@ void ChaiManager::init() {
     add_global_const(chaiscript::const_var(PLAYER_WEAK_ATT_FORCE), "PLAYER_WEAK_ATT_FORCE");
     add_global_const(chaiscript::const_var(SMALL_ITEM_EXTENTS), "SMALL_ITEM_EXTENTS");
     add_global_const(chaiscript::const_var(TILE_SIZE), "TILE_SIZE");
-    add_global_const(chaiscript::const_var(COMPONENT_SAVE_LIST_ID), "COMPONENT_SAVE_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_GRAPHICS_LIST_ID), "COMPONENT_GRAPHICS_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_PHYSICS_LIST_ID), "COMPONENT_PHYSICS_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_CONTROLLER_LIST_ID), "COMPONENT_CONTROLLER_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_INVENTORY_LIST_ID), "COMPONENT_INVENTORY_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_HEALTH_LIST_ID), "COMPONENT_HEALTH_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_ANIMATION_LIST_ID), "COMPONENT_ANIMATION_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_PICKUP_LIST_ID), "COMPONENT_PICKUP_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_COUNTDOWN_LIST_ID), "COMPONENT_COUNTDOWN_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_GARBAGE_LIST_ID), "COMPONENT_GARBAGE_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_EVENTQ_LIST_ID), "COMPONENT_EVENTQ_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_EFFECT_LIST_ID), "COMPONENT_EFFECT_LIST_ID");
-    add_global_const(chaiscript::const_var(COMPONENT_ATTACK_LIST_ID), "COMPONENT_ATTACK_LIST_ID");
 
     Logger::unindent();
     Logger::writeToLog("Initialized ChaiManager");
 }
 
 void ChaiManager::eval_script(crstring file_name, const ChaiParams& params) {
-    PhysicsComponent* physics = (PhysicsComponent*)params.ecs->get_component(params.id, COMPONENT_PHYSICS_LIST_ID);
-    PickupComponent* pickup = (PickupComponent*)params.ecs->get_component(params.id, COMPONENT_PICKUP_LIST_ID);
+    PhysicsComponent* physics = params.ecs->get_component<PhysicsComponent>(params.id).map_or<PhysicsComponent*>([](auto& cmpn) {
+        return &cmpn;
+    }, nullptr);
+    PickupComponent* pickup = params.ecs->get_component<PickupComponent>(params.id).map_or<PickupComponent*>([](auto& cmpn) {
+        return &cmpn;
+    }, nullptr);
 
     m_chai.set_global(chaiscript::var(params.params), "params");
     m_chai.set_global(chaiscript::var(params.ecs), "ecs");

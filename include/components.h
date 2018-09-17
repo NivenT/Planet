@@ -17,7 +17,7 @@ class ChaiManager;
 
 class SavableComponent : public nta::Component {
 public:
-    SavableComponent(nta::crstring name) : name(name), nta::Component(COMPONENT_SAVE_LIST_ID) {}
+    SavableComponent(nta::crstring name) : name(name) {}
     virtual ~SavableComponent() {}
     virtual nta::utils::Json save() const = 0;
     virtual void load(const nta::utils::Json& json) = 0;
@@ -29,7 +29,7 @@ class GraphicsComponent : public nta::Component {
 protected:
     bool m_invisible = false; // set to true if it shouldn't be rendered for any reason
 public:
-    GraphicsComponent(nta::ComponentListID lists = 0) : nta::Component(COMPONENT_GRAPHICS_LIST_ID | lists) {}
+    GraphicsComponent() {}
     void receive(const nta::Message& msg);
     virtual void render(nta::SpriteBatch& batch) const = 0;
     void render_debug(nta::DebugBatch& dbatch) const {}
@@ -45,7 +45,7 @@ protected:
     glm::vec2 m_extents;
     float m_angle;
 public:
-    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col, nta::ComponentListID lists = 0) : m_tex_file(tex), m_color(col), GraphicsComponent(lists) {}
+    ObjectGraphicsComponent(nta::crstring tex, nta::crvec4 col) : m_tex_file(tex), m_color(col) {}
     virtual void receive(const nta::Message& message);
 };
 
@@ -90,7 +90,7 @@ private:
 protected:
     virtual void setVelocity(nta::crvec2 vel);
 
-    virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::EntityID);
+    virtual void resolve_collision(const UpdateParams&, b2ContactEdge*, b2Contact*, nta::Entity);
     
     const glm::vec2 m_max_speed;
     glm::vec2 m_extents;
@@ -102,10 +102,10 @@ protected:
 
     b2Body* m_body;
 public:
-    PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed), nta::Component(COMPONENT_PHYSICS_LIST_ID) {}
+    PhysicsComponent(nta::crvec2 max_speed) : m_max_speed(max_speed) {}
     virtual ~PhysicsComponent();
 
-    virtual void add_to_world(b2World* world, const CreationParams& params, nta::EntityID owner);
+    virtual void add_to_world(b2World* world, const CreationParams& params, nta::Entity owner);
     void destroy(b2World* world);
 
     glm::vec2 getCenter() const;
@@ -125,12 +125,12 @@ public:
 class SensorPhysicsComponent : public PhysicsComponent {
 public:
     SensorPhysicsComponent(nta::crvec2 max_speed) : PhysicsComponent(max_speed) {}
-    void add_to_world(b2World* world, const CreationParams& params, nta::EntityID owner);
+    void add_to_world(b2World* world, const CreationParams& params, nta::Entity owner);
 };
 
 class ControllerComponent : public nta::Component {
 public:
-    ControllerComponent() : nta::Component(COMPONENT_CONTROLLER_LIST_ID) {}
+    ControllerComponent() {}
     virtual void act(const UpdateParams& params) = 0;
 };
 
@@ -162,7 +162,7 @@ protected:
     virtual void onFinish() { m_flag = false; }
     virtual void onStart() { m_flag = true; }
 public:
-    CountdownComponent(nta::ComponentListID lists) : nta::Component(lists | COMPONENT_COUNTDOWN_LIST_ID) {}
+    CountdownComponent() {}
     void countdown();
 };
 
@@ -183,7 +183,7 @@ private:
     glm::vec2 m_vel;
     float m_mass;
 public:
-    HealthComponent(float init_health, uint16_t cat, uint16_t mask, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), m_category_bits(cat), m_mask_bits(mask), CountdownComponent(COMPONENT_HEALTH_LIST_ID) {}
+    HealthComponent(float init_health, uint16_t cat, uint16_t mask, nta::crvec3 col = DEFAULT_HEALTH_COLOR) : m_health(init_health), m_max_health(init_health), m_bar_color(col), m_category_bits(cat), m_mask_bits(mask) {}
     void render(nta::SpriteBatch& batch) const;
     void receive(const nta::Message&);
     float getHealth() { return m_health; }
@@ -194,9 +194,9 @@ public:
 
 class InventoryComponent : public CountdownComponent {
 private:
-    Cycle<nta::EntityID> m_inventory;
+    Cycle<nta::Entity> m_inventory;
 public:
-    InventoryComponent() : CountdownComponent(COMPONENT_INVENTORY_LIST_ID) {}
+    InventoryComponent() {}
     void render(nta::SpriteBatch& batch, nta::SpriteFont* font) const;
     void receive(const nta::Message&);
 
@@ -218,24 +218,24 @@ public:
 
 class PickupComponent : public nta::Component {
 private:
-    nta::EntityID m_owner = NTA_INVALID_ID;
+    nta::Entity m_owner = NTA_INVALID_ID;
     bool m_picked_up = false;
 
     b2Body* m_body = nullptr;
 public:
-    PickupComponent() : nta::Component(COMPONENT_PICKUP_LIST_ID) {}
-    void pickup(nta::EntityID owner, b2World* world);
+    PickupComponent() {}
+    void pickup(nta::Entity owner, b2World* world);
     void receive(const nta::Message&);
 
-    nta::EntityID getOwner() const { return m_owner; }
+    nta::Entity getOwner() const { return m_owner; }
     bool is_picked_up() const { return m_picked_up; }
 };
 
 class GarbageComponent : public nta::Component {
 private:
-    std::stack<nta::EntityID> m_trash;
+    std::stack<nta::Entity> m_trash;
 public:
-    GarbageComponent() : nta::Component(COMPONENT_GARBAGE_LIST_ID) {}
+    GarbageComponent() {}
     void receive(const nta::Message&);
     void dump();
 };
@@ -246,7 +246,7 @@ private:
 
     b2World* m_world;
 public:
-    EventQueueComponent(b2World* w) : m_world(w), nta::Component(COMPONENT_EVENTQ_LIST_ID) {}
+    EventQueueComponent(b2World* w) : m_world(w) {}
     void receive(const nta::Message&);
     void process();
 };
@@ -255,7 +255,7 @@ class EffectComponent : public nta::Component {
 private:
     std::string m_effect;
 public:
-    EffectComponent(nta::crstring effect) : m_effect(effect), nta::Component(COMPONENT_EFFECT_LIST_ID) {}
+    EffectComponent(nta::crstring effect) : m_effect(effect) {}
     void receive(const nta::Message&) {}
     void use(const UpdateParams& params);
 };
@@ -273,7 +273,7 @@ private:
     glm::vec2 m_extents;
     bool m_direction;
 public:
-    AttackComponent() : nta::Component(COMPONENT_ATTACK_LIST_ID) {}
+    AttackComponent() {}
     void receive(const nta::Message&);
 
     bool is_attacking() const { return m_num_cycles > 0; }

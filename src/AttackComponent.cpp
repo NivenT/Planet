@@ -3,6 +3,7 @@
 using namespace std;
 using namespace glm;
 using namespace nta;
+using namespace nta::utils;
 
 void AttackComponent::render(SpriteBatch& batch) const {
     if (!is_attacking()) return;
@@ -34,13 +35,12 @@ void AttackComponent::receive(const Message& msg) {
             if (!is_attacking()) return;
             
             CollisionParams p = *(CollisionParams*)msg.data;
-            PhysicsComponent* physics = (PhysicsComponent*)m_system->get_component(p.other, COMPONENT_PHYSICS_LIST_ID);
-            // I don't like this
-            HealthComponent* health = (HealthComponent*)m_system->get_component(p.other, COMPONENT_HEALTH_LIST_ID);
-            if (physics && health) {
+            Option<PhysicsComponent&> physics = m_system->get_component<PhysicsComponent>(p.other);
+            Option<HealthComponent&> health = m_system->get_component<HealthComponent>(p.other);
+            if (physics.is_some() && health.is_some()) {
                 // should probably use center instead of top left but meh
-                vec2 force = m_knockback*normalize(physics->getTopLeft()-m_top_left);
-                physics->applyForce(force.x, force.y);
+                vec2 force = m_knockback*normalize(physics.unwrap().getTopLeft()-m_top_left);
+                physics.unwrap().applyForce(force.x, force.y);
             }
         } break;
     }

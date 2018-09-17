@@ -1,4 +1,5 @@
 #include <nta/ResourceManager.h>
+#include <iostream>
 
 #include "components.h"
 
@@ -9,6 +10,7 @@ using namespace nta;
 void GraphicsComponent::receive(const Message& msg) {
     if (msg == MESSAGE_TOGGLE_VISIBILITY) {
         m_invisible = !m_invisible;
+        cout<<"here: "<<m_invisible<<endl;
     }
 }
 
@@ -43,7 +45,7 @@ void TextureComponent::render_icon(SpriteBatch& batch, crvec2 top_left,
 
 AnimationComponent::AnimationComponent(crstring texture, crivec2 anim_dims, 
                                        const MotionAnimation anims[], crvec4 color) : 
-    ObjectGraphicsComponent(texture, color, COMPONENT_ANIMATION_LIST_ID) {
+    ObjectGraphicsComponent(texture, color) {
     m_anim = Animation2D(m_tex_file, anim_dims);
     if (anim_dims != ivec2(1)) {
         memcpy(m_anim_params, anims, NUM_MOTION_STATES*sizeof(MotionAnimation));

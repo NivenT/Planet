@@ -1,5 +1,5 @@
 def run_stick() {
-    var owner_attack = ecs.get_component(pickup.getOwner(), COMPONENT_ATTACK_LIST_ID);
+    var owner_attack = ecs.getAttackComponent(pickup.getOwner());
     if (!owner_attack.is_attacking()) {
         owner_attack.anim = Animation2D("resources/images/stick2.png", 9, 0, 9, 30);
         owner_attack.offset = PLAYER_DIMS * vec2(-0.1, -0.2);

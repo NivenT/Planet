@@ -58,7 +58,7 @@ private:
     b2World m_world;
 
     nta::ECS m_ecs;
-    nta::EntityID m_player;
+    nta::Entity m_player;
 public:
     World(const WorldParams& params, bool player = true);
     ~World();

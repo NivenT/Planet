@@ -54,7 +54,7 @@ void PhysicsComponent::destroy(b2World* world) {
 }
 
 void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params,
-                                    EntityID owner) {
+                                    Entity owner) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(params.position.x, params.position.y);
@@ -77,7 +77,7 @@ void PhysicsComponent::add_to_world(b2World* world, const CreationParams& params
 }
 
 void PhysicsComponent::resolve_collision(const UpdateParams& params, b2ContactEdge* edge, b2Contact* contact, 
-                               EntityID obj) {
+                               Entity obj) {
     static const float EPS = 1e-1;
     if (contact->IsTouching() && 
             !(contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())) {
@@ -106,7 +106,7 @@ void PhysicsComponent::handle_collisions(const UpdateParams& params) {
         void* object = edge->other->GetUserData();
         b2Contact* contact = edge->contact;
         
-        resolve_collision(params, edge, contact, (EntityID::inner)object);
+        resolve_collision(params, edge, contact, (Entity::inner)object);
     }
 }
 
@@ -171,7 +171,7 @@ void PhysicsComponent::receive(const Message& msg) {
 
 void SensorPhysicsComponent::add_to_world(b2World* world, 
                                           const CreationParams& params,
-                                          EntityID owner) {
+                                          Entity owner) {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     body_def.position = b2Vec2(params.position.x, params.position.y);
@@ -196,7 +196,7 @@ void SensorPhysicsComponent::add_to_world(b2World* world,
     sensor_def.isSensor = true;
     m_body->CreateFixture(&sensor_def);
 
-    // should probably just new EntityID(owner) instead, but dynamic allocation and junk
+    // should probably just new Entity(owner) instead, but dynamic allocation and junk
     m_body->SetUserData((void*)owner.to_inner());
     send(Message(MESSAGE_RECEIVE_BODY, m_body));
 }
