@@ -1,5 +1,4 @@
 #include <nta/ResourceManager.h>
-#include <iostream>
 
 #include "components.h"
 
@@ -10,7 +9,6 @@ using namespace nta;
 void GraphicsComponent::receive(const Message& msg) {
     if (msg == MESSAGE_TOGGLE_VISIBILITY) {
         m_invisible = !m_invisible;
-        cout<<"here: "<<m_invisible<<endl;
     }
 }
 

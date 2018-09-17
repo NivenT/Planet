@@ -98,6 +98,7 @@ void ChaiManager::init() {
     }), "getHealthComponent");
     add(chaiscript::user_type<ECS>(), "ECS");
 
+    add(chaiscript::fun(&Component::get_id), "get_id");
     add(chaiscript::user_type<Component>(), "Component");
 
     add(chaiscript::fun(&PhysicsComponent::getCenter), "getCenter");

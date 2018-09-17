@@ -46,7 +46,7 @@ void HealthComponent::receive(const nta::Message& msg) {
                 start_countdown();
 
                 if (m_health <= 0) {
-                    Entity me = m_system->get_owner(this);
+                    Entity me = m_system->get_owner(m_id);
                     m_system->broadcast<GarbageComponent>(Message(MESSAGE_DESTROY_ENTITY, &me));
                 }
             }

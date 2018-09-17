@@ -1,4 +1,3 @@
-#include <iostream>
 #include "World.h"
 
 using namespace std;
@@ -20,10 +19,11 @@ World::World(const WorldParams& params, bool player) : m_world(params.planet.get
         m_ecs.add_component<SensorPhysicsComponent>(id, item.max_speed);
         m_ecs.add_component<EffectComponent>(id, item.use_script);
 
-        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<TextureComponent>(id).unwrap());
+        /// \todo Store ComponentID from above call to add_component instead
+        m_ecs.add_component_to_list<GraphicsComponent>(m_ecs.get_component<TextureComponent>(id).unwrap().get_id());
 
         SensorPhysicsComponent& physics = m_ecs.get_component<SensorPhysicsComponent>(id).unwrap();
-        m_ecs.add_component_to_list<PhysicsComponent>(&physics);
+        m_ecs.add_component_to_list<PhysicsComponent>(physics.get_id());
         physics.add_to_world(&m_world, item, id);
 
         vec2 tl = physics.getTopLeft(), cen = physics.getCenter();
@@ -43,9 +43,9 @@ World::World(const WorldParams& params, bool player) : m_world(params.planet.get
                                              ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR);
         m_ecs.add_component<ScriptComponent>(id, enemy.update_script);
 
-        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<AnimationComponent>(id).unwrap());
-        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(id).unwrap());
-        m_ecs.add_component_to_list<ControllerComponent>(&m_ecs.get_component<ScriptComponent>(id).unwrap());
+        m_ecs.add_component_to_list<GraphicsComponent>(m_ecs.get_component<AnimationComponent>(id).unwrap().get_id());
+        m_ecs.add_component_to_list<CountdownComponent>(m_ecs.get_component<HealthComponent>(id).unwrap().get_id());
+        m_ecs.add_component_to_list<ControllerComponent>(m_ecs.get_component<ScriptComponent>(id).unwrap().get_id());
 
         PhysicsComponent& physics = m_ecs.get_component<PhysicsComponent>(id).unwrap();
         physics.add_to_world(&m_world, enemy, id);
@@ -70,12 +70,12 @@ World::World(const WorldParams& params, bool player) : m_world(params.planet.get
         m_ecs.add_component<SpawnerComponent>(id, spawner.spawn_rate*TARGET_FPS,
                                               EnemyParams::load(utils::Json::from_file(spawner.spawn)));
 
-        m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<AnimationComponent>(id).unwrap());
-        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(id).unwrap());
-        m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<SpawnerComponent>(id).unwrap());
+        m_ecs.add_component_to_list<GraphicsComponent>(m_ecs.get_component<AnimationComponent>(id).unwrap().get_id());
+        m_ecs.add_component_to_list<CountdownComponent>(m_ecs.get_component<HealthComponent>(id).unwrap().get_id());
+        m_ecs.add_component_to_list<CountdownComponent>(m_ecs.get_component<SpawnerComponent>(id).unwrap().get_id());
 
         SensorPhysicsComponent& physics = m_ecs.get_component<SensorPhysicsComponent>(id).unwrap();
-        m_ecs.add_component_to_list<PhysicsComponent>(&physics);
+        m_ecs.add_component_to_list<PhysicsComponent>(physics.get_id());
         physics.add_to_world(&m_world, spawner, id);
 
         vec2 tl = physics.getTopLeft(), cen = physics.getCenter();
@@ -121,11 +121,11 @@ void World::add_player() {
     m_ecs.add_component<InventoryComponent>(m_player);
     m_ecs.add_component<AttackComponent>(m_player);
 
-    m_ecs.add_component_to_list<GraphicsComponent>(&m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap());
-    m_ecs.add_component_to_list<AnimationComponent>(&m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap());
-    m_ecs.add_component_to_list<ControllerComponent>(&m_ecs.get_component<PlayerControllerComponent>(m_player).unwrap());
-    m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<HealthComponent>(m_player).unwrap());
-    m_ecs.add_component_to_list<CountdownComponent>(&m_ecs.get_component<InventoryComponent>(m_player).unwrap());
+    m_ecs.add_component_to_list<GraphicsComponent>(m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap().get_id());
+    m_ecs.add_component_to_list<AnimationComponent>(m_ecs.get_component<PlayerAnimationComponent>(m_player).unwrap().get_id());
+    m_ecs.add_component_to_list<ControllerComponent>(m_ecs.get_component<PlayerControllerComponent>(m_player).unwrap().get_id());
+    m_ecs.add_component_to_list<CountdownComponent>(m_ecs.get_component<HealthComponent>(m_player).unwrap().get_id());
+    m_ecs.add_component_to_list<CountdownComponent>(m_ecs.get_component<InventoryComponent>(m_player).unwrap().get_id());
 
     auto& physics = m_ecs.get_component<PhysicsComponent>(m_player).unwrap();
     physics.add_to_world(&m_world, params, m_player);
@@ -187,10 +187,6 @@ bool World::update(UpdateParams& params) {
         garbage->dump();
     }
     m_world.Step(params.dt, 6, 2);
-
-    if (m_ecs.get_component<AttackComponent>(m_player).unwrap().is_attacking()) {
-        cout<<"attacking"<<endl;
-    }
 
     // Should prbably ensure that m_player has a PlayerControllerComponent
     return !m_ecs.does_entity_exist(m_player);

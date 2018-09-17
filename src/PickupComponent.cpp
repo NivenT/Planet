@@ -9,7 +9,7 @@ void PickupComponent::pickup(Entity owner, b2World* world) {
     m_picked_up = true;
 
     send(Message(MESSAGE_TOGGLE_VISIBILITY));
-    m_system->delete_components<PhysicsComponent>(m_system->get_owner(this));
+    m_system->delete_components<PhysicsComponent>(m_system->get_owner(m_id));
 }
 
 void PickupComponent::receive(const Message& msg) {

@@ -11,15 +11,16 @@ void EventQueueComponent::process() {
         /// \todo Don't duplicate code
         Entity id = m_system->gen_entity();
 
-        m_system->add_component<AnimationComponent>(id, spawn.tex, spawn.anim_dims,
+        ComponentID anim = m_system->add_component<AnimationComponent>(id, spawn.tex, spawn.anim_dims,
                                                 spawn.anims, spawn.color);
         m_system->add_component<PhysicsComponent>(id, spawn.max_speed);
-        m_system->add_component<HealthComponent>(id, spawn.init_health, ENEMY_HEALTH_CATEGORY,
+        ComponentID health = m_system->add_component<HealthComponent>(id, spawn.init_health, ENEMY_HEALTH_CATEGORY,
                                              ENEMY_HEALTH_MASK, ENEMY_HEALTH_COLOR);
-        m_system->add_component<ScriptComponent>(id, spawn.update_script);
+        ComponentID script = m_system->add_component<ScriptComponent>(id, spawn.update_script);
 
-        m_system->add_component_to_list<GraphicsComponent>(&m_system->get_component<AnimationComponent>(id).unwrap());
-        m_system->add_component_to_list<ControllerComponent>(&m_system->get_component<ScriptComponent>(id).unwrap());
+        m_system->add_component_to_list<GraphicsComponent>(anim);
+        m_system->add_component_to_list<CountdownComponent>(health);
+        m_system->add_component_to_list<ControllerComponent>(script);
 
         PhysicsComponent& physics = m_system->get_component<PhysicsComponent>(id).unwrap();
         physics.add_to_world(m_world, spawn, id);

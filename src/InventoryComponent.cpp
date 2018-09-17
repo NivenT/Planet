@@ -37,8 +37,8 @@ void InventoryComponent::receive(const nta::Message& msg) {
             CollisionParams p = *(CollisionParams*)msg.data;
             auto pickup = m_system->get_component<PickupComponent>(p.other);
             if (pickup.is_some()) {
-                pickup.unwrap().pickup(m_system->get_owner(this), p.params.world);
-                m_inventory.push_back(m_system->get_owner(&pickup.unwrap()));
+                pickup.unwrap().pickup(m_system->get_owner(m_id), p.params.world);
+                m_inventory.push_back(m_system->get_owner(pickup.unwrap().get_id()));
                 start_countdown();
             }
         } break;
