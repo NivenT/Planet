@@ -4,7 +4,7 @@
 #include <Box2D/Box2D.h>
 
 #include <nta/IOManager.h>
-#include <nta/Entity.h>
+#include <nta/ECS.h>
 #include <nta/DebugBatch.h>
 #include <nta/Camera2D.h>
 #include <nta/Json.h>

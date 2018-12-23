@@ -3,7 +3,6 @@
 
 #include <Box2D/Box2D.h>
 
-#include <nta/ECS.h>
 #include <nta/SpriteFont.h>
 #include <nta/DebugBatch.h>
 #include <nta/Animation2D.h>
